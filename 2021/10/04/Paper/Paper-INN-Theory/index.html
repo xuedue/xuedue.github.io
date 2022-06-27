@@ -1,0 +1,215 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>可逆神经网络flow的理解 | xuedue</title><meta name="keywords" content="inn"><meta name="author" content="xuedue"><meta name="copyright" content="xuedue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本文参考  苏神博客-细水长flow之NICE：流模型的基本概念与实现 flow-based生成模型  分布问题在生成网络中，我们知道的是样本x，即训练数据，我们希望通过概率模型$q_θ(x)$来拟合真实样本$x$，其中$θ$即模型中的参数。 由于我们是不知道真实数据的分布(只有真实数据)，想直接用KL Loss去拟合样本数据和真实数据是不可能的。对于连续型分布，我们可以将样本分布改为$$q(x)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="可逆神经网络flow的理解">
+<meta property="og:url" content="http://example.com/2021/10/04/Paper/Paper-INN-Theory/index.html">
+<meta property="og:site_name" content="xuedue">
+<meta property="og:description" content="本文参考  苏神博客-细水长flow之NICE：流模型的基本概念与实现 flow-based生成模型  分布问题在生成网络中，我们知道的是样本x，即训练数据，我们希望通过概率模型$q_θ(x)$来拟合真实样本$x$，其中$θ$即模型中的参数。 由于我们是不知道真实数据的分布(只有真实数据)，想直接用KL Loss去拟合样本数据和真实数据是不可能的。对于连续型分布，我们可以将样本分布改为$$q(x)">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg">
+<meta property="article:published_time" content="2021-10-04T07:18:08.000Z">
+<meta property="article:modified_time" content="2022-06-27T08:53:37.899Z">
+<meta property="article:author" content="xuedue">
+<meta property="article:tag" content="inn">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/10/04/Paper/Paper-INN-Theory/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '可逆神经网络flow的理解',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-06-27 08:53:37'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/iconfont.css"><meta name="generator" content="Hexo 5.4.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/07/20/8I4hkX5vgNjQS6Y.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">39</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">33</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">xuedue</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">可逆神经网络flow的理解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-10-04T07:18:08.000Z" title="发表于 2021-10-04 07:18:08">2021-10-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-06-27T08:53:37.899Z" title="更新于 2022-06-27 08:53:37">2022-06-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Paper/">Paper</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Paper/INN/">INN</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="可逆神经网络flow的理解"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><strong>本文参考</strong></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://spaces.ac.cn/archives/5776/comment-page-3#comments">苏神博客-细水长flow之NICE：流模型的基本概念与实现</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/43157737">flow-based生成模型</a></li>
+</ul>
+<h1 id="分布问题"><a href="#分布问题" class="headerlink" title="分布问题"></a>分布问题</h1><p>在生成网络中，我们知道的是样本x，即训练数据，我们希望通过概率模型$q_θ(x)$来拟合真实样本$x$，其中$θ$即模型中的参数。</p>
+<p>由于我们是不知道真实数据的分布(只有真实数据)，想直接用KL Loss去拟合样本数据和真实数据是不可能的。对于连续型分布，我们可以将样本分布改为<br>$$<br>q(x) = ∫q(z)q(x|z)dz<br>$$<br>其中$q(x|z)$描述了一个由$z$来生成$x$的模型，其中$q(z)$一般是标准高斯分布。</p>
+<details>
+<summary>最大似然：</summary>
+给定一个概率分布函数$f_D$，以及一个分布参数$θ$，我们可以从这个分布中抽出一个具有n个值的采样$X1,X2,...,Xn$，通过利用$f_D$，我们就能计算出其概率：
+$$
+P=(x_1,x_2,...,x_n)=f_D(x_1,x_2,...,x_n|θ)
+$$
+最大似然就是我们寻找参数$θ$，使得这个采样的可能性最大(最大化拟合分布)，定义可能性为
+$$
+lik(θ)=f_D(x_1,x_2,...,x_n|θ)
+$$
+在θ的所有取值上，使这个函数最大化。这个使可能性最大的值即被称为$θ$的最大似然估计。
+</details>
+
+
+<p>已知分布形式，要想求出参数$θ$，我们可以利用最大似然(求出网络中的参数)。<br>$$<br>E_{x{\sim}p(x)}[log q(x)]<br>$$<br>只要我们能够最大化上面的似然值，那么我们找到的$θ$就是最能够拟合真实分布的网络参数。</p>
+<ul>
+<li><p>VAE<br>在VAE中，其通过优化$z$和标准正太分布靠近，且$z$又是通过encoder来进行采样的，即假设后验分布$p(z|x)$是正太分布，从而对于正太分布中的一个$z$，能找到一个相应的$x$。VAE是优化一个更强的上界，这使得它只能是一个近似模型，无法达到良好的生成效果。</p>
+</li>
+<li><p>GAN<br>利用对抗学习的方式，和求这个最大似然估计参数无关，用交替训练来使得模型精度不断提升。</p>
+</li>
+</ul>
+<h1 id="可逆神经网络"><a href="#可逆神经网络" class="headerlink" title="可逆神经网络"></a>可逆神经网络</h1><p>在flow模型中，则是直接求取这个最大似然的值。<br>$$<br>E_{x{\sim}p(x)}[log q(x)]=log\prod_{i=1}^nq(x_i)<br>$$</p>
+<p>假设我们寻找变换$z=f(x)$，使得数据映射到新空间，且各个维度相互独立。<br>$$<br>q(z)=\prod_{i=1}^nq(z_i)<br>$$<br>假设$f(x)$是可逆的，并且$z$的维度与$x$的维度相同。由概率密度的变量代换我们有:</p>
+<p>$$<br>q(x)=\prod_{i=1}^nq(f(x_i)){\begin{matrix}|det\frac{ {\partial}f}{x}| \end{matrix} }<br>$$<br>其中${\begin{matrix}|det\frac{ {\partial}f}{x}| \end{matrix} }$为“雅可比行列式”的绝对值，在空间转换中，雅可比矩阵描述了向量空间中的运行变换，从$n$维空间转换到$m$维空间，当$m=n$，即雅可比行列式，代表了两个空间中体积比率。</p>
+<p>在这里，对于flow模型，就需要有两个要求</p>
+<ol>
+<li>可逆，并且易于求逆函数（它的逆g就是我们希望的生成模型）；</li>
+<li>对应的雅可比行列式容易计算。</li>
+</ol>
+<p>这样，需要要最大化最大似然，就能优化模型求得真实分布：<br>$$<br>E_{x{\sim}p(x)}[log q(x)]=log\prod_{i=1}^nq(x_i)=log\prod_{i=1}^nq(f(x_i)){\begin{matrix}|det\frac{ {\partial}f}{x}| \end{matrix} }<br>$$<br>当$f(x)$为标准高斯分布时<br>$$<br>E_{x{\sim}p(x)}[log q(x)]=logq(x)=\sum_{i=0}^n{-\frac{D}{2}log(2{\pi})-\frac{1}{2}\begin{Vmatrix}f(x_i)\end{Vmatrix}^2+log{\begin{matrix}|det\frac{ {\partial}f}{x}| \end{matrix} } }<br>$$<br>在实际的网络训练中，为了最小化loss，通常使用负对数似然损失，即在上面的公式中加上一个符号，同时去掉第一个常数。通过优化这个损失，当训练完成，我们就可以随机采样一个$z$，然后通过$f$的逆来生成一个样本$f^{−1}(z)=g(z)$，这就得到了生成模型。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">xuedue</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2021/10/04/Paper/Paper-INN-Theory/">http://example.com/2021/10/04/Paper/Paper-INN-Theory/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">xuedue</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/inn/">inn</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/11/29/Pytorch/Pytorch-Streamlit/"><img class="prev-cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Pytorch-Streamlit</div></div></a></div><div class="next-post pull-right"><a href="/2021/09/26/Pytorch/Pytorch-%E8%AF%AD%E6%B3%95/"><img class="next-cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Pytorch-语法</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/07/20/8I4hkX5vgNjQS6Y.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">xuedue</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">39</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">33</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xuedue"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://bilibili.com" target="_blank" title="BiliBili"><i class="iconfont icon-bilibili-fill card_icon"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">今天超市薯片半价</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">分布问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%AF%E9%80%86%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="toc-number">2.</span> <span class="toc-text">可逆神经网络</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/06/27/hello-world/" title="Hello World">Hello World</a><time datetime="2022-06-27T08:53:37.899Z" title="发表于 2022-06-27 08:53:37">2022-06-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/06/27/C++/C&amp;C++%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/" title="C&amp;C++知识点整理">C&amp;C++知识点整理</a><time datetime="2022-06-27T08:53:37.895Z" title="发表于 2022-06-27 08:53:37">2022-06-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/06/27/Vscode/Vscode-C%E8%AF%AD%E8%A8%80/" title="Vscode配置C语言">Vscode配置C语言</a><time datetime="2022-06-27T08:49:43.000Z" title="发表于 2022-06-27 08:49:43">2022-06-27</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By xuedue</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

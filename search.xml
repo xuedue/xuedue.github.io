@@ -1,0 +1,1312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Hello World</title>
+    <url>/2022/06/27/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Anaconda命令和环境</title>
+    <url>/2021/07/22/Anaconda/Anaconda%E5%91%BD%E4%BB%A4%E5%92%8C%E7%8E%AF%E5%A2%83/</url>
+    <content><![CDATA[<h1 id="Anaconda命令和环境"><a href="#Anaconda命令和环境" class="headerlink" title="Anaconda命令和环境"></a>Anaconda命令和环境</h1><h2 id="conda常用命令"><a href="#conda常用命令" class="headerlink" title="conda常用命令"></a>conda常用命令</h2><ul>
+<li>创建一个名为xuedue的环境，指定Python版本是3.6(优先寻找3.6.x的最新版本), 这里的–name可以简化为-n<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda create --name xuedue python=3.6  </span><br></pre></td></tr></table></figure></li>
+<li>安装好后，使用activate激活某个环境<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">source</span> activate xuedue </span><br></pre></td></tr></table></figure></li>
+<li>如果想返回普通环境，运行<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">source</span>(conda) deactivate</span><br></pre></td></tr></table></figure></li>
+<li>删除一个已有的环境<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda remove --name xuedue --all</span><br></pre></td></tr></table></figure></li>
+<li>复制一个已有的环境<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda create -n xuedue_clone --<span class="built_in">clone</span> xuedue</span><br></pre></td></tr></table></figure></li>
+<li>查看已经安装的环境<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda info --env</span><br></pre></td></tr></table></figure></li>
+<li>conda安装scipy<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda install scipy</span><br></pre></td></tr></table></figure></li>
+<li>查看已经安装的packages<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda list</span><br></pre></td></tr></table></figure></li>
+<li>查看某个指定环境的已安装包<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda list -n xuedue</span><br></pre></td></tr></table></figure></li>
+<li>查找package信息<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda search numpy</span><br></pre></td></tr></table></figure></li>
+<li>安装某个指定环境的package(如果不用-n指定环境名称，则被安装在当前活跃环境，也可以通过-c指定通过某个channel安装)<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda install -n xuedue numpy</span><br></pre></td></tr></table></figure></li>
+<li>更新package<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda update -n xuedue numpy</span><br></pre></td></tr></table></figure></li>
+<li>删除package<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda remove -n xuedue numpy</span><br></pre></td></tr></table></figure></li>
+<li>使用yaml文件配置环境<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda env create -f example.yml</span><br></pre></td></tr></table></figure>
+<h2 id="anaconda-prompt中cd命令不起作用"><a href="#anaconda-prompt中cd命令不起作用" class="headerlink" title="anaconda prompt中cd命令不起作用"></a>anaconda prompt中cd命令不起作用</h2>conda prompt 中cd命令只能在同一个盘下进行切换路径，而不能切换到其他盘  </li>
+<li>方法一：先输入要进入的盘，再使用cd命令  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">e:</span><br><span class="line"><span class="built_in">cd</span> xxx\xxx</span><br></pre></td></tr></table></figure></li>
+<li>方法二：添加/d  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /d e:\xxx\xxx</span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Anaconda</category>
+      </categories>
+      <tags>
+        <tag>Anaconda</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Android</title>
+    <url>/2021/08/12/Android/Android-Q&amp;A/</url>
+    <content><![CDATA[<h1 id="Android-Studio完全卸载"><a href="#Android-Studio完全卸载" class="headerlink" title="Android Studio完全卸载"></a>Android Studio完全卸载</h1><ol>
+<li>在安装目录中找到uninstall，然后卸载整个安装文件夹</li>
+<li>找到Android SDK安装目录，手动删除</li>
+<li>在用户文件夹中（如C:Users/yourname/) 找到”.android”, “.AndroidStudioX.X”, “.gradle”等文件夹（如果有的话，一般进行第一步的时候也会同时删除）</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Android</category>
+        <category>Q&amp;A</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+        <tag>Install</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>C&amp;C++知识点整理</title>
+    <url>/2022/06/27/C++/C&amp;C++%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/</url>
+    <content><![CDATA[<h1 id="C-关键词"><a href="#C-关键词" class="headerlink" title="C++关键词"></a>C++关键词</h1><h2 id="const"><a href="#const" class="headerlink" title="const"></a>const</h2><ul>
+<li>指向常量的指针<br>int const *p;<br>const int *p;  </li>
+<li>指针本身是常量<br>int *const p;<br>分辨:从右往左看，看const离谁近  </li>
+<li>const修饰成员函数<br>void func() const{} 常成员函数，可以使用类中的所有成员变量，但是不能修改它们，一般用于返回成员变量；</li>
+</ul>
+<h2 id="define-预处理阶段"><a href="#define-预处理阶段" class="headerlink" title="define(预处理阶段)"></a>define(预处理阶段)</h2><p>  define 在预处理阶段进行替换<br>  define函数<br>  <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">define <span class="title">add</span><span class="params">(a,b)</span> </span>&#123;a++; b++; cout&lt;&lt;a+b&lt;&lt;endl;&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="inline-编译阶段"><a href="#inline-编译阶段" class="headerlink" title="inline(编译阶段)"></a>inline(编译阶段)</h2><p><strong>内联函数和普通函数的区别</strong>：当编译器处理调用内联函数的语句时，不会将该语句编译成函数调用的指令，而是直接将整个函数体的代码插人调用语句处，就像整个函数体在调用处被重写了一遍一样。  </p>
+<ul>
+<li>优点: 有了内联函数，就能像调用一个函数那样方便地重复使用一段代码，而不需要付出执行函数调用的额外开销。</li>
+<li>缺点: <ul>
+<li>使用内联函数会使最终可执行程序的体积增加。以空间换时间，或增加空间消耗来节省时间，这是计算机学科中常用的方法; </li>
+<li>inline造成代码膨胀会导致额外的换页行为，降低指令高速缓存装置的命中率，以及伴随这些而来的效率降低。——-摘自effective</li>
+</ul>
+</li>
+</ul>
+<p>内联函数中的代码应该只是很简单、执行很快的几条语句。如果一个函数较为复杂，它执行的时间可能上万倍于函数调用的额外开销，那么将其作为内联函数处理的结果是付出让代码体积增加不少的代价，却只使速度提高了万分之一，这显然是不划算的。</p>
+<p><strong>内联函数和宏的区别</strong>：宏是由预处理器对宏进行替代，而内联函数是通过编译器控制来实现的，而且内联函数是真正的函数。</p>
+<p>Q: 类中的构造函数和析构函数可以是内联的吗？<br>A: 你当然可以将其声明为内联的，因为你有权利向编译器建议任何函数为内联的。哈哈，当然我们应该换一种问法，类中的构造函数和析构函数适合作为内联函数吗？effective里面说，构造函数和析构函数往往是inlining的糟糕候选人。因为编译器在编译期间会给你的构造函数和析构函数额外加入很多的代码，像成员函数的构造析构等代码，所以通常构造析构函数比表面上看起来的要多，并不适合作为内联函数。</p>
+<h2 id="static"><a href="#static" class="headerlink" title="static"></a>static</h2><ol>
+<li><p><strong>全局静态变量</strong><br>在全局变量前加上关键字static，全局变量就定义成一个全局静态变量。<br>静态存储区，在整个程序运行期间一直存在。<br>初始化：未经初始化的全局静态变量会被自动初始化为0（自动对象的值是任意的，除非他被显式初始化）；<br>作用域：全局静态变量在声明他的文件之外是不可见的，准确地说是从定义之处开始，到文件结尾。</p>
+</li>
+<li><p><strong>局部静态变量</strong><br>在局部变量之前加上关键字static，局部变量就成为一个局部静态变量。<br>内存中的位置：静态存储区<br>初始化：未经初始化的全局静态变量会被自动初始化为0（自动对象的值是任意的，除非他被显式初始化）；<br>作用域：作用域仍为局部作用域，当定义它的函数或者语句块结束的时候，作用域结束。但是当局部静态变量离开作用域后，并没有销毁，而是仍然驻留在内存当中，只不过我们不能再对它进行访问，直到该函数再次被调用，并且值不变；</p>
+</li>
+<li><p><strong>静态函数</strong><br>在函数返回类型前加static，函数就定义为静态函数。函数的定义和声明在默认情况下都是extern的，但静态函数只是在<strong>声明他的文件当中可见，不能被其他文件所用</strong>。<br>函数的实现使用static修饰，那么这个函数只可在本cpp内使用，不会同其他cpp中的同名函数引起冲突；<br>warning：不要再头文件中声明static的全局函数，不要在cpp内声明非static的全局函数，如果你要在多个cpp中复用该函数，就把它的声明提到头文件里去，否则cpp内部声明需加上static修饰；</p>
+</li>
+<li><p><strong>类的静态成员</strong><br>static修饰的变量先于对象存在，所以<strong>static修饰的变量要在类外初始化</strong>。因为static是所有对象共享的东西嘛，必须要比对象先存在的。<strong>初始化不受private和protected访问限制</strong>，但是若是private，下面main函数就无法访问。</p>
+ <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span>&#123;</span></span><br><span class="line">  <span class="keyword">private</span>:</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> i; <span class="comment">//声明</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">int</span> Test::i = <span class="number">100</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span>:&#123;</span></span><br><span class="line">  cout&lt;&lt;Test::i&lt;&lt;endl;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 通常，非static数据成员存在于类类型的每个对象中。然而，static数据成员<strong>独立于该类的任意对象而存在</strong>；每个static数据成员是<strong>与类关联的对象，而不是与该类的对象相关联</strong>。<br> static数据成员定义：  </p>
+<ul>
+<li>一般情况下，static数据成员是类内声明，类外定义;</li>
+<li>static成员不通过类构造函数初始化，而是在定义时进行初始化；</li>
+<li>一个例外：初始化式为常量表达式，整型static const 数据成员（static const int） 可以在类的定义体内进行初始化：</li>
+</ul>
+</li>
+<li><p><strong>类的静态函数</strong><br>静态成员函数和静态数据成员一样，它们都属于类的静态成员，它们都不是对象成员。因此，对静态成员的引用不需要用对象名。<br>在静态成员函数的实现中<strong>不能直接引用类中说明的非静态成员</strong>（没有this指针），<strong>可以引用类中说明的静态成员</strong>（这点非常重要）。如果静态成员函数中要引用非静态成员时，可通过对象来引用。从中可看出，调用静态成员函数使用如下格式：&lt;类名&gt;::&lt;静态成员函数名&gt;(&lt;参数表&gt;);<br>注意：类的<strong>非static成员函数</strong>是可以直接访问类的<strong>static和非static成员</strong>，而不用作用域操作符。<br>使用static成员的优点：  </p>
+<ul>
+<li>避免命名冲突：static成员的名字在类的作用域中，因此可以避免与其他类的成员或全局对象名字冲突。</li>
+<li>可以实施封装：static成员可以是私有成员，而全局对象不可以。</li>
+<li>易读性：static成员是与特定类关联的，可显示程序员的意图。</li>
+</ul>
+</li>
+</ol>
+<h2 id="extern"><a href="#extern" class="headerlink" title="extern"></a>extern</h2><p>extern有两个作用: </p>
+<ol>
+<li>extern “C”:当它与”C”一起连用时，如: extern “C” void fun(int a, int b);则告诉编译器在编译fun这个函数名时按着C的规则去翻译相应的函数名而不是C++的，C++的规则在翻译这个函数名时会把fun这个名字变得面目全非，可能是fun@aBc_int_int#%$也可能是别的，这要看编译器的”脾气”了(不同的编译器采用的方法不一样)</li>
+<li>extern:当extern不与”C”在一起修饰变量或函数时，如在头文件中: extern int g_Int; 它的作用就是<strong>声明函数或全局变量的作用范围</strong>的关键字，其声明的函数和变量可以在本模块或其他模块中使用，记住它是一个声明不是定义!也就是说B模块(编译单元)要是引用模块(编译单元)A中定义的全局变量或函数时，它只要包含A模块的头文件即可,在编译阶段，模块B虽然找不到该函数或变量，但它不会报错，它会在连接时从模块A生成的目标代码中找到此函数。</li>
+</ol>
+<h2 id="volatile"><a href="#volatile" class="headerlink" title="volatile"></a>volatile</h2><p>定义为volatile的变量是说这变量可能会被意想不到地改变，即在你程序运行过程中一直会变，你希望这个值被正确的处理，每次从内存中去读这个值，而不是因编译器优化从缓存的地方读取，比如读取缓存在寄存器中的数值，从而保证volatile变量被正确的读取。</p>
+<h1 id="C-模板以及底层实现"><a href="#C-模板以及底层实现" class="headerlink" title="C++模板以及底层实现"></a>C++模板以及底层实现</h1><ol>
+<li>编译器并不是把函数模板处理成能够处理任意类的函数；编译器从函数模板通过具体类型产生不同的函数；编译器会对函数模板进行<strong>两次编译</strong>：在<strong>声明的地方</strong>对模板代码本身进行编译，在<strong>调用的地方</strong>对参数替换后的代码进行编译。</li>
+<li>这是因为函数模板要被实例化后才能成为真正的函数，在使用函数模板的源文件中包含函数模板的头文件，如果该头文件中只有声明，没有定义，那编译器无法实例化该模板，最终导致链接错误。</li>
+</ol>
+<h1 id="include-“”和include-lt-gt-区别"><a href="#include-“”和include-lt-gt-区别" class="headerlink" title="include “”和include&lt;&gt;区别"></a>include “”和include&lt;&gt;区别</h1><ul>
+<li>include “”查找头文件路径顺序<br>当前头文件目录(比如D:\MyProjects\tmp\ )<br>编译器设置的头文件路径(编译器可使用-I显式指定搜索路径)(比如C:\Keil\c51\INC\ )<br>系统变量CPLUS_INCLUDE_PATH/C_INCLUDE_PATH指定的头文件路径  </li>
+<li>include&lt;&gt;查找头文件的路径顺序为：<br>编译器设置的头文件路径(编译器可使用-I显式指定搜索路径)<br>系统变量CPLUS_INCLUDE_PATH/C_INCLUDE_PATH指定的头文件路径</li>
+</ul>
+<h1 id="指针和引用的区别"><a href="#指针和引用的区别" class="headerlink" title="指针和引用的区别"></a>指针和引用的区别</h1><ol>
+<li>指针有自己的一块空间，而引用只是一个别名；</li>
+<li>使用sizeof看一个指针的大小是4，而引用则是被引用对象的大小；</li>
+<li>指针可以被初始化为NULL，而引用必须被初始化且必须是一个已有对象的引用；</li>
+<li>作为参数传递时，指针需要被解引用才可以对对象进行操作，而直接对引用的修改都会改变引用所指向的对象；</li>
+<li>指针在使用中可以指向其它对象，但是引用只能是一个对象的引用，不能被改变；</li>
+<li>指针可以有多级指针（**p），而引用只有一级；</li>
+<li>指针和引用使用++运算符的意义不一样(一个指针本身的大小是4字节)； <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span>* p1,<span class="keyword">double</span>* p2;</span><br><span class="line"><span class="keyword">int</span> a=<span class="number">1</span>,<span class="keyword">double</span> b=<span class="number">2</span>;</span><br><span class="line">p1=&amp;a,p2=&amp;b;</span><br><span class="line">cout&lt;&lt;p1&lt;&lt;<span class="string">&quot; &quot;</span>&lt;&lt;p2&lt;&lt;endl;</span><br><span class="line">p1++;	p2++;</span><br><span class="line"><span class="comment">//指向的内存空间+1，所以和类型有关，第一个+4，第二个+8</span></span><br><span class="line">cout&lt;&lt;p1&lt;&lt;<span class="string">&quot; &quot;</span>&lt;&lt;p2&lt;&lt;endl;	</span><br><span class="line"><span class="comment">//本身内存空间+1，所以两个地址值都是+4</span></span><br><span class="line">cout&lt;&lt;(&amp;p1+<span class="number">1</span>)&lt;&lt;<span class="string">&quot; &quot;</span>&lt;&lt;(&amp;p2+<span class="number">1</span>);</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="调用赋值构造函数还是拷贝（复制）构造函数的情况（历史悠久，还没理清）"><a href="#调用赋值构造函数还是拷贝（复制）构造函数的情况（历史悠久，还没理清）" class="headerlink" title="调用赋值构造函数还是拷贝（复制）构造函数的情况（历史悠久，还没理清）"></a>调用赋值构造函数还是拷贝（复制）构造函数的情况（历史悠久，还没理清）</h1><p>总结，还没初始化的调用拷贝构造函数，已经初始化过的调用赋值构造函数。</p>
+<h1 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h1>  <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">funtion</span><span class="params">()</span> </span>&#123;函数体&#125;</span><br><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">funtion</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>虚函数，在基类声明，在其派生类中根据需要进行重写(不需要可以不重写，继承基类的虚函数)。<br>而声明纯虚函数的类为抽象类，不可定义对象，由其派生的子类想要使用该虚函数，必须重新实现该虚函数，不会自动继承抽象类的虚函数。有纯虚函数的类为抽象类，不能定义抽象类的对象，它的子类要么实现它所有的纯虚函数变为一个普通类，要么还是一个抽象类。</p>
+<h1 id="虚函数实现"><a href="#虚函数实现" class="headerlink" title="虚函数实现"></a>虚函数实现</h1><p>虚函数表：类的虚函数表是一块连续的内存，每个内存单元中记录一个JMP指令的地址。</p>
+<p>编译器会为每个有虚函数的类创建一个虚函数表，该虚函数表将被该类的所有对象共享。类的每个虚函数占据虚函数表中的一块。如果类中有N个虚函数，那么其虚函数表将有N*4字节的大小。</p>
+<p>虚函数表是在编译阶段创建，运行时动态绑定虚函数</p>
+<p>编译器另外还为每个特定类的对象提供了一个虚表指针（即vptr），这个指针指向了对象所属类的虚表。在程序运行时，根据对象的类型去初始化vptr，从而让vptr正确的指向所属类的虚表，从而在调用虚函数时，就能够找到正确的函数。</p>
+<ol>
+<li>一个类中的某个方法被声明为虚函数，则它将放在虚函数表中。</li>
+<li>当一个类继承了另一个类，就会继承它的虚函数表，虚函数表中所包含的函数，如果在子类中有重写，则指向当前重写的实现，否则指向基类实现。若在子类中定义了新的虚函数，则该虚函数指针在虚函数表的后面。</li>
+<li>在继承或多级继承中，要用一个祖先类的指针调用一个后代类实例的方法，若想体现出多态，则必须在该祖先类中就将需要的方法声明为虚函数，否则虽然后代类的虚函数表中有这个方法在后代类中的实现，但对祖先类指针的方法调用依然是早绑定的。</li>
+</ol>
+<p>有虚函数或虚继承的类实例化后的对象大小至少为4字节（确切的说是一个指针的字节数；说至少是因为还要加上其他非静态数据成员，还要考虑对齐问题）；没有虚函数和虚继承的类实例化后的对象大小至少为1字节（没有非静态数据成员的情况下也要有1个字节来记录它的地址）。</p>
+<h1 id="构造函数能否使用虚函数，析构函数呢"><a href="#构造函数能否使用虚函数，析构函数呢" class="headerlink" title="构造函数能否使用虚函数，析构函数呢"></a>构造函数能否使用虚函数，析构函数呢</h1><ul>
+<li>构造函数<strong>不能</strong>为虚函数：构造函数在进行调用时还不存在父类和子类的概念，父类只会调用父类的构造函数，子类调用子类的，因此不存在动态绑定的概念；但是构造函数中可以调用虚函数，不过并没有动态效果，只会调用本类中的对应函数；</li>
+<li>析构函数<strong>可以</strong>为虚函数：对象已经创建，虚表指针存放析构函数的地址，基类与派生类都含有析构虚函数，创建基类与子类对象，都含有各类的虚表指针，当写通用函数时，运行根据传入对象的类型确定析构函数的地址，然后调用该析构函数。<br>析构函数可以是纯虚函数，但是必须提供纯虚析构函数的定义。<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">awov</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"><span class="keyword">virtual</span> ~<span class="built_in">awov</span>() = <span class="number">0</span>; <span class="comment">// 声明一个纯虚析构函数</span></span><br><span class="line">&#125;;</span><br><span class="line">awov::~<span class="built_in">awov</span>() &#123;&#125; <span class="comment">// 纯虚析构函数的定义</span></span><br></pre></td></tr></table></figure>
+这个定义是必需的，因为虚析构函数工作的方式是：最底层的派生类的析构函数最先被调用，然后各个基类的析构函数被调用。这就是说，即使是抽象类，编译器也要产生对~awov的调用，所以要保证为它提供函数体。如果不这么做，链接器就会检测出来，最后还是得回去把它添上.</li>
+</ul>
+<h1 id="虚继承"><a href="#虚继承" class="headerlink" title="虚继承"></a>虚继承</h1>]]></content>
+      <categories>
+        <category>C&amp;C++</category>
+      </categories>
+      <tags>
+        <tag>C</tag>
+        <tag>C++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Github/Git相关问题</title>
+    <url>/2021/07/22/Github/Github-Q&amp;A/</url>
+    <content><![CDATA[<h1 id="解决git-clone-速度慢的问题"><a href="#解决git-clone-速度慢的问题" class="headerlink" title="解决git clone 速度慢的问题"></a>解决git clone 速度慢的问题</h1><p>利用国内镜像替换</p>
+<blockquote>
+<p>github.com.cnpmjs.org<br>git.sdut.me</p>
+</blockquote>
+<p>方法</p>
+<blockquote>
+<p>#我们准备clone的链接<br><code>git clone https://github.com/example</code><br>#使用镜像<br><code>git clone https://github.com.cnpmjs.org/example</code></p>
+</blockquote>
+<h1 id="git-push时登录显示密码错误"><a href="#git-push时登录显示密码错误" class="headerlink" title="git push时登录显示密码错误"></a>git push时登录显示密码错误</h1><p>依次进入界面<br><img src="https://i.loli.net/2021/08/02/o7sMXVbxkpQiSlG.png" alt="image.png"><br><img src="https://i.loli.net/2021/08/02/kMGWqlyPZtEHb6a.png" alt="image.png"><br><img src="https://i.loli.net/2021/08/02/MjGeZpFLdTb12BS.png" alt="image.png"></p>
+<p>全部勾选并生成token，token便是git push登录时需要输入的密码（只会出现一次，记得复制！</p>
+<h1 id="pip-install-git报错"><a href="#pip-install-git报错" class="headerlink" title="pip install git报错"></a>pip install git报错</h1><p>利用git安装github上的项目报错<br><code>ERROR: Command errored out with exit status 128: git clone -q https://github.com/xxx/xxx.git /tmp/pip-req-build-88ue_mql Check the logs for full command output.</code></p>
+<p>解决方法<br>将github网页中的http://换成git://</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 本来是</span></span><br><span class="line">pip install git+http://github.com/xxx/xxx.git</span><br><span class="line"><span class="comment"># 改为</span></span><br><span class="line">pip install git+git://github.com/xxx/xxx.git</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Github</category>
+        <category>Q&amp;A</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+        <tag>Github</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Github-stars</title>
+    <url>/2021/08/09/Github/Github-stars/</url>
+    <content><![CDATA[<h1 id="Github上star的项目分类"><a href="#Github上star的项目分类" class="headerlink" title="Github上star的项目分类"></a>Github上star的项目分类</h1><p>垃圾Github，分类功能都不能做个吗</p>
+<h2 id="StyleGan"><a href="#StyleGan" class="headerlink" title="StyleGan"></a>StyleGan</h2><h3 id="Desinging-an-Encoder-for-StyleGAN-Image-Manipulation"><a href="#Desinging-an-Encoder-for-StyleGAN-Image-Manipulation" class="headerlink" title="Desinging an Encoder for StyleGAN Image Manipulation"></a><a href="https://github.com/omertov/encoder4editing">Desinging an Encoder for StyleGAN Image Manipulation</a></h3><h3 id="Encoding-in-Style-a-StyleGAN-Encoder-for-Image-to-Image-Translation"><a href="#Encoding-in-Style-a-StyleGAN-Encoder-for-Image-to-Image-Translation" class="headerlink" title="Encoding in Style: a StyleGAN Encoder for Image-to-Image Translation"></a><a href="https://github.com/eladrich/pixel2style2pixel">Encoding in Style: a StyleGAN Encoder for Image-to-Image Translation</a></h3><h3 id="Face-Identity-Disentanglement-via-Latent-Space-Mapping"><a href="#Face-Identity-Disentanglement-via-Latent-Space-Mapping" class="headerlink" title="Face Identity Disentanglement via Latent Space Mapping"></a><a href="https://github.com/YotamNitzan/ID-disentanglement">Face Identity Disentanglement via Latent Space Mapping</a></h3><h3 id="Only-a-Matter-of-Style-Age-Transformation-Using-a-Style-Based-Regression-Model"><a href="#Only-a-Matter-of-Style-Age-Transformation-Using-a-Style-Based-Regression-Model" class="headerlink" title="Only a Matter of Style: Age Transformation Using a Style-Based Regression Model"></a><a href="https://github.com/yuval-alaluf/SAM">Only a Matter of Style: Age Transformation Using a Style-Based Regression Model</a></h3><h2 id="Face-Aging"><a href="#Face-Aging" class="headerlink" title="Face Aging"></a>Face Aging</h2><h3 id="Lifespan-Age-Transformation-Synthesis-code"><a href="#Lifespan-Age-Transformation-Synthesis-code" class="headerlink" title="Lifespan Age Transformation Synthesis code"></a><a href="https://github.com/royorel/Lifespan_Age_Transformation_Synthesis">Lifespan Age Transformation Synthesis code</a></h3><h3 id="Only-a-Matter-of-Style-Age-Transformation-Using-a-Style-Based-Regression-Model-1"><a href="#Only-a-Matter-of-Style-Age-Transformation-Using-a-Style-Based-Regression-Model-1" class="headerlink" title="Only a Matter of Style: Age Transformation Using a Style-Based Regression Model"></a><a href="https://github.com/yuval-alaluf/SAM">Only a Matter of Style: Age Transformation Using a Style-Based Regression Model</a></h3><h3 id="Face-Aging-with-Identity-Preserved-Conditional-Generative-Adversarial-Networks"><a href="#Face-Aging-with-Identity-Preserved-Conditional-Generative-Adversarial-Networks" class="headerlink" title="Face Aging with Identity-Preserved Conditional Generative Adversarial Networks"></a><a href="https://github.com/guyuchao/IPCGANs-Pytorch">Face Aging with Identity-Preserved Conditional Generative Adversarial Networks</a></h3><h3 id="Age-Progression-Regression-by-Conditional-Adversarial-Autoencoder"><a href="#Age-Progression-Regression-by-Conditional-Adversarial-Autoencoder" class="headerlink" title="Age Progression/Regression by Conditional Adversarial Autoencoder"></a><a href="https://github.com/ZZUTK/Face-Aging-CAAE">Age Progression/Regression by Conditional Adversarial Autoencoder</a></h3><h2 id="INN"><a href="#INN" class="headerlink" title="INN"></a>INN</h2><h3 id="Invertible-Residual-Networks"><a href="#Invertible-Residual-Networks" class="headerlink" title="Invertible Residual Networks"></a><a href="https://github.com/jhjacobsen/invertible-resnet">Invertible Residual Networks</a></h3><h3 id="FFJORD-Free-form-Continuous-Dynamics-for-Scalable-Reversible-Generative-Models"><a href="#FFJORD-Free-form-Continuous-Dynamics-for-Scalable-Reversible-Generative-Models" class="headerlink" title="FFJORD: Free-form Continuous Dynamics for Scalable Reversible Generative Models"></a><a href="https://github.com/rtqichen/ffjord">FFJORD: Free-form Continuous Dynamics for Scalable Reversible Generative Models</a></h3><h3 id="PyTorch-Framework-for-Developing-Memory-Efficient-Deep-Invertible-Networks"><a href="#PyTorch-Framework-for-Developing-Memory-Efficient-Deep-Invertible-Networks" class="headerlink" title="PyTorch Framework for Developing Memory Efficient Deep Invertible Networks"></a><a href="https://github.com/silvandeleemput/memcnn">PyTorch Framework for Developing Memory Efficient Deep Invertible Networks</a></h3><h2 id="Traffic"><a href="#Traffic" class="headerlink" title="Traffic"></a>Traffic</h2><h3 id="Pytorch-Implementation-For-LPRNet-A-High-Performance-And-Lightweight-License-Plate-Recognition-Framework"><a href="#Pytorch-Implementation-For-LPRNet-A-High-Performance-And-Lightweight-License-Plate-Recognition-Framework" class="headerlink" title="Pytorch Implementation For LPRNet, A High Performance And Lightweight License Plate Recognition Framework"></a><a href="https://github.com/sirius-ai/LPRNet_Pytorch">Pytorch Implementation For LPRNet, A High Performance And Lightweight License Plate Recognition Framework</a></h3><h2 id="Landmark检测"><a href="#Landmark检测" class="headerlink" title="Landmark检测"></a>Landmark检测</h2><h3 id="face-alignment"><a href="#face-alignment" class="headerlink" title="face-alignment"></a><a href="https://github.com/1adrianb/face-alignment">face-alignment</a></h3><h2 id="Package-amp-Tool-amp-Study"><a href="#Package-amp-Tool-amp-Study" class="headerlink" title="Package&amp;Tool&amp;Study"></a>Package&amp;Tool&amp;Study</h2><h3 id="pytorch-structural-similarity-SSIM-loss"><a href="#pytorch-structural-similarity-SSIM-loss" class="headerlink" title="pytorch structural similarity (SSIM) loss"></a><a href="https://github.com/Po-Hsun-Su/pytorch-ssim">pytorch structural similarity (SSIM) loss</a></h3><h3 id="PyTorch-tutorials-and-fun-projects-including-neural-talk-neural-style-poem-writing-anime-generation"><a href="#PyTorch-tutorials-and-fun-projects-including-neural-talk-neural-style-poem-writing-anime-generation" class="headerlink" title="PyTorch tutorials and fun projects including neural talk, neural style, poem writing, anime generation"></a><a href="https://github.com/chenyuntc/pytorch-book">PyTorch tutorials and fun projects including neural talk, neural style, poem writing, anime generation</a></h3>]]></content>
+      <categories>
+        <category>Github</category>
+        <category>Stars</category>
+      </categories>
+      <tags>
+        <tag>Github</tag>
+        <tag>stars</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>利用Github Actions实现自动部署</title>
+    <url>/2021/09/22/Hexo/Hexo-GithubAction/</url>
+    <content><![CDATA[<p><strong>本文参考</strong></p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/170563000">GitHub Actions 来自动部署 Hexo</a></li>
+<li><a href="https://xin520.xyz/githubactions/">用GitHub Actions 自动部署 Hexo博客</a></li>
+</ul>
+<h1 id="Hexo-部署"><a href="#Hexo-部署" class="headerlink" title="Hexo 部署"></a>Hexo 部署</h1><p>在Hexo中，以往的部署通常都需要通过命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean <span class="comment"># 清空静态页面(public文件夹)</span></span><br><span class="line">hexo g <span class="comment"># 创建静态页面</span></span><br><span class="line">hexo d <span class="comment"># 发布页面：清空.deploy_git/里文件，从public/复制新生成的文件</span></span><br></pre></td></tr></table></figure>
+<p>在实现自动部署之前，hexo博客必须能够成功运行以上代码并成功部署</p>
+<h1 id="实现自动部署"><a href="#实现自动部署" class="headerlink" title="实现自动部署"></a>实现自动部署</h1><h2 id="生成ssh密钥文件"><a href="#生成ssh密钥文件" class="headerlink" title="生成ssh密钥文件"></a>生成ssh密钥文件</h2><p>在任何位置的git bash窗口中运行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 4096 -C <span class="string">&quot;Hexo Deploy Key&quot;</span> -f github-deploy-key -N <span class="string">&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>会在当前目录生成两个文件</p>
+<ul>
+<li>github-deploy-key —— 私钥</li>
+<li>github-deploy-key.pub —— 公钥</li>
+</ul>
+<h2 id="创建私人仓库-用于部署"><a href="#创建私人仓库-用于部署" class="headerlink" title="创建私人仓库(用于部署)"></a>创建私人仓库(用于部署)</h2><p>在GitHub中创建repositories，名字随意取，选private，其他勾不勾无所谓<br>然后在你的博客文件夹根目录(不是themes目录)运行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
+<p>将整个博客文件夹变成一个git管理的仓库<br>依次运行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add . <span class="comment"># 将所有文件夹加入到暂存区(这里需要删除themes中的.git文件夹，否则themes文件夹不会被加入暂存区)</span></span><br><span class="line">git commit -m <span class="string">&#x27;the initial edition&#x27;</span> <span class="comment"># 提交暂存区</span></span><br><span class="line">git remote add origin https://github.com/usrname/usrname.git <span class="comment"># 与仓库关联</span></span><br><span class="line">git pull <span class="comment">#拉取仓库比较内容，放心不会覆盖本地文件</span></span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+<p>现在看你的私人仓库，文件内容应该和你的工作区(本地博客文件夹)是一致的(本地的.deploy_git可以直接删除)</p>
+<h2 id="配置密钥"><a href="#配置密钥" class="headerlink" title="配置密钥"></a>配置密钥</h2><h3 id="配置私钥"><a href="#配置私钥" class="headerlink" title="配置私钥"></a>配置私钥</h3><ul>
+<li>在上面的创建的私人仓库中访问<code>Settings -&gt; Secrets,New secret</code>  </li>
+<li>在name中填写<code>HEXO_DEPLOY_KEY</code>，将私钥文件<code>github-deploy-key</code>中的内容全部复制进来</li>
+</ul>
+<h3 id="配置公钥"><a href="#配置公钥" class="headerlink" title="配置公钥"></a>配置公钥</h3><ul>
+<li>在你的博客仓库(存放html静态页面的仓库)，一般为<code>name.github.io</code>中访问<code>Settings -&gt; Deploy keys,Add deploy key</code></li>
+<li>在name中填写<code>HEXO_DEPLOY_PUB</code>，将公钥文件<code>github-deploy-key.pub</code>中的内容全部复制进来</li>
+<li>勾选<code>Allow write access</code></li>
+</ul>
+<h2 id="创建触发自动部署的脚本"><a href="#创建触发自动部署的脚本" class="headerlink" title="创建触发自动部署的脚本"></a>创建触发自动部署的脚本</h2><p>两种方法</p>
+<ul>
+<li>直接在私人仓库中添加文件(路径为.github/workflows/deploy.yml)，然后再pull到本地；</li>
+<li>直接在本地工作区添加文件(路径为.github/workflows/deploy.yml)，然后再push到仓库；</li>
+</ul>
+<p>我这里选用了方法一</p>
+<ul>
+<li><p>在私人仓库添加文件(路径为.github/workflows/deploy.yml)，内容为</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">name: Hexo Deploy</span><br><span class="line"></span><br><span class="line">on:</span><br><span class="line">  push:</span><br><span class="line">    branches:</span><br><span class="line">      - master</span><br><span class="line"></span><br><span class="line"><span class="built_in">jobs</span>:</span><br><span class="line">  build:</span><br><span class="line">    runs-on: ubuntu-18.04</span><br><span class="line">    <span class="keyword">if</span>: github.event.repository.owner.id == github.event.sender.id</span><br><span class="line"></span><br><span class="line">    steps:</span><br><span class="line">      - name: Checkout <span class="built_in">source</span></span><br><span class="line">        uses: actions/checkout@v2</span><br><span class="line">        with:</span><br><span class="line">          ref: master</span><br><span class="line"></span><br><span class="line">      - name: Setup Node.js</span><br><span class="line">        uses: actions/setup-node@v1</span><br><span class="line">        with:</span><br><span class="line">          node-version: <span class="string">&#x27;12&#x27;</span></span><br><span class="line"></span><br><span class="line">      - name: Setup Hexo</span><br><span class="line">        env:</span><br><span class="line">          ACTION_DEPLOY_KEY: <span class="variable">$&#123;&#123; secrets.HEXO_DEPLOY_KEY &#125;</span>&#125;</span><br><span class="line">        run: |</span><br><span class="line">          mkdir -p ~/.ssh/</span><br><span class="line">          <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$ACTION_DEPLOY_KEY</span>&quot;</span> &gt; ~/.ssh/id_rsa</span><br><span class="line">          chmod 700 ~/.ssh</span><br><span class="line">          chmod 600 ~/.ssh/id_rsa</span><br><span class="line">          ssh-keyscan github.com &gt;&gt; ~/.ssh/known_hosts</span><br><span class="line">          git config --global user.email <span class="string">&quot;email@xx.com&quot;</span></span><br><span class="line">          git config --global user.name <span class="string">&quot;usrname&quot;</span></span><br><span class="line">          npm install hexo-cli -g</span><br><span class="line">          npm install</span><br><span class="line"></span><br><span class="line">      - name: Deploy</span><br><span class="line">        run: |</span><br><span class="line">          hexo clean</span><br><span class="line">          hexo deploy</span><br></pre></td></tr></table></figure>
+<p>将上面的email和usrname改为你自己的邮件路径和名字<br>上面的推送脚本就是说只要本地的工作区有内容push到私人仓库中，就会执行hexo clean和hexo deploy</p>
+</li>
+<li><p>然后将这个文件夹pull到本地</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git pull origin master</span><br></pre></td></tr></table></figure>
+<p>如果没有成功把workflow文件夹pull到本地，可以尝试</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git pull -f origin master <span class="comment"># 强制拉取</span></span><br></pre></td></tr></table></figure>
+<p>如果不进行拉取同步，那么在后续push的时候也会报错，因为你私人仓库和本地仓库内容不同步。</p>
+</li>
+</ul>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>知道了原理，你可以在本地中修改任意文件，然后执行</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+<p>成功push之后，就是自动触发GitHub Actions中的脚本，执行编译和部署(如果失败的话)，GitHub就会给你发邮件。</p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>GithubAction</tag>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>markdown</title>
+    <url>/2021/08/01/Hexo/Hexo-Markdown/</url>
+    <content><![CDATA[<h1 id="持续记录一些markdown语法"><a href="#持续记录一些markdown语法" class="headerlink" title="持续记录一些markdown语法"></a>持续记录一些markdown语法</h1><p><strong>只记录自己在写的时候会发问的语法（以防忘记</strong></p>
+<ol>
+<li><p>加粗,斜体,删除线 </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">**加粗**</span><br><span class="line">*斜体* </span><br><span class="line">***粗斜体文本***</span><br><span class="line">~~删除线~~</span><br></pre></td></tr></table></figure></li>
+<li><p>代码块  </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">\`\`\` bash  </span><br><span class="line">代码</span><br><span class="line">\`\`\`</span><br></pre></td></tr></table></figure></li>
+<li><p>csdn或者hexo上显示连续中划线-&zwnj;-  </p>
+</li>
+</ol>
+<ul>
+<li>在连续中划线之间使用零宽不连字 <code>&amp;zwnj;</code>  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">`-&amp;zwnj;-`</span><br></pre></td></tr></table></figure></li>
+<li>直接用``进行包裹  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">`--`</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="4">
+<li><p>添加分割线  </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">***  </span><br><span class="line">* * *  </span><br><span class="line">*****  </span><br><span class="line">- - -  </span><br><span class="line">----------</span><br></pre></td></tr></table></figure></li>
+<li><p>添加待办事项</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">- [ ] 准备做</span><br><span class="line">- [x] 已经完成</span><br></pre></td></tr></table></figure></li>
+<li></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>利用Hexo搭建博客+更换主题以及后续问题记录</title>
+    <url>/2021/07/20/Hexo/Hexo_buildweb/</url>
+    <content><![CDATA[<h1 id="利用Hexo搭建博客"><a href="#利用Hexo搭建博客" class="headerlink" title="利用Hexo搭建博客"></a>利用Hexo搭建博客</h1><p><strong>参考文章</strong></p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/22498474">Hexo(2)-部署博客及更新博文</a></li>
+</ul>
+<p>算是一次自己成功尝试的记录</p>
+<h2 id="Github创建个人仓库"><a href="#Github创建个人仓库" class="headerlink" title="Github创建个人仓库"></a>Github创建个人仓库</h2><p>点击GitHub中的New repository创建新仓库，仓库名应该为：用户名.github.io 这个用户名使用自己的GitHub帐号名称代替</p>
+<h2 id="安装Git"><a href="#安装Git" class="headerlink" title="安装Git"></a>安装Git</h2><p>任意位置右键选择Git Bash Here<br> <img src="https://i.loli.net/2021/07/21/ZWYFpob54ndehJS.png" width = "30%" alt="图片名称" lign='center' /><br> <!-- <img src='https://i.loli.net/2021/07/21/ZWYFpob54ndehJS.png' style='float:left'/> --></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global user.name xuedue  <span class="comment">#改成你的GitHub用户名  </span></span><br><span class="line">git config --global user.email 1515****06@qq.com  <span class="comment">#改成你自己的GitHub注册邮箱&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>生成ssh密钥文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C 1515****06@qq.com <span class="comment">#改成你自己的GitHub注册邮箱</span></span><br></pre></td></tr></table></figure>
+
+<p>然后直接三个回车即可，默认不需要设置密码<br>然后找到生成的.ssh的文件夹中的id_rsa.pub密钥，打开文件并复制内容<br> <img src="https://i.loli.net/2021/07/21/ptdnSA1becZgNRH.png" width="80%"><br>打开<a href="https://github.com/settings/keys">GitHub_Settings_keys</a> 页面，新建new SSH Key<br> <img src="https://i.loli.net/2021/07/21/LMgYGFX5J87s6lu.png" width="80%"><br>Title为标题，随便填，将上面复制的id_rsa.pub的内容粘贴进去，最后点击Add SSH key。<br>在Git Bash中检测GitHub公钥设置是否成功，输入 ssh <a href="mailto:&#103;&#105;&#116;&#64;&#x67;&#105;&#116;&#x68;&#117;&#x62;&#46;&#99;&#111;&#109;">&#103;&#105;&#116;&#64;&#x67;&#105;&#116;&#x68;&#117;&#x62;&#46;&#99;&#111;&#109;</a> ，有如下显示就算成功<br><img src="https://i.loli.net/2021/07/21/TJYHQxPILw8lM3S.png" alt="1626879148_1_.jpg"></p>
+<h2 id="安装Node-js和npm"><a href="#安装Node-js和npm" class="headerlink" title="安装Node.js和npm"></a>安装Node.js和npm</h2><p>安装完Node.js会自动安装npm,并填入系统路径，在cmd中查看版本验证是否安装正确</p>
+<p><img src="https://i.loli.net/2021/07/21/FpWHbLXk3B1c95T.png" alt="image.png"></p>
+<h2 id="安装Hexo并初始化博客文件夹"><a href="#安装Hexo并初始化博客文件夹" class="headerlink" title="安装Hexo并初始化博客文件夹"></a>安装Hexo并初始化博客文件夹</h2><ul>
+<li>安装Hexo<br>打开cmd窗口，输入下面命令：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install -g hexo-cli </span><br></pre></td></tr></table></figure></li>
+<li>初始化博客文件夹<br>在cmd窗口进入你想要创建博客文件夹的位置，并输入下面命令：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo init blog(博客文件夹的名字)  </span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>进入博客文件夹中，如果用上述命令，则cd blog<br>网站这时候已经建立好，可以通过命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo g  </span><br><span class="line">hexo s  </span><br></pre></td></tr></table></figure>
+
+<p>这时候访问 localhost:4000，就可以看到自己的网页了</p>
+<h3 id="hexo常用命令"><a href="#hexo常用命令" class="headerlink" title="hexo常用命令"></a>hexo常用命令</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install hexo -g <span class="comment">#安装Hexo  </span></span><br><span class="line">npm update hexo -g <span class="comment">#升级  </span></span><br><span class="line">hexo init <span class="comment">#初始化博客  </span></span><br></pre></td></tr></table></figure>
+
+<p>命令简写</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo n article_name == hexo new article_name <span class="comment">#新建文章  </span></span><br><span class="line">hexo new page page_name <span class="comment">#新建页面</span></span><br><span class="line">hexo g == hexo generate <span class="comment">#生成  </span></span><br><span class="line">hexo s == hexo server <span class="comment">#启动服务预览  </span></span><br><span class="line">hexo d == hexo deploy <span class="comment">#部署  </span></span><br><span class="line">hexo server <span class="comment">#Hexo会监视文件变动并自动更新，无须重启服务器  </span></span><br><span class="line">hexo server -s <span class="comment">#静态模式  </span></span><br><span class="line">hexo server -p 5000 <span class="comment">#更改端口  </span></span><br><span class="line">hexo server -i 192.168.1.1 <span class="comment">#自定义 IP  </span></span><br><span class="line">hexo clean <span class="comment">#清除缓存，若是网页正常情况下可以忽略这条命令</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="发布网站"><a href="#发布网站" class="headerlink" title="发布网站"></a>发布网站</h2><p>打开博客文件夹根目录的_config.yml文件，修改最后的Deployment，把repo改为自己的仓库路径<br><img src="https://i.loli.net/2021/07/21/LPfMQYOTDhozH9r.png" alt="image.png"><br>保存文件，然后安装Git部署插件  </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save </span><br></pre></td></tr></table></figure>
+
+<p>然后输入hexo命令将网站部署</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean  </span><br><span class="line">hexo g  </span><br><span class="line">hexo d </span><br></pre></td></tr></table></figure>
+
+<h3 id="可能出现的问题"><a href="#可能出现的问题" class="headerlink" title="可能出现的问题"></a>可能出现的问题</h3><p>这里可能会出现  OpenSSL SSL_read: Connection was reset, errno 10054 的问题<br>打开Git执行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global http.sslVerify <span class="string">&quot;false&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>之后浏览器访问 <code>XXX.github.io</code> 就能访问到我们的网站了</p>
+<h2 id="更换主题"><a href="#更换主题" class="headerlink" title="更换主题"></a>更换主题</h2><p>找到喜欢的主题的github界面，执行命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> -b master https://github.com/jerryc127/hexo-theme-butterfly.git themes/butterfly</span><br></pre></td></tr></table></figure>
+
+<p>上面的链接就是你自己找的主题的GitHub链接，后面就是git clone到当前目录的什么文件夹下，注意这里要在博客的根目录下执行，因为命令中已经加了themes/</p>
+<p>然后打开根目录下的_config.yml文件，修改其中的Themes<br><img src="https://i.loli.net/2021/07/21/AbON5qZYeKnI8Ct.png" alt="image.png"></p>
+<p>修改保存后，再次进行部署</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo g  </span><br><span class="line">hexo d </span><br></pre></td></tr></table></figure>
+<p>进入网站查看部署效果。</p>
+<h1 id="Hexo-报错"><a href="#Hexo-报错" class="headerlink" title="Hexo 报错"></a>Hexo 报错</h1><h2 id="type-39-expected-variable-end-39"><a href="#type-39-expected-variable-end-39" class="headerlink" title="type: &#39;expected variable end&#39;"></a><code>type: &#39;expected variable end&#39;</code></h2><p>hexo s调试时报上述错误<br>原因是文中内容存在连续的大括号(通常是由于公式内容)，导致hexo解析失败，只需要在连续的中括号(左右都要)中间加上一个空格号。</p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Latex</title>
+    <url>/2022/06/25/Latex/Latex/</url>
+    <content><![CDATA[<p><strong>相关链接</strong>  </p>
+<ul>
+<li><a href="http://www.ctex.org/documents/latex/graphics/">Latex插图指南</a></li>
+<li><a href="https://www.techwalla.com/articles/horizontal-line-options-in-latex">Horizontal Line Options in LaTeX</a></li>
+<li><a href="https://mathpretty.com/?s=latex">文艺数字君</a></li>
+</ul>
+<h2 id="LaTex中输入空格以及换行"><a href="#LaTex中输入空格以及换行" class="headerlink" title="LaTex中输入空格以及换行"></a>LaTex中输入空格以及换行</h2><p><strong>参考链接</strong>  </p>
+<ul>
+<li><p><a href="https://blog.csdn.net/luolang_103/article/details/81289529">LaTex中输入空格以及换行</a></p>
+</li>
+<li><p>使用\表示空格</p>
+<table>
+<thead>
+<tr>
+<th align="left">空格</th>
+<th align="left">代码</th>
+<th align="left">效果</th>
+<th align="left">解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">quad空格</td>
+<td align="left">a \qquad b</td>
+<td align="left">$a \qquad b$</td>
+<td align="left">两个m的宽度</td>
+</tr>
+<tr>
+<td align="left">quad空格</td>
+<td align="left">a \quad b</td>
+<td align="left">$a \quad b$</td>
+<td align="left">一个m的宽度</td>
+</tr>
+<tr>
+<td align="left">大空格</td>
+<td align="left">a\ b</td>
+<td align="left">$a \  b$</td>
+<td align="left">1/3m宽度</td>
+</tr>
+<tr>
+<td align="left">中等空格</td>
+<td align="left">a\;b</td>
+<td align="left">$a ; b$</td>
+<td align="left">2/7m宽度</td>
+</tr>
+<tr>
+<td align="left">小空格</td>
+<td align="left">a\,b</td>
+<td align="left">$a , b$</td>
+<td align="left">1/6m宽度</td>
+</tr>
+<tr>
+<td align="left">没有空格</td>
+<td align="left">ab</td>
+<td align="left">$ab$</td>
+<td align="left">无空格</td>
+</tr>
+<tr>
+<td align="left">紧贴</td>
+<td align="left">a\!b</td>
+<td align="left">$a ! b$</td>
+<td align="left">缩进1/6m宽度</td>
+</tr>
+</tbody></table>
+<p>  \quad、1em、em、m代表当前字体下接近字符‘M’的宽度。</p>
+</li>
+<li><p>使用\\表示换行</p>
+</li>
+</ul>
+<h2 id="Latex声调输入"><a href="#Latex声调输入" class="headerlink" title="Latex声调输入"></a>Latex声调输入</h2><p><strong>参考链接</strong>  </p>
+<ul>
+<li><p><a href="https://blog.csdn.net/qq_43511299/article/details/113844504">Latex texstudio法国人名字上面的一撇，声调输入</a>(文章出错，下面已经改正四声)</p>
+</li>
+<li><p>声调表格</p>
+<table>
+<thead>
+<tr>
+<th align="left">声调</th>
+<th align="left">代码</th>
+<th align="left">效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">一声</td>
+<td align="left">\={a}</td>
+<td align="left">$={a}$</td>
+</tr>
+<tr>
+<td align="left">二声</td>
+<td align="left">\‘{a}</td>
+<td align="left">$&#39;{a}$</td>
+</tr>
+<tr>
+<td align="left">三声</td>
+<td align="left">\v{a}</td>
+<td align="left">$\v{a}$</td>
+</tr>
+<tr>
+<td align="left">四声</td>
+<td align="left">\`{a}</td>
+<td align="left">$`{a}$</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<h2 id="Latex长度单位"><a href="#Latex长度单位" class="headerlink" title="Latex长度单位"></a>Latex长度单位</h2><p><strong>参考链接</strong>  </p>
+<ul>
+<li><p><a href="https://blog.csdn.net/robert_chen1988/article/details/52739825">latex 中的长度单位，尺寸</a></p>
+</li>
+<li><p>latex中的通用长度单位如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">单位</th>
+<th align="left">名称</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">mm</td>
+<td align="left">毫米</td>
+<td align="left">1 mm = 2.845 pt</td>
+</tr>
+<tr>
+<td align="center">pt</td>
+<td align="left">点</td>
+<td align="left">1 pt = 0.351 mm</td>
+</tr>
+<tr>
+<td align="center">bp</td>
+<td align="left">大点</td>
+<td align="left">1 bp = 0.353 mm &gt; 1 pt</td>
+</tr>
+<tr>
+<td align="center">dd</td>
+<td align="left">迪多</td>
+<td align="left">1 dd = 0.376 mm = 1.07 p</td>
+</tr>
+<tr>
+<td align="center">pc</td>
+<td align="left">排卡</td>
+<td align="left">1 pc = 4.218 mm = 12 pt</td>
+</tr>
+<tr>
+<td align="center">sp</td>
+<td align="left">定标点</td>
+<td align="left">65536 sp = 1 pt</td>
+</tr>
+<tr>
+<td align="center">cm</td>
+<td align="left">厘米</td>
+<td align="left">1 cm= 10 mm= 28.453 pt</td>
+</tr>
+<tr>
+<td align="center">cc</td>
+<td align="left">西塞罗</td>
+<td align="left">1 cc= 4.513 mm= 12 dd = 12.84 pt</td>
+</tr>
+<tr>
+<td align="center">in</td>
+<td align="left">英寸</td>
+<td align="left">1 in = 25.4 mm = 72.27 pt</td>
+</tr>
+<tr>
+<td align="center">ex</td>
+<td align="left">ex</td>
+<td align="left">1 ex = 当前字体尺寸中 x 的高度</td>
+</tr>
+<tr>
+<td align="center">em</td>
+<td align="left">em</td>
+<td align="left">1 em = 当前字体尺寸中 M 的宽度</td>
+</tr>
+</tbody></table>
+<p>  对水平距离的设置常用 em ，而对垂直距离的设置，如行距，常用 ex。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Latex</category>
+      </categories>
+      <tags>
+        <tag>latex</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>OS-Linux-Command</title>
+    <url>/2021/08/09/OS/OS-Linux-Command/</url>
+    <content><![CDATA[<h1 id="查看PID所在的文件夹"><a href="#查看PID所在的文件夹" class="headerlink" title="查看PID所在的文件夹"></a>查看PID所在的文件夹</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /proc/23333  </span><br><span class="line">ls -al</span><br></pre></td></tr></table></figure>
+
+<h1 id="zip压缩-记得加-r"><a href="#zip压缩-记得加-r" class="headerlink" title="zip压缩(记得加-r)"></a>zip压缩(记得加-r)</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">zip -r example.zip example/</span><br></pre></td></tr></table></figure>
+
+<h1 id="cp复制文件-文件夹"><a href="#cp复制文件-文件夹" class="headerlink" title="cp复制文件/文件夹"></a>cp复制文件/文件夹</h1><p>cp 将当前目录 org_dir/ 下的所有文件复制到新目录 tar_dir 下<br>复制文件夹</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cp –r org_dir/ tar_dir  </span><br></pre></td></tr></table></figure>
+
+<p>复制文件到当前目录并重命名  </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cp filename ./my_filename</span><br></pre></td></tr></table></figure>
+
+<h1 id="mv命令"><a href="#mv命令" class="headerlink" title="mv命令"></a>mv命令</h1><p>对文件重命名</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mv source_file(文件) dest_file(文件)</span><br></pre></td></tr></table></figure>
+<p>移动文件到其他目录</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mv source_file(文件) dest_directory(目录)</span><br></pre></td></tr></table></figure>
+<p>目录名 dest_directory 已存在，将 source_directory 移动到目录名 dest_directory 中；目录名 dest_directory 不存在则 source_directory 改名为目录名 dest_directory</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mv source_directory(目录) dest_directory(目录)</span><br></pre></td></tr></table></figure>
+
+<h1 id="rm命令"><a href="#rm命令" class="headerlink" title="rm命令"></a>rm命令</h1><p>-r 就是向下递归，不管有多少级目录，一并删除<br>-f 就是直接强行删除，不作任何提示的意思</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rm -rf  dirname</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看目录文件数量和空间大小"><a href="#查看目录文件数量和空间大小" class="headerlink" title="查看目录文件数量和空间大小"></a>查看目录文件数量和空间大小</h1><p>先进入目标目录</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> tar_path</span><br><span class="line">ls -l|grep <span class="string">&quot;^-&quot;</span>| wc -l <span class="comment"># 文件数量，不包含子目录中的文件</span></span><br><span class="line">ls -lR|grep <span class="string">&quot;^-&quot;</span>| wc -l <span class="comment"># 文件数量，包含子目录中的文件</span></span><br><span class="line">ls -l|grep <span class="string">&quot;^d&quot;</span>| wc -l <span class="comment"># 文件夹数量，不包含子目录中的文件</span></span><br><span class="line">ls -lR|grep <span class="string">&quot;^d&quot;</span>| wc -l <span class="comment"># 文件夹数量，包含子目录中的文件</span></span><br><span class="line">ls -lR 20161124*/|grep <span class="string">&quot;^-&quot;</span>| wc -l <span class="comment"># 统计所有以&quot;20161124&quot;开头的目录下的全部文件数量</span></span><br><span class="line">du -sh * <span class="comment">#统计当前目录下每个文件(文件夹)占用的空间大小</span></span><br></pre></td></tr></table></figure>
+<p><strong>ls -l</strong><br>该命令表示以长列表输出指定目录下的信息（未指定则表示当前目录），R代表子目录中的”文件”，这个”文件”指的是目录、链接、设备文件等的总称.<br><strong>grep</strong><br>“d”表示目录，”-“表示文件<br><strong>wc -l</strong><br>表示统计输出信息的行数，因为经过前面的过滤已经只剩下普通文件，一个目录或文件对应一行，所以统计的信息的行数也就是目录或文件的个数</p>
+]]></content>
+      <categories>
+        <category>Operating System</category>
+        <category>Linux</category>
+        <category>Command</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux命令和问题</title>
+    <url>/2021/07/22/OS/OS-Linux-Q&amp;A/</url>
+    <content><![CDATA[<h2 id="解决ubuntu-16-4解压后中文乱码"><a href="#解决ubuntu-16-4解压后中文乱码" class="headerlink" title="解决ubuntu 16.4解压后中文乱码"></a>解决ubuntu 16.4解压后中文乱码</h2><p>zip格式没有指定编码格式，window下的zip编码是GBK/GB2312等</p>
+<p>使用命令进行解压</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">unzip -O CP936  xxx.zip</span><br></pre></td></tr></table></figure>
+
+<p>其中字符可以是CP936、GBK、GB18030三种中的任一一种</p>
+<h2 id="Linux查看占用GPU的进程"><a href="#Linux查看占用GPU的进程" class="headerlink" title="Linux查看占用GPU的进程"></a>Linux查看占用GPU的进程</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo fuser -v /dev/nvidia*</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Operating System</category>
+        <category>Linux</category>
+        <category>Q&amp;A</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>解压</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>OS-Linux-Ubuntu换驱动</title>
+    <url>/2021/08/14/OS/OS-Linux-Ubuntu%E6%8D%A2%E9%A9%B1%E5%8A%A8/</url>
+    <content><![CDATA[<p><strong>参考文章</strong></p>
+<ul>
+<li><a href="https://blog.csdn.net/Rookie_tong/article/details/83989969">ubuntu16.04更换nvidia驱动极简教程 </a></li>
+<li><a href="https://www.nvidia.com/en-us/drivers/unix/linux-amd64-display-archive/">驱动下载网址</a></li>
+</ul>
+<ol>
+<li>禁用nouveau<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo <span class="built_in">echo</span> <span class="string">&quot;blacklist nouveau&quot;</span> &gt;&gt; /etc/modprobe.d/blacklist.conf</span><br><span class="line">sudo update-initramfs -u</span><br><span class="line">reboot </span><br></pre></td></tr></table></figure>
+可使用以下命令查询是否禁用成功。<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">lsmod | grep nouveau</span><br></pre></td></tr></table></figure></li>
+<li>安装nvidia驱动<br>nvidia官网下载显卡对应驱动，更改文件权限。<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo chmod 777 NVIDIA-Linux-XXX.run</span><br></pre></td></tr></table></figure>
+Ctrl + Alt + F1 进入命令行模式。<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo service lightdm stop</span><br><span class="line">sudo ./NVIDIA-Linux-XXX.run</span><br></pre></td></tr></table></figure>
+一直确定即可。最后重启。<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">reboot</span><br></pre></td></tr></table></figure>
+可使用以下命令查看驱动是否安装成功。<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nvidia-smi</span><br></pre></td></tr></table></figure></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Operating System</category>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>nvidia驱动</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>OS-Linux-screen</title>
+    <url>/2021/08/09/OS/OS-Linux-screen/</url>
+    <content><![CDATA[<h1 id="screen-使用"><a href="#screen-使用" class="headerlink" title="screen 使用"></a>screen 使用</h1><h2 id="命令行下的screen命令"><a href="#命令行下的screen命令" class="headerlink" title="命令行下的screen命令"></a>命令行下的screen命令</h2><p>创建名为xuedue的session</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">screen -S xuedue</span><br></pre></td></tr></table></figure>
+
+<p>列出当前所有session</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">screen -ls</span><br></pre></td></tr></table></figure>
+
+<p>远程离线(detach)名为xuedue的session(如果有多个同名记得带编号)  </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">screen -d name</span><br></pre></td></tr></table></figure>
+
+<p>回到名为xuedue的session</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">screen -r xuedue</span><br></pre></td></tr></table></figure>
+
+<p>删除名为xuedue的session</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">screen -X -S xuedue quit</span><br></pre></td></tr></table></figure>
+
+<h2 id="session中使用Ctrl-a的命令"><a href="#session中使用Ctrl-a的命令" class="headerlink" title="session中使用Ctrl+a的命令"></a>session中使用Ctrl+a的命令</h2><p>只记录一些最常用的<br>离线当前session</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Ctrl+a+d</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Operating System</category>
+        <category>Linux</category>
+        <category>screen</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>screen</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Paper-FaceAging-Survey</title>
+    <url>/2021/09/19/Paper/Paper-FaceAging-Survey/</url>
+    <content><![CDATA[<h1 id="Age-simulation-for-face-recognition"><a href="#Age-simulation-for-face-recognition" class="headerlink" title="Age simulation for face recognition"></a>Age simulation for face recognition</h1><p>Accept:2006ICPR<br>首先使用形状和纹理矢量通过在形状或纹理的本征空间中投影面部图像来表示面部图像。 然后结合年龄函数和年龄分类法对年龄进行估计。 并且我们使用估计的年龄，典型的向量创建函数和原始测试图像的特征向量来生成目标年龄的合成特征向量。 最后，我们重建了特征空间中的形状和纹理，并结合起来以在目标年龄合成面部图像。</p>
+<h1 id="A-Compositional-and-Dynamic-Model-for-Face-Aging"><a href="#A-Compositional-and-Dynamic-Model-for-Face-Aging" class="headerlink" title="A Compositional and Dynamic Model for Face Aging"></a>A Compositional and Dynamic Model for Face Aging</h1><p>Accept:2009IEEE Transactions on Pattern Analysis and Machine Intelligence<br>组成模型通过分层的“或”图表示每个年龄组中的面孔，其中“与”节点将面孔分解成描述对年龄感知至关重要的细节（例如头发，皱纹等）的部分</p>
+<h1 id="Age-Synthesis-and-Estimation-via-Faces-A-Survey"><a href="#Age-Synthesis-and-Estimation-via-Faces-A-Survey" class="headerlink" title="Age Synthesis and Estimation via Faces: A Survey"></a>Age Synthesis and Estimation via Faces: A Survey</h1><p>Accept:2010IEEE transactions on pattern analysis and machine intelligence<br>综述</p>
+<h1 id="A-concatenational-graph-evolution-aging-model"><a href="#A-concatenational-graph-evolution-aging-model" class="headerlink" title="A concatenational graph evolution aging model"></a>A concatenational graph evolution aging model</h1><p>Accept:2012 IEEE transactions on pattern analysis and machine intelligence<br>传统建模</p>
+<h1 id="Illumination-Aware-Age-Progression"><a href="#Illumination-Aware-Age-Progression" class="headerlink" title="Illumination-Aware Age Progression"></a>Illumination-Aware Age Progression</h1><p>Accept:2014CVPR  </p>
+<ul>
+<li>问题  <ol>
+<li>首先，老化过程是不确定的，具体取决于输入照片中可能不明显的环境和遗传因素。</li>
+<li>其次，面部表情和可识别性受发型，眼镜，表情和照明的强烈影响，这些因素是可变且不可预测的。</li>
+<li>最后，由于现有的年龄分析数据库相对较小，分辨率较低和/或年龄范围有限，因此可用于构建有效模型的数据相对较少。</li>
+<li>从一张照片中老化非常小的孩子的照片被认为是所有情况中最困难的情况，超过几岁的年龄被认为是不切实际的。我们专门针对这个极具挑战性的案例。</li>
+</ol>
+</li>
+<li>贡献<ol>
+<li>我们介绍了第一种完全自动化的年龄发展方法，该方法在“野外”运行，即在光照，表情或姿势上没有严格的限制。（在这之前的做法需要手动对齐）</li>
+<li>我们提出了一些关于成年婴儿成年的令人信服的（也是最广泛的）结果。</li>
+<li>我们引入了一种新颖的照明感知年龄发展技术，利用照明建模结果[1，31]，可以在不重建3D模型或光源方向的情况下正确考虑场景照明并纠正表面阴影。</li>
+</ol>
+</li>
+<li>相关工作<ul>
+<li>Facial analysis and synthesis using image-based models.提出了使用基于图像的模型来合成新人脸的方法，但并没有关注老化和未校准的条件；</li>
+<li>现在有一些商业程序可以老化使用网络摄像头或手机拍摄的照片。但是，通常这些程序仅对成人或较大的孩子的照片有效；</li>
+</ul>
+</li>
+<li>方法<br><img src="https://z3.ax1x.com/2021/09/19/48GGFA.png" alt="48GGFA"><br>不同年龄段的人的平均图像。 每个图像代表大约1500个人。 最上面一行的结果仅对齐以使眼睛，鼻子和嘴巴大致对应。 第二行显示像素间对齐后的平均值。 这些要清晰得多，但是色调是可变的，照明是不自然的，并且细微的形状差异（例如皱纹）被平均化了（以放大至最后一列）。 最下面的两行显示重新照明的平均值，与具有相反照明方向的两个参考帧（最左侧）匹配。 重新照明的结果具有适当的阴影，经过色调匹配，可以跨年龄比较，并显示3D形状变化（注意鼻子和额头）。<br><img src="https://z3.ax1x.com/2021/09/19/48G6Wq.png" alt="48G6Wq"><br>得到可用的low-rank平均图片，就可以按照上图的方法进行叠加</li>
+</ul>
+<h1 id="Personalized-Age-Progression-with-Aging-Dictionary-CDL"><a href="#Personalized-Age-Progression-with-Aging-Dictionary-CDL" class="headerlink" title="Personalized Age Progression with Aging Dictionary(CDL)"></a>Personalized Age Progression with Aging Dictionary(CDL)</h1><p>Accept: 2015ICCV</p>
+<ul>
+<li>问题<ol>
+<li>基于原型的年龄发展会将预先划分的来源年龄组和目标年龄组的两个原型（例如，平均面孔）之间的差异转移到输入的个人面孔中，其年龄属于来源年龄组。基于原型的年龄发展方法不能很好地保留单个人脸的这种个性，因为它们是基于相对较大人群的人类衰老过程中的一般规则。</li>
+<li>基于建模的年龄进程使用实际年龄（范围）对形状/纹理合成的面部参数建模。基于建模的年龄发展方法不会特别考虑这些个性化细节。而且，它们需要密集的长期（例如年龄跨度超过20岁）面部老化序列来构建复杂模型。但是，在现实世界中收集这些密集的长期面部序列非常困难，甚至不可能。</li>
+</ol>
+</li>
+<li>贡献<ol>
+<li>我们提出了一种个性化的年龄发展方法来渲染衰老的面孔，该方法可以保留个性化的面部特征； </li>
+<li>由于收集所有年龄段的人的面部序列是具有挑战性的甚至是不可能的，因此所提出的方法仅需要可用的短期面部老化对来学习人类衰老的所有老化字典基础，这是更可行的。 广泛的实验很好地证明了我们提出的解决方案相对于其他最新技术的优势 个性化的衰老进程，以及通过合成衰老面孔进行跨时代面孔验证的性能提升。</li>
+</ol>
+</li>
+</ul>
+<h1 id="Recurrent-Face-Aging（RFA）"><a href="#Recurrent-Face-Aging（RFA）" class="headerlink" title="Recurrent Face Aging（RFA）"></a>Recurrent Face Aging（RFA）</h1><p>Accept: 2016CVPR</p>
+<ul>
+<li>问题<ol>
+<li>首先，面部可能具有许多不同的表情和光照条件，这对建模老化模式提出了巨大挑战。</li>
+<li>此外，训练数据通常非常有限，并且同一人的面部图像仅覆盖狭窄的年龄范围。</li>
+<li>此外，面部衰老过程还取决于环境和难以建模的基因。</li>
+<li>物理模型方法采用参数模型，通过对肌肉，皮肤或颅骨的衰老机制进行建模来模拟面部衰老。但是，这些方法非常复杂且计算量很大，并且它们需要具有不同年龄范围的同一个人的大量面部序列。但是，当前很少有面部衰老数据集可以提供足够的数据。</li>
+<li>原型方法不需要具有连续年龄的同一个人的脸部序列。原型方法使用非参数模型对老化进行建模。首先，将所有可用的面部分为离散的年龄组，并计算每个年龄组内的平均面部作为先验。平均面之间的差异被视为老化图案，并且该图案被转移到每个单独的面上以产生老化面。但是，==原型方法完全丢弃了个性化信息，所有人共享相同的老化模式。==而且，无论模型类型如何，所有这些方法都通过学习单个映射函数来执行从一个年龄组到另一年龄组的一步转换。因此，单步映射功能通常无法捕获相邻年龄组之间的面部中间序列的动态。</li>
+</ol>
+</li>
+<li>贡献<ol>
+<li>提出了使用RNN网络的每个相邻群体之间的平滑面部老化过程； （解决问题2，）</li>
+<li>我们的方法可以生成平滑的中间面，并且可以正确处理重影伪影。</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>需要配对数据（需要较长年龄的面部图像序列</li>
+<li>只能老化，不能年轻化</li>
+<li>关注老化，没有重视身份保持</li>
+<li>基于组的学习，这需要测试面孔的真实年龄来定位过渡状态</li>
+<li>需要繁琐的预处理（Face Aging with Improved Invertible Conditional GANs）</li>
+</ol>
+</li>
+</ul>
+<h1 id="Face-Aging-Effect-Simulation-using-Hidden-Factor-Analysis-Joint-Sparse-Representation"><a href="#Face-Aging-Effect-Simulation-using-Hidden-Factor-Analysis-Joint-Sparse-Representation" class="headerlink" title="Face Aging Effect Simulation using Hidden Factor Analysis Joint Sparse Representation"></a>Face Aging Effect Simulation using Hidden Factor Analysis Joint Sparse Representation</h1><p>Accept: 2016IEEE Transactions on Image Processing</p>
+<ul>
+<li>问题<ol>
+<li>衰老的复杂性：人脸衰老涉及共同的规则和独特的模式。人们有着与年龄相关的相似变化，其中包括皱纹的加剧和轮廓的增长；而不同的遗传因素为不同的个体引入了随机性和多样性，使衰老过程彼此不同。此外，许多外部因素也对其产生影响。例如，生活方式会延迟或加速一个人的衰老速度，而化妆品与配饰一起会导致面部外观与其实际年龄之间出现偏差。所有这些原因增加了年龄发展过程中的不确定性和外观预测的难度。</li>
+<li>数据收集：最近的大多数年龄发展方法都是以数据为驱动力的，其中从训练样本中了解衰老模式和与年龄相关的特征。因此，数据收集对于生成此类统计模型至关重要。只有在训练阶段涵盖足够的老化变化和皮肤细节的前提下，合成结果才有意义且可信。由于缺乏老年人的图像，或者迫于需求一个人长期衰老图片，现有的公开可用的面部衰老数据库远远不够。</li>
+<li>其他干扰：使老化合成成为一项具有挑战性的任务的另一个原因是，实际的探针面通常会在表情，姿势和光照方面发生变化；因此，应该考虑使用健壮的老化模型。  </li>
+</ol>
+<ul>
+<li>由于上述的复杂老化模型未解决问题的存在，在当前的老化模拟研究中，大多数其他干扰仍然受到严格限制。</li>
+</ul>
+</li>
+<li>贡献<ol>
+<li>为了解决常见的数据短缺问题，我们收集了一个数据库，该数据库包含来自Internet的2,000多个面部图像，年龄从1到70岁，并且在每个面部上手动标记了68个地标</li>
+<li>我们提出了一种新颖且通用的方法来进行面部衰老效果模拟，分别对在较长时期内趋于稳定的个人特定属性和随时间逐渐变化的提示进行建模。 </li>
+<li>我们将稀疏表示应用于面部衰老效果综合问题，该问题通过考虑与输入面部的一致性来更好地重建与年龄相关的分量，从而使合成的纹理更加自然。</li>
+</ol>
+</li>
+<li>属于原型方法</li>
+</ul>
+<h1 id="Face-Aging-With-Conditional-Generative-Adversarial-Networks（AC-GAN）"><a href="#Face-Aging-With-Conditional-Generative-Adversarial-Networks（AC-GAN）" class="headerlink" title="Face Aging With Conditional Generative Adversarial Networks（AC-GAN）"></a>Face Aging With Conditional Generative Adversarial Networks（AC-GAN）</h1><p>Accept: 2017ICIP</p>
+<ul>
+<li>问题<ol>
+<li>原型制作方法可估计预定义年龄组内的平均面孔。这些面部之间的差异构成了老化模式，该老化模式进一步用于将输入的面部图像转换为目标年龄组。原型方法既简单又快速，但是由于它们基于通用规则，因此它们完全丢弃了个性化信息，从而导致图像不真实。</li>
+<li>建模方法采用参数模型来模拟特定个体的肌肉，皮肤和头骨的衰老机制。然而，这些方法通常需要具有很大年龄范围的同一人的面部老化序列，这非常昂贵。提出的传统人脸老化方法仅限于对人脸的整体理解（其人格特征，面部表情，可能的面部配件等）缺失的衰老模式的建模。</li>
+<li>在许多实际使用案例中，必须进行人脸老化结合其他面部更改，例如添加太阳镜或胡须。</li>
+<li>以前基于GAN的人脸修改方法的一个普遍问题，即原始人的身份经常在修改后的图像中丢失。因此，在本研究中，我们着重于保持身份的面部老化。</li>
+</ol>
+</li>
+<li>贡献<ol>
+<li>我们设计了Age-cGAN（年龄条件生成对抗网络），这是<strong>第一个生成所需年龄类别内高质量合成图像的GAN</strong>。</li>
+<li>我们提出了一种新颖的潜在向量优化方法，该方法允许Age-cGAN重建输入的人脸图像，以保留原始人的身份。（这种方法具有通用性，意味着它不仅可以用于保留脸部衰老的身份，还可以用于其他脸部更改（例如添加胡须，太阳镜等）的身份。）</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>图像重构损失函数错误（DualGAN，在训练过程中使用一个年龄label，但是测试过程中使用图像和不同的年龄label来进行测试）</li>
+<li>强制执行身份一致性，不足以消除未配对训练数据中的匹配歧义（Attribute-aware Face Aging with Wavelet-based Generative Adversarial Networks）</li>
+<li>尽管保留了身份，但对于年龄而言，这些方法仅考虑了年龄组之间的人口到人口的过渡，而没有明确考虑不同年龄之间的每个人的个性化过渡模式（S2GAN）</li>
+</ol>
+</li>
+<li>方法<br><img src="https://z3.ax1x.com/2021/09/19/48Yi59.png" alt="48Yi59"></li>
+</ul>
+<p>后续再继续搬…（咕咕咕</p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+        <category>FaceAging</category>
+      </categories>
+      <tags>
+        <tag>gan</tag>
+        <tag>aging</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>可逆神经网络flow的理解</title>
+    <url>/2021/10/04/Paper/Paper-INN-Theory/</url>
+    <content><![CDATA[<p><strong>本文参考</strong></p>
+<ul>
+<li><a href="https://spaces.ac.cn/archives/5776/comment-page-3#comments">苏神博客-细水长flow之NICE：流模型的基本概念与实现</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/43157737">flow-based生成模型</a></li>
+</ul>
+<h1 id="分布问题"><a href="#分布问题" class="headerlink" title="分布问题"></a>分布问题</h1><p>在生成网络中，我们知道的是样本x，即训练数据，我们希望通过概率模型$q_θ(x)$来拟合真实样本$x$，其中$θ$即模型中的参数。</p>
+<p>由于我们是不知道真实数据的分布(只有真实数据)，想直接用KL Loss去拟合样本数据和真实数据是不可能的。对于连续型分布，我们可以将样本分布改为<br>$$<br>q(x) = ∫q(z)q(x|z)dz<br>$$<br>其中$q(x|z)$描述了一个由$z$来生成$x$的模型，其中$q(z)$一般是标准高斯分布。</p>
+<details>
+<summary>最大似然：</summary>
+给定一个概率分布函数$f_D$，以及一个分布参数$θ$，我们可以从这个分布中抽出一个具有n个值的采样$X1,X2,...,Xn$，通过利用$f_D$，我们就能计算出其概率：
+$$
+P=(x_1,x_2,...,x_n)=f_D(x_1,x_2,...,x_n|θ)
+$$
+最大似然就是我们寻找参数$θ$，使得这个采样的可能性最大(最大化拟合分布)，定义可能性为
+$$
+lik(θ)=f_D(x_1,x_2,...,x_n|θ)
+$$
+在θ的所有取值上，使这个函数最大化。这个使可能性最大的值即被称为$θ$的最大似然估计。
+</details>
+
+
+<p>已知分布形式，要想求出参数$θ$，我们可以利用最大似然(求出网络中的参数)。<br>$$<br>E_{x{\sim}p(x)}[log q(x)]<br>$$<br>只要我们能够最大化上面的似然值，那么我们找到的$θ$就是最能够拟合真实分布的网络参数。</p>
+<ul>
+<li><p>VAE<br>在VAE中，其通过优化$z$和标准正太分布靠近，且$z$又是通过encoder来进行采样的，即假设后验分布$p(z|x)$是正太分布，从而对于正太分布中的一个$z$，能找到一个相应的$x$。VAE是优化一个更强的上界，这使得它只能是一个近似模型，无法达到良好的生成效果。</p>
+</li>
+<li><p>GAN<br>利用对抗学习的方式，和求这个最大似然估计参数无关，用交替训练来使得模型精度不断提升。</p>
+</li>
+</ul>
+<h1 id="可逆神经网络"><a href="#可逆神经网络" class="headerlink" title="可逆神经网络"></a>可逆神经网络</h1><p>在flow模型中，则是直接求取这个最大似然的值。<br>$$<br>E_{x{\sim}p(x)}[log q(x)]=log\prod_{i=1}^nq(x_i)<br>$$</p>
+<p>假设我们寻找变换$z=f(x)$，使得数据映射到新空间，且各个维度相互独立。<br>$$<br>q(z)=\prod_{i=1}^nq(z_i)<br>$$<br>假设$f(x)$是可逆的，并且$z$的维度与$x$的维度相同。由概率密度的变量代换我们有:</p>
+<p>$$<br>q(x)=\prod_{i=1}^nq(f(x_i)){\begin{matrix}|det\frac{ {\partial}f}{x}| \end{matrix} }<br>$$<br>其中${\begin{matrix}|det\frac{ {\partial}f}{x}| \end{matrix} }$为“雅可比行列式”的绝对值，在空间转换中，雅可比矩阵描述了向量空间中的运行变换，从$n$维空间转换到$m$维空间，当$m=n$，即雅可比行列式，代表了两个空间中体积比率。</p>
+<p>在这里，对于flow模型，就需要有两个要求</p>
+<ol>
+<li>可逆，并且易于求逆函数（它的逆g就是我们希望的生成模型）；</li>
+<li>对应的雅可比行列式容易计算。</li>
+</ol>
+<p>这样，需要要最大化最大似然，就能优化模型求得真实分布：<br>$$<br>E_{x{\sim}p(x)}[log q(x)]=log\prod_{i=1}^nq(x_i)=log\prod_{i=1}^nq(f(x_i)){\begin{matrix}|det\frac{ {\partial}f}{x}| \end{matrix} }<br>$$<br>当$f(x)$为标准高斯分布时<br>$$<br>E_{x{\sim}p(x)}[log q(x)]=logq(x)=\sum_{i=0}^n{-\frac{D}{2}log(2{\pi})-\frac{1}{2}\begin{Vmatrix}f(x_i)\end{Vmatrix}^2+log{\begin{matrix}|det\frac{ {\partial}f}{x}| \end{matrix} } }<br>$$<br>在实际的网络训练中，为了最小化loss，通常使用负对数似然损失，即在上面的公式中加上一个符号，同时去掉第一个常数。通过优化这个损失，当训练完成，我们就可以随机采样一个$z$，然后通过$f$的逆来生成一个样本$f^{−1}(z)=g(z)$，这就得到了生成模型。</p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+        <category>INN</category>
+      </categories>
+      <tags>
+        <tag>inn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Paper-StyleGAN-V1</title>
+    <url>/2021/09/19/Paper/Paper-StyleGAN-V1/</url>
+    <content><![CDATA[<h1 id="A-Style-Based-Generator-Architecture-for-Generative-Adversarial-Networks"><a href="#A-Style-Based-Generator-Architecture-for-Generative-Adversarial-Networks" class="headerlink" title="A Style-Based Generator Architecture for Generative Adversarial Networks"></a>A Style-Based Generator Architecture for Generative Adversarial Networks</h1><p>Accept:CVPR2019<br>code：github上一搜一大把(官方非官方，tf或者pytorch)</p>
+<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem:"></a>Problem:</h2><p>生成更加真实多样且高清的图像</p>
+<h2 id="Framework"><a href="#Framework" class="headerlink" title="Framework"></a>Framework</h2><p><img src="https://z3.ax1x.com/2021/09/19/48QdpT.png" alt="48QdpT"></p>
+<ul>
+<li>上图(a)为ProgressiveGAN(Progressive growing of GANs for improved quality, stability, and variation)，作者就是在这篇的基础上进行改进；  </li>
+<li>上图(b)为StyleGAN的框架。</li>
+</ul>
+<ol>
+<li>隐空间变换<br>首先通过8层的FC将随机采样的z改为了w，这样做的好处就是一般z都是从高斯分布进行采样，但是实际上高斯分布和真实数据的分布是不同的，因此将z变换到w空间能更好的对生成网络进行一个控制(个人觉得就是一个hard变为soft的过程，原先的先验采样z太hard了，如果转换到w空间，就能更好地拟合出真实样本的部分)</li>
+<li>生成网络<br>生成网络的输入不再是z，而是三部分，分别为上图(b)的Const 4×4×512，AdaIN变换的参数A(由w得到)以及随机噪声B。生成网络一共有9个块[4×4, 8×8, .., 1024×1024]，每个块中有两层卷积(除了第一层)，最后一层使用1×1卷积来转换通道数。</li>
+</ol>
+<h2 id="Style-Mixing"><a href="#Style-Mixing" class="headerlink" title="Style Mixing"></a>Style Mixing</h2><p><img src="https://z3.ax1x.com/2021/09/19/481AII.png" alt="481AII"><br>采样两个z，z1和z2，再经过Mapping网络得到w1和w2</p>
+<ol>
+<li>(4×4-8×8)两个块使用SourceB的w，其余块使用SouceA的w</li>
+</ol>
+<p>修改高级语义，比如姿势，发型，脸型和眼镜等，而像一些眼睛，头发光线等则保持不变</p>
+<ol start="2">
+<li>(16×16-32×32)两个块使用SourceB的w，其余块使用SouceA的w</li>
+</ol>
+<p>继承了B的较小比例的面部特征，比如发型，睁开/闭上的眼睛，而A的姿势，脸型和眼镜则保留下来</p>
+<ol start="3">
+<li>(64×64-1024×1024)两个块使用SourceB的w，其余块使用SouceA的w</li>
+</ol>
+<p>主要是一些颜色和细微结构的变化，整体的语义保持不变</p>
+<embed src="https://openaccess.thecvf.com/content_CVPR_2019/papers/Karras_A_Style-Based_Generator_Architecture_for_Generative_Adversarial_Networks_CVPR_2019_paper.pdf" width="100%" height="1000" type="application/pdf">]]></content>
+      <categories>
+        <category>Paper</category>
+        <category>StyleGAN</category>
+      </categories>
+      <tags>
+        <tag>gan</tag>
+        <tag>stylegan</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GAN Prior Embedded Network for Blind Face Restoration in the Wild</title>
+    <url>/2021/09/12/Paper/Paper-Stylegan-GPEN/</url>
+    <content><![CDATA[<h1 id="Paper-GAN-Prior-Embedded-Network-for-Blind-Face-Restoration-in-the-Wild"><a href="#Paper-GAN-Prior-Embedded-Network-for-Blind-Face-Restoration-in-the-Wild" class="headerlink" title="Paper:GAN Prior Embedded Network for Blind Face Restoration in the Wild"></a>Paper:GAN Prior Embedded Network for Blind Face Restoration in the Wild</h1><p>Accept:CVPR2021<br><a href="https://github.com/yangxy/GPEN">Code</a></p>
+<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem:"></a>Problem:</h2><p>野外人脸复原(Blind face restoration)，属于人脸复原任务中的一种，类似于超分，inpainting等工作。文章为了解决野外人脸的退化复杂性(噪声，缺损，分辨率低等)，提出了解决方法。</p>
+<h2 id="Framework"><a href="#Framework" class="headerlink" title="Framework"></a>Framework</h2><p><img src="https://z3.ax1x.com/2021/09/12/49IYlD.png" alt="49IYlD"><br>在原先的styelgan中，需要W和noise，也就是调制模块中的A和B。  </p>
+<ul>
+<li>w：<br>将W修改为encoder得到的z，再经过mapping网络得到W。</li>
+<li>noise:<br>使用encoder中的浅层空间信息，同时这里作者将原先直接add的方式修改为concat，并在后续的实验中验证这两种方式的优劣。<br>通过这种方法，作者认为可以比较好地结合全局信息(w,也就是z,感受野更大)和局部信息(noise,感受野更小)，从而使得生成图像的质量更好。<br>和之前基于stylegan的方法不同的是，作者这里对stylegan进行了finetune。</li>
+</ul>
+<embed src="https://arxiv.org/pdf/2105.06070.pdf#toolbar=1&navpanes=1&scrollbar=1" width="100%" height="1000" type="application/pdf">]]></content>
+      <categories>
+        <category>Paper</category>
+        <category>StyleGAN</category>
+      </categories>
+      <tags>
+        <tag>stylegan</tag>
+        <tag>blind face restoratio</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Paper-Stylegan-Image2StylegGAN</title>
+    <url>/2021/09/19/Paper/Paper-Stylegan-Image2Stylegan/</url>
+    <content><![CDATA[<h1 id="Image2StyleGAN-How-to-Embed-Images-Into-the-StyleGAN-Latent-Space"><a href="#Image2StyleGAN-How-to-Embed-Images-Into-the-StyleGAN-Latent-Space" class="headerlink" title="Image2StyleGAN: How to Embed Images Into the StyleGAN Latent Space?"></a>Image2StyleGAN: How to Embed Images Into the StyleGAN Latent Space?</h1><p>Accept: 2019ICCV</p>
+<h2 id="Problem："><a href="#Problem：" class="headerlink" title="Problem："></a>Problem：</h2><p>基于优化(optimized-based)的StyleGAN反转</p>
+<h2 id="Framework"><a href="#Framework" class="headerlink" title="Framework"></a>Framework</h2><p>提出w+空间。即优化的latent code由原先stylegan的w变为w+(原先stylegan的w空间是通过复制然后送入styleblock进行调制，即18个w是完全相同的)</p>
+<ul>
+<li><strong>LOSS</strong></li>
+<li>perceptual loss and pixel-wise MSE loss<br>$$<br>w^∗ = \min_{w}L_percept(G(w), I) + \frac{λ_{mse}}{N}{\begin{Vmatrix}G(w) −I\end{Vmatrix}}_2^2<br>$$</li>
+<li>perceptual loss<br>$$<br>L_{percept}(I_1, I_2) = \sum_{j=1}^4\frac{λ_j}{N_j}{\begin{Vmatrix}F_j (I_1) −F_j (I_2)\end{Vmatrix}}_2^2<br>$$<br>perceptual loss的计算分别使用 VGG-16的$conv$1_1, $conv$1_2, $conv$3_2, $conv$4_2</li>
+</ul>
+<embed src="https://openaccess.thecvf.com/content_ICCV_2019/papers/Abdal_Image2StyleGAN_How_to_Embed_Images_Into_the_StyleGAN_Latent_Space_ICCV_2019_paper.pdf" width="100%" height="1000" type="application/pdf">
+]]></content>
+      <categories>
+        <category>Paper</category>
+        <category>StyleGAN</category>
+      </categories>
+      <tags>
+        <tag>stylegan</tag>
+        <tag>inversion</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>v2rayN</title>
+    <url>/2021/09/10/Proxy/v2rayN/</url>
+    <content><![CDATA[<h1 id="解决最新版本v2rayN绕过大陆-PAC-设置问题"><a href="#解决最新版本v2rayN绕过大陆-PAC-设置问题" class="headerlink" title="解决最新版本v2rayN绕过大陆(PAC)设置问题"></a>解决最新版本v2rayN绕过大陆(PAC)设置问题</h1><ul>
+<li><p>GitHub上的<a href="https://github.com/2dust/v2rayN/wiki">Wiki</a>对代理模式进行了解释</p>
+<ol>
+<li>清除系统代理: 每次启动/重启服务的时候,强制把windows系统(ie)的代理清除掉</li>
+<li>自动配置系统代理: 每次启动/重启服务的时候,强制设定windows系统(ie)的代理</li>
+<li>不改变系统代理: 每次启动/重启服务的时候,什么都不做.作用就是保留其他软件设定的代理</li>
+</ol>
+</li>
+<li><p>解决方法</p>
+<ol>
+<li>v2rayN版本:<strong>4.20</strong><br>v2ray版本:<strong>4.25</strong></li>
+<li>在检查更新中更新 <strong>geoip</strong> 和 <strong>geosite</strong> 文件，这两个文件包含一些含一些国内IP和域名</li>
+<li>依次点击<strong>设置-路由设置-基础功能-一键导入基础规则</strong></li>
+<li>选择<strong>启用高级路由</strong>，然后选择<strong>全局</strong>或者<strong>绕过大陆</strong></li>
+<li>在绕过大陆的规则中，可以自定义白名单，在<strong>规则功能</strong>中<strong>添加规则</strong>，选择代理或者直连，并填上你想要添加的网站，左边填域名，右边填IP</li>
+<li>系统代理 选择 <strong>自动配置系统代理</strong><br>路由高级功能 选择 <strong>绕过大陆</strong></li>
+</ol>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Proxy</category>
+      </categories>
+      <tags>
+        <tag>proxy</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python-plt</title>
+    <url>/2021/08/01/Python/Python-Plt/</url>
+    <content><![CDATA[<h1 id="python中Plt库相关函数"><a href="#python中Plt库相关函数" class="headerlink" title="python中Plt库相关函数"></a>python中Plt库相关函数</h1><p><strong>只讲使用，不讲参数</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 创建画布，画布大小（长，高），提供了顶层Artist</span></span><br><span class="line">fig = plt.figure(figsize=(<span class="number">16</span>, <span class="number">8</span>))</span><br><span class="line"><span class="comment"># 将画布分割为2*4的8个子块，控制所有图元的子图和顶层容器的默认间距</span></span><br><span class="line">gs = fig.add_gridspec(<span class="number">2</span>, <span class="number">4</span>)</span><br><span class="line"><span class="comment"># 创建一个子图[行位置，列位置]</span></span><br><span class="line">fig.add_subplot(gs[<span class="number">0</span>, <span class="number">0</span>])</span><br><span class="line"><span class="comment"># 自动调整子图参数，使之填充整个图像区域</span></span><br><span class="line">plt.tight_layout()</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Python</category>
+        <category>Plt</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>Plt</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python-语法</title>
+    <url>/2021/08/17/Python/Python-%E8%AF%AD%E6%B3%95/</url>
+    <content><![CDATA[<h1 id="Python语法记录"><a href="#Python语法记录" class="headerlink" title="Python语法记录"></a>Python语法记录</h1><h2 id="list"><a href="#list" class="headerlink" title="list"></a>list</h2><ul>
+<li>创建列表,获取长度  <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 已知元素</span></span><br><span class="line">mylist = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]</span><br><span class="line"><span class="comment"># 未知元素</span></span><br><span class="line">mylist = []</span><br><span class="line">mylist.append(<span class="number">1</span>)</span><br><span class="line"><span class="comment"># 获取长度</span></span><br><span class="line">length = <span class="built_in">len</span>(mylist)</span><br></pre></td></tr></table></figure></li>
+<li>对list所有元素执行统一操作  <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 不想写循环的话,且不想改变原列表元素</span></span><br><span class="line">test = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>] <span class="comment"># [1, 2, 3, 4, 5]</span></span><br><span class="line">test1 = [x+<span class="number">1</span> <span class="keyword">for</span> x <span class="keyword">in</span> test] <span class="comment"># [2, 3, 4, 5, 6]</span></span><br><span class="line">test2 = <span class="built_in">list</span>(<span class="built_in">map</span>(<span class="keyword">lambda</span> x:x+<span class="number">1</span>, test)) <span class="comment"># [2, 3, 4, 5, 6]</span></span><br></pre></td></tr></table></figure>
+<h2 id="array"><a href="#array" class="headerlink" title="array"></a>array</h2>array数组在python中是不可改变的</li>
+<li>创建array  <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line">test = np.array([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>])</span><br><span class="line"><span class="comment"># 获取形状</span></span><br><span class="line">shape = test.shape</span><br><span class="line"><span class="comment">#获取部分元素</span></span><br><span class="line">part = test[<span class="number">2</span>:<span class="number">4</span>]</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="Dict"><a href="#Dict" class="headerlink" title="Dict"></a>Dict</h2><ul>
+<li>获取字典的key值  <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> key <span class="keyword">in</span> <span class="built_in">dict</span>:</span><br><span class="line">    <span class="built_in">print</span>(key)</span><br><span class="line"><span class="keyword">for</span> i, key <span class="keyword">in</span> <span class="built_in">enumerate</span>(<span class="built_in">dict</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;the <span class="subst">&#123;i&#125;</span> key:&quot;</span>, key)</span><br><span class="line"><span class="keyword">for</span> key <span class="keyword">in</span> <span class="built_in">dict</span>.keys():</span><br><span class="line">    <span class="built_in">print</span>(key)</span><br></pre></td></tr></table></figure></li>
+<li>获取字典键值对  <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 输出为数组，例如(&#x27;key&#x27;,&#x27;value&#x27;)</span></span><br><span class="line"><span class="keyword">for</span> kv <span class="keyword">in</span> <span class="built_in">dict</span>.items():</span><br><span class="line">    <span class="built_in">print</span>(kv)</span><br><span class="line"><span class="keyword">for</span> key,value <span class="keyword">in</span> <span class="built_in">dict</span>.items():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;key&#125;</span>:<span class="subst">&#123;value&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="sort-amp-sorted"><a href="#sort-amp-sorted" class="headerlink" title="sort &amp; sorted"></a>sort &amp; sorted</h2><ul>
+<li>sort<br>list内置的sort()函数(只适用于list)，本身不会返回新的list，会改变原先的list的顺序(节省空间，提高效率)  <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">my_list = [<span class="number">3</span>, <span class="number">5</span>, <span class="number">1</span>, <span class="number">4</span>, <span class="number">2</span>]</span><br><span class="line">my_list.sort()  <span class="comment"># [1, 2, 3, 4, 5]</span></span><br></pre></td></tr></table></figure></li>
+<li>sorted<br>sorted()函数适用于任意可以迭代的对象排序，不会改变原对象，返回一个新的可迭代对象  <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">my_list = [<span class="number">3</span>, <span class="number">5</span>, <span class="number">1</span>, <span class="number">4</span>, <span class="number">2</span>]</span><br><span class="line">result = <span class="built_in">sorted</span>(my_list)  <span class="comment"># [1, 2, 3, 4, 5]</span></span><br></pre></td></tr></table></figure>
+<h2 id="cv2"><a href="#cv2" class="headerlink" title="cv2"></a>cv2</h2></li>
+<li>cv2.resize()<br>要求size为integer，否则报错  <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cv2img = cv2.resize(cv2img, (size1, size2))</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="使用f-string保留小数点位数"><a href="#使用f-string保留小数点位数" class="headerlink" title="使用f-string保留小数点位数"></a>使用f-string保留小数点位数</h2><p><strong>参考文章</strong>  </p>
+<ul>
+<li><p><a href="https://blog.csdn.net/zlbingo/article/details/116946961">Python：使用f-string保留小数点位数</a></p>
+</li>
+<li><p>格式</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">f<span class="string">&quot;&#123;num:xxx&#125;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>上面xxx的格式如下：</p>
+<table>
+<thead>
+<tr>
+<th align="left">格式</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">width</td>
+<td align="left">整数width指定宽度</td>
+</tr>
+<tr>
+<td align="left">0width</td>
+<td align="left">整数width指定宽度，0表示最高位用0补足宽度</td>
+</tr>
+<tr>
+<td align="left">width.precision</td>
+<td align="left">整数width指定宽度，整数precision表示精度（保留小数点后几位小数）</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>实例</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">a = <span class="number">123.456</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 只指定widthc</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">f&quot;<span class="subst">&#123;a:<span class="number">10</span>&#125;</span>&quot;</span></span><br><span class="line"><span class="string">&#x27;123.456&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定0width</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">f&quot;<span class="subst">&#123;a:010&#125;</span>&quot;</span></span><br><span class="line"><span class="string">&#x27;000123.456&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用width.precision</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">f&quot;<span class="subst">&#123;a:<span class="number">10.1</span>f&#125;</span>&quot;</span></span><br><span class="line"><span class="string">&#x27;123.5&#x27;</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">f&quot;<span class="subst">&#123;a:<span class="number">.2</span>f&#125;</span>&quot;</span></span><br><span class="line"><span class="string">&#x27;123.46&#x27;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Python</category>
+        <category>语法</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>语法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Pytorch-Q&amp;A</title>
+    <url>/2021/08/09/Pytorch/Pytorch-Q&amp;A/</url>
+    <content><![CDATA[<h1 id="Pytorch-Bug记录"><a href="#Pytorch-Bug记录" class="headerlink" title="Pytorch Bug记录"></a>Pytorch Bug记录</h1><h2 id="RuntimeError-view-size-is-not-compatible-with-input-tensor-39-s-size-and-stride-at-least-one-dimension-spans-across-two-contiguous-subspaces-Use-reshape-instead"><a href="#RuntimeError-view-size-is-not-compatible-with-input-tensor-39-s-size-and-stride-at-least-one-dimension-spans-across-two-contiguous-subspaces-Use-reshape-instead" class="headerlink" title="RuntimeError: view size is not compatible with input tensor&#39;s size and stride (at least one dimension spans across two contiguous subspaces). Use .reshape(...) instead."></a><code>RuntimeError: view size is not compatible with input tensor&#39;s size and stride (at least one dimension spans across two contiguous subspaces). Use .reshape(...) instead.</code></h2><ul>
+<li>解决方法<br>view()需要Tensor中的元素地址是连续的，但可能出现Tensor不连续的情况，所以先用 .contiguous() 将其在内存中变成连续分布：  </li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">out = out.contiguous().view(out.size()[<span class="number">0</span>], -<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="RuntimeError-The-size-of-tensor-a-32-must-match-the-size-of-tensor-b-28-at-non-singleton-or-ValueError-expected-sequence-of-length-51-at-dim-1-got-0"><a href="#RuntimeError-The-size-of-tensor-a-32-must-match-the-size-of-tensor-b-28-at-non-singleton-or-ValueError-expected-sequence-of-length-51-at-dim-1-got-0" class="headerlink" title="RuntimeError: The size of tensor a (32) must match the size of tensor b (28) at non-singleton or ValueError: expected sequence of length 51 at dim 1 (got 0)"></a><code>RuntimeError: The size of tensor a (32) must match the size of tensor b (28) at non-singleton</code> or <code>ValueError: expected sequence of length 51 at dim 1 (got 0)</code></h2><ul>
+<li>问题及解决<br>pytorch中将list转为tensor的时候，如果list中长度不同会报维度不匹配的错误，查看list中的元素寻找解决方法</li>
+</ul>
+<h2 id="RTX3090运行stylegan编译不成功"><a href="#RTX3090运行stylegan编译不成功" class="headerlink" title="RTX3090运行stylegan编译不成功"></a><code>RTX3090运行stylegan编译不成功</code></h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> TORCH_CUDA_ARCH_LIST=<span class="string">&quot;8.0&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="RuntimeError-The-size-of-tensor-a-4-must-match-the-size-of-tensor-b-3-at-non-singleton-dimension-0"><a href="#RuntimeError-The-size-of-tensor-a-4-must-match-the-size-of-tensor-b-3-at-non-singleton-dimension-0" class="headerlink" title="RuntimeError: The size of tensor a (4) must match the size of tensor b (3) at non-singleton dimension 0"></a><code>RuntimeError: The size of tensor a (4) must match the size of tensor b (3) at non-singleton dimension 0</code></h2><ul>
+<li>问题出在<code>tensor.sub_(mean[:, None, None]).div_(std[:, None, None])</code><br>在读取PNG图片然后进行transform的正则化过程中，Image会读取成RGBA，即四个通道，一般在做图像处理只读取三个通道，所以归一化也只做三个通道，因此报错</li>
+<li>解决办法<br>加上.convert(‘RGB’)<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">image = Image.<span class="built_in">open</span>(<span class="string">&quot;img_path&quot;</span>).convert(<span class="string">&#x27;RGB&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="torch-utils-cpp-extension-load卡住无响应"><a href="#torch-utils-cpp-extension-load卡住无响应" class="headerlink" title="torch.utils.cpp_extension.load卡住无响应"></a><code>torch.utils.cpp_extension.load卡住无响应</code></h2><p><strong>参考文章</strong></p>
+<ul>
+<li><a href="https://blog.csdn.net/qq_38677322/article/details/109696077">torch.utils.cpp_extension.load卡住无响应</a></li>
+</ul>
+<p>主要原因是因为读写锁，在home/username/的路径下的.cache文件中，找到torch_extensions文件夹，然后寻找里面的文件夹是否存在lock文件，存在删除即可。</p>
+<h2 id="TypeError-Caught-TypeError-in-DataLoader-worker-process-0"><a href="#TypeError-Caught-TypeError-in-DataLoader-worker-process-0" class="headerlink" title=" TypeError: Caught TypeError in DataLoader worker process 0"></a><code> TypeError: Caught TypeError in DataLoader worker process 0</code></h2><p>问题极大可能出现在transform，实际上和work的数量没什么关系</p>
+<p>我第一次遇到这个bug的时候是因为送入的transform为None</p>
+<h2 id="RuntimeError-Trying-to-backward-through-the-graph-a-second-time-but-the-saved-intermediate-results-have-already-been-freed-Specify-retain-graph-True-when-calling-backward-the-first-time"><a href="#RuntimeError-Trying-to-backward-through-the-graph-a-second-time-but-the-saved-intermediate-results-have-already-been-freed-Specify-retain-graph-True-when-calling-backward-the-first-time" class="headerlink" title="RuntimeError: Trying to backward through the graph a second time, but the saved intermediate results have already been freed. Specify retain_graph=True when calling backward the first time."></a><code>RuntimeError: Trying to backward through the graph a second time, but the saved intermediate results have already been freed. Specify retain_graph=True when calling backward the first time.</code></h2><p>在网络训练过程中，在一次迭代中使用多次backward()时就有可能会遇到这个问题。说明你的中间变量进行了两次的梯度回传。</p>
+<ul>
+<li>解决<br>查找除了叶子节点的其他中间节点，是否重复使用，若有，则对这个中间节点使用<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">var_new = var.clone().detach().requires_grad_(<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+或者<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">var.detach()</span><br></pre></td></tr></table></figure>
+<h2 id="pytorch-中的Out-of-memory-显存占用问题-记录"><a href="#pytorch-中的Out-of-memory-显存占用问题-记录" class="headerlink" title="pytorch 中的Out of memory(显存占用问题)记录"></a>pytorch 中的<code>Out of memory</code>(显存占用问题)记录</h2></li>
+</ul>
+<ol>
+<li>计算loss但是不进行梯度回传</li>
+<li>读取数据的batch 大小</li>
+<li>用于计算loss时的图片大小(1024和256使用同一个loss计算可能显存占用差别会很大)</li>
+<li>即使设置generator的grad为false，但是forward经过generator生成的图片仍带有梯度；</li>
+</ol>
+<h2 id="pytorch中程序退出但显存未释放"><a href="#pytorch中程序退出但显存未释放" class="headerlink" title="pytorch中程序退出但显存未释放"></a>pytorch中程序退出但显存未释放</h2><p>查看进程</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">fuser -v /dev/nvidia*</span><br></pre></td></tr></table></figure>
+<p>杀死进程</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">kill</span> -9 PID</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Pytorch</category>
+        <category>Q&amp;A</category>
+      </categories>
+      <tags>
+        <tag>Error</tag>
+        <tag>Pytorch</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Pytorch-Streamlit</title>
+    <url>/2021/11/29/Pytorch/Pytorch-Streamlit/</url>
+    <content><![CDATA[<h1 id="Streamlit-一个快速构建python应用程序的框架"><a href="#Streamlit-一个快速构建python应用程序的框架" class="headerlink" title="Streamlit, 一个快速构建python应用程序的框架"></a>Streamlit, 一个快速构建python应用程序的框架</h1><p><strong>本文参考</strong></p>
+<ul>
+<li><a href="https://github.com/streamlit/streamlit">Github官方文档</a></li>
+<li><a href="http://cw.hubwiz.com/card/c/streamlit-manual/">中文开发文档</a></li>
+</ul>
+<h2 id="安装Streamlit"><a href="#安装Streamlit" class="headerlink" title="安装Streamlit"></a>安装Streamlit</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">pip install streamlit</span><br><span class="line">streamlit hello</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用Streamlit"><a href="#使用Streamlit" class="headerlink" title="使用Streamlit"></a>使用Streamlit</h2><p>具体用法可以参考中文开发文档，实际上就是单纯调用api。这里我记录一些我在使用过程中遇到的一些问题。  </p>
+<ol>
+<li>Streamlit运行过程<br>Streamlit在每次运行时，都会从头开始将整个app重新运行一遍(除了那些缓存在cache中的数据)</li>
+<li>Streamlit远程运行<br>Streamlit默认端口为8501，同样可以利用端口转发技术，将远程Streamlit程序显示在当前电脑中。 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh -L 8501:127.0.0.1:8501 xuedue@125.216.231.147 </span><br></pre></td></tr></table></figure></li>
+<li>vscode开发Streamlit<br>在扩展商店中安装<strong>multi-command</strong>扩展，扩展的settings.json文件中加入 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="string">&quot;multiCommand.commands&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;command&quot;</span>: <span class="string">&quot;multiCommand.streamlitActiveFile&quot;</span>,</span><br><span class="line">            <span class="string">&quot;label&quot;</span>: <span class="string">&quot;Streamlit: Run Active File&quot;</span>,</span><br><span class="line">            <span class="string">&quot;description&quot;</span>: <span class="string">&quot;Streamlit run active file in active terminal&quot;</span>,</span><br><span class="line">            <span class="string">&quot;sequence&quot;</span>: [</span><br><span class="line">                <span class="string">&quot;workbench.action.terminal.focus&quot;</span>,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;command&quot;</span>: <span class="string">&quot;workbench.action.terminal.sendSequence&quot;</span>,</span><br><span class="line">                    <span class="string">&quot;args&quot;</span>: &#123;</span><br><span class="line">                        <span class="string">&quot;text&quot;</span>: <span class="string">&quot;streamlit run <span class="variable">$&#123;relativeFile&#125;</span>\u000D&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;,</span><br><span class="line">    ],</span><br></pre></td></tr></table></figure>
+ 实际上就是用一个快捷命令来控制Streamlit的运行，这样不用每次自己手敲输命令。<br> 键入crtl+shift+p，选择Multi command:Execute multi command,再选择Streamlit命令。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Pytorch</category>
+        <category>Streamlit</category>
+      </categories>
+      <tags>
+        <tag>pytorch</tag>
+        <tag>streamlit</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Pytorch环境相关</title>
+    <url>/2021/07/22/Pytorch/Pytorch-env/</url>
+    <content><![CDATA[<h1 id="显卡，显卡驱动-nvcc-cuda-driver-cudatoolkit-cudnn到底是什么？"><a href="#显卡，显卡驱动-nvcc-cuda-driver-cudatoolkit-cudnn到底是什么？" class="headerlink" title="显卡，显卡驱动,nvcc, cuda driver,cudatoolkit,cudnn到底是什么？"></a>显卡，显卡驱动,nvcc, cuda driver,cudatoolkit,cudnn到底是什么？</h1><p><a href="https://www.cnblogs.com/marsggbo/p/11838823.html">https://www.cnblogs.com/marsggbo/p/11838823.html</a></p>
+<h1 id="conda-换源"><a href="#conda-换源" class="headerlink" title="conda 换源"></a>conda 换源</h1><ul>
+<li>查看原来的镜像源<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda config --show</span><br></pre></td></tr></table></figure></li>
+<li>删除旧镜像源<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda config --remove channels &lt;https://mirrors.tuna.tsinghua.edu.cn/tensorflow/linux/cpu/&gt;  </span><br></pre></td></tr></table></figure></li>
+<li>添加新镜像源<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda config --add channels &lt;https://mirrors.tuna.tsinghua.edu.cn/tensorflow/linux/cpu/&gt;</span><br></pre></td></tr></table></figure></li>
+<li>设置搜索时显示通道地址<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda config --<span class="built_in">set</span> show_channel_urls yes</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<ul>
+<li>查看已有的channel<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda config --show channels</span><br></pre></td></tr></table></figure></li>
+<li>添加新的channel  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda config --add channels &lt;https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/&gt;  </span><br><span class="line">conda config --add channels &lt;https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge&gt;</span><br><span class="line">conda config --add channels &lt;https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/msys2/&gt;</span><br><span class="line">conda config --add channels &lt;https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/&gt;</span><br><span class="line">conda config --<span class="built_in">set</span> show_channel_urls yes</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="pip-换源"><a href="#pip-换源" class="headerlink" title="pip 换源"></a>pip 换源</h1><p>pip国内常用源：</p>
+<blockquote>
+<p>阿里云 <a href="http://mirrors.aliyun.com/pypi/simple/">http://mirrors.aliyun.com/pypi/simple/</a><br>中国科技大学 <a href="https://pypi.mirrors.ustc.edu.cn/simple/">https://pypi.mirrors.ustc.edu.cn/simple/</a><br>豆瓣(douban) <a href="http://pypi.douban.com/simple/">http://pypi.douban.com/simple/</a><br>清华大学 <a href="https://pypi.tuna.tsinghua.edu.cn/simple/">https://pypi.tuna.tsinghua.edu.cn/simple/</a><br>中国科学技术大学 <a href="http://pypi.mirrors.ustc.edu.cn/simple/">http://pypi.mirrors.ustc.edu.cn/simple/</a>  </p>
+</blockquote>
+<p>例子</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip install -i &lt;https://pypi.tuna.tsinghua.edu.cn/simple&gt; keras</span><br></pre></td></tr></table></figure>
+
+<h1 id="Pytorch-换卡运行"><a href="#Pytorch-换卡运行" class="headerlink" title="Pytorch 换卡运行"></a>Pytorch 换卡运行</h1><p>换卡运行  </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">CUDA_VISIBLE_DEVICES=1 python example.py xxxxxx</span><br></pre></td></tr></table></figure>
+
+<h1 id="cuda-amp-cudnn版本查看"><a href="#cuda-amp-cudnn版本查看" class="headerlink" title="cuda&amp;cudnn版本查看"></a>cuda&amp;cudnn版本查看</h1><p>cuda版本</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nvcc -V or cat /usr/<span class="built_in">local</span>/cuda/version.txt</span><br></pre></td></tr></table></figure>
+
+<p>cudnn版本</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cat /usr/<span class="built_in">local</span>/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2</span><br></pre></td></tr></table></figure>
+
+<h1 id="Ubuntu-安装cuda"><a href="#Ubuntu-安装cuda" class="headerlink" title="Ubuntu 安装cuda"></a>Ubuntu 安装cuda</h1><ol>
+<li><p>下载cuda<br>在官网选择自己需要的cuda版本<br><a href="https://developer.nvidia.com/cuda-toolkit-archive">https://developer.nvidia.com/cuda-toolkit-archive</a><br>并根据系统和环境选择下载方式</p>
+</li>
+<li><p>安装cuda<br>执行命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo sh cuda_xx.x.xxx_xxx.xx_linux.run</span><br></pre></td></tr></table></figure>
+<p>比较新的版本在安装之前提示选择安装的内容，这里把驱动Driver的选择取消，即不选择安装驱动Driver<br>然后一路闪电带火花</p>
+</li>
+<li><p>设置cuda环境变量<br>打开.bashrc</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo gedit ~/.bashrc</span><br></pre></td></tr></table></figure>
+<p>添加如下内容</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=<span class="variable">$LD_LIBRARY_PATH</span>:/usr/<span class="built_in">local</span>/cuda-xx.x/lib64</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:/usr/<span class="built_in">local</span>/cuda-xx.x/bin</span><br><span class="line"><span class="built_in">export</span> CUDA_HOME=<span class="variable">$CUDA_HOME</span>:/usr/<span class="built_in">local</span>/cuda-xx.x</span><br></pre></td></tr></table></figure></li>
+<li><p>验证<br>在终端输入</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nvcc --version</span><br></pre></td></tr></table></figure>
+<p>显示正确版本则安装成功</p>
+</li>
+</ol>
+<h1 id="Ubuntu-安装cudnn"><a href="#Ubuntu-安装cudnn" class="headerlink" title="Ubuntu 安装cudnn"></a>Ubuntu 安装cudnn</h1><p>下载链接<br><a href="https://developer.nvidia.com/zh-cn/cudnn">https://developer.nvidia.com/zh-cn/cudnn</a><br>选择合适的版本下载(tgz format(library),deb format(runtime，develop))<br>下载好后直接命令行解压，然后复制 lib64 和 include 文件夹到 /usr/local/cuda-xx.x，命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tar -zxvf cudnn-xx.x-linux-x64-v7.5.0.56.tgz</span><br><span class="line">sudo cp cuda/include/cudnn.h /usr/<span class="built_in">local</span>/cuda-xx.x/include</span><br><span class="line">sudo cp cuda/lib64/libcudnn* /usr/<span class="built_in">local</span>/cuda-xx.x/lib64</span><br><span class="line">sudo chmod a+r /usr/<span class="built_in">local</span>/cuda-xx.x/include/cudnn.h /usr/<span class="built_in">local</span>/cuda-xx.x/lib64/libcudnn*</span><br></pre></td></tr></table></figure>
+
+<h1 id="Ubuntu-cuda-版本切换"><a href="#Ubuntu-cuda-版本切换" class="headerlink" title="Ubuntu cuda 版本切换"></a>Ubuntu cuda 版本切换</h1><ol>
+<li>设置链接库<br>执行sudo gedit ~/.bashrc 打开.bashrc，可以看到已经安装的版本，比如<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> PATH=<span class="string">&quot;<span class="variable">$PATH</span>:/usr/local/cuda-9.0/bin&quot;</span></span><br><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=<span class="string">&quot;<span class="variable">$LD_LIBRARY_PATH</span>:/usr/local/cuda-9.0/lib64/&quot;</span></span><br><span class="line"><span class="built_in">export</span> LIBRARY_PATH=<span class="string">&quot;<span class="variable">$LIBRARY_PATH</span>:/usr/local/cuda-9.0/lib64&quot;</span>  </span><br></pre></td></tr></table></figure>
+将上面行中所有的cuda-9.0更改为cuda：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> PATH=<span class="string">&quot;<span class="variable">$PATH</span>:/usr/local/cuda/bin&quot;</span></span><br><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=<span class="string">&quot;<span class="variable">$LD_LIBRARY_PATH</span>:/usr/local/cuda/lib64/&quot;</span></span><br><span class="line"><span class="built_in">export</span> LIBRARY_PATH=<span class="string">&quot;<span class="variable">$LIBRARY_PATH</span>:/usr/local/cuda/lib64&quot;</span></span><br></pre></td></tr></table></figure>
+保存退出后，在终端运行如下命令使之生效:<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure></li>
+<li>切换版本<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo rm -rf /usr/<span class="built_in">local</span>/cuda <span class="comment">#删除之前创建的软链接</span></span><br><span class="line">sudo ln -s /usr/<span class="built_in">local</span>/cuda-10.0 /usr/<span class="built_in">local</span>/cuda  <span class="comment">#创建新 cuda-10.0 的软链接</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="Ubuntu-安装TensorRT"><a href="#Ubuntu-安装TensorRT" class="headerlink" title="Ubuntu 安装TensorRT"></a>Ubuntu 安装TensorRT</h1><p>使用压缩包进行安装</p>
+<ol>
+<li>下载TensorRT的压缩包<br>下载地址 <a href="https://developer.nvidia.com/nvidia-tensorrt-download">https://developer.nvidia.com/nvidia-tensorrt-download</a><br>需要填写问卷之后才能下载</li>
+<li>解压并添加环境变量  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tar xzvf TensorRT-x.××××.tar</span><br></pre></td></tr></table></figure>
+添加环境变量需要注意TensorRT的版本需要和cuda以及cudnn一致  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo gedit ~/.bashrc</span><br><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=/home/wsy/TensorRT-5.0.2.6/lib:<span class="variable">$LD_LIBRARY_PATH</span> </span><br><span class="line"><span class="built_in">export</span> CUDA_INSTALL_DIR=/usr/<span class="built_in">local</span>/cuda-x.x</span><br><span class="line"><span class="built_in">export</span> CUDNN_INSTALL_DIR=/usr/<span class="built_in">local</span>/cuda-x.x</span><br><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure></li>
+<li>安装<br>cd到解压目录，并且进入需要安装的conda环境，安装所有whl文件<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#先进入conda虚拟环境</span></span><br><span class="line">conda activate env_name</span><br><span class="line"><span class="comment">#install TensorRT</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HOME</span>/tensorrt-x.x.x.x/python</span><br><span class="line">pip install xxxxxx.whl</span><br></pre></td></tr></table></figure></li>
+<li>测试<br>测试TensorRT是否安装成功，进入Python编辑器导入tensorrt和uff模块<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorrt</span><br><span class="line"><span class="keyword">import</span> uff</span><br><span class="line"><span class="built_in">print</span>(tensorrt.__version__)</span><br><span class="line"><span class="built_in">print</span>(uff.__version__)</span><br></pre></td></tr></table></figure>
+此处<code>print(uff.__version__)</code>可能会报错是因为没有安装TensorFlow的原因，可不用管。至此TensorRT安装完成。</li>
+</ol>
+<h1 id="pytorch环境更新包"><a href="#pytorch环境更新包" class="headerlink" title="pytorch环境更新包"></a>pytorch环境更新包</h1><p>-U更新到最新版本，加上==指定版本</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip install -U tensorflow-gpu==2.4.1</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Pytorch</category>
+        <category>env</category>
+      </categories>
+      <tags>
+        <tag>pip</tag>
+        <tag>conda</tag>
+        <tag>cuda</tag>
+        <tag>cudann</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Pytorch visdom相关</title>
+    <url>/2021/07/22/Pytorch/Pytorch-visdom/</url>
+    <content><![CDATA[<h1 id="Visdom远程连接"><a href="#Visdom远程连接" class="headerlink" title="Visdom远程连接"></a>Visdom远程连接</h1><p>此方法同样适用于tensorboard,streamlit(已知，且亲自尝试过)</p>
+<ol>
+<li>连接ssh时，将服务器的8097端口重定向到自己机器上的18097端口：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh -L 18097:127.0.0.1:8097 xuedue@125.216.231.147 </span><br></pre></td></tr></table></figure></li>
+<li>在服务器上使用8097端口正常启动Visdom<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">visdom</span><br></pre></td></tr></table></figure></li>
+<li>在本地浏览器中输入local host地址再加上重定向的端口号：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:18097/</span><br></pre></td></tr></table></figure></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Pytorch</category>
+        <category>visdom</category>
+      </categories>
+      <tags>
+        <tag>visdom</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Pytorch-语法</title>
+    <url>/2021/09/26/Pytorch/Pytorch-%E8%AF%AD%E6%B3%95/</url>
+    <content><![CDATA[<h1 id="torch函数"><a href="#torch函数" class="headerlink" title="torch函数"></a>torch函数</h1><h2 id="torch-clamp"><a href="#torch-clamp" class="headerlink" title="torch.clamp()"></a>torch.clamp()</h2><p>torch.clamp(input, min, max, out=None) → Tensor<br>参数：</p>
+<ul>
+<li>input (Tensor) – 输入张量</li>
+<li>min (Number) – 限制范围下限</li>
+<li>max (Number) – 限制范围上限</li>
+<li>out (Tensor, optional) – 输出张量</li>
+</ul>
+<p>作用：将输入夹紧至某一区间</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">output = torch.clamp(<span class="built_in">input</span>, <span class="number">0</span>, <span class="number">1</span>) <span class="comment">#输入值&lt;0则为0，&gt;1则为1  </span></span><br></pre></td></tr></table></figure>
+<h2 id="torch-round"><a href="#torch-round" class="headerlink" title="torch.round()"></a>torch.round()</h2><p>torch.round(input, out=None)<br>作用：返回一个新张量，将输入input张量每个元素舍入到最近的整数</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">a = torch.tensor(<span class="number">0.6</span>)</span><br><span class="line">b = torch.<span class="built_in">round</span>(a)  <span class="comment"># a = 0.6, b = 1.0</span></span><br><span class="line">a = a.<span class="built_in">round</span>()  <span class="comment"># a = 1.0, b = 1.0</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="torch-sign"><a href="#torch-sign" class="headerlink" title="torch.sign()"></a>torch.sign()</h2><p>torch.sign(input, out=None) → Tensor<br>作用：返回tensor的符号</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">a = torch.tensor([-<span class="number">1.1</span>, <span class="number">0.</span>, <span class="number">1.1</span>])</span><br><span class="line">sign = torch.sign(a) </span><br><span class="line"><span class="built_in">print</span>(a.sign()) <span class="comment"># tensor([-1.,  0.,  1.])</span></span><br><span class="line"><span class="built_in">print</span>(sign) <span class="comment"># tensor([-1.,  0.,  1.])</span></span><br></pre></td></tr></table></figure>
+<h2 id="detach-amp-clone"><a href="#detach-amp-clone" class="headerlink" title="detach() &amp; clone()"></a>detach() &amp; clone()</h2><ul>
+<li>torch.detach() </li>
+</ul>
+<ol>
+<li>新的tensor会脱离计算图，不会牵扯梯度计算；</li>
+<li>浅拷贝，和原先的tensor指向同一内存；</li>
+</ol>
+<ul>
+<li>torch.clone()</li>
+</ul>
+<ol>
+<li>新的tensor充当中间变量，会保留在计算图中，参与梯度计算（回传叠加），但是一般不会保留自身梯度；</li>
+<li>深拷贝，开辟新的内存空间；</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Pytorch</category>
+        <category>语法</category>
+      </categories>
+      <tags>
+        <tag>语法</tag>
+        <tag>Pytorch</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Vscode配置C语言</title>
+    <url>/2022/06/27/Vscode/Vscode-C%E8%AF%AD%E8%A8%80/</url>
+    <content><![CDATA[<p><strong>参考文章</strong><br><a href="https://blog.csdn.net/m0_46147064/article/details/124424305">VScode中配置 C/C++ 环境,超级详细，问题分析全面，绝对好用</a></p>
+]]></content>
+      <categories>
+        <category>Vscode</category>
+        <category>c\c++</category>
+      </categories>
+      <tags>
+        <tag>vscode</tag>
+        <tag>c\c++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Vscode-代理设置</title>
+    <url>/2022/06/25/Vscode/Vscode-%E4%BB%A3%E7%90%86%E8%AE%BE%E7%BD%AE/</url>
+    <content><![CDATA[<p><strong>本文参考</strong></p>
+<ul>
+<li><a href="https://blog.csdn.net/lihefei_coder/article/details/119905933">VSCode设置代理</a></li>
+</ul>
+<h2 id="具体步骤-亲测"><a href="#具体步骤-亲测" class="headerlink" title="具体步骤(亲测)"></a>具体步骤(亲测)</h2><ol>
+<li>依次点击左下角按钮<br> setting-应用程序-代理服务器-edit in settings</li>
+<li>在配置最后加上,端口和ip需要根据自己的代理进行设置，可以在window中的代理中查看 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="string">&quot;http.proxy&quot;</span>: <span class="string">&quot;http://xxx.xxx.xxx.xxx:8080&quot;</span>,</span><br><span class="line"><span class="string">&quot;http.proxyStrictSSL&quot;</span>: <span class="literal">false</span></span><br></pre></td></tr></table></figure></li>
+<li>打开命令终端，在根目录给项目设置git代理 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config  http.sslVerify <span class="literal">false</span></span><br><span class="line">git config  http.proxy http://xxx.xxx.xxx.xxx:8080</span><br></pre></td></tr></table></figure></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Vscode</category>
+        <category>proxy</category>
+      </categories>
+      <tags>
+        <tag>proxy</tag>
+        <tag>vscode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Vscode-快捷键</title>
+    <url>/2022/06/25/Vscode/Vscode-%E5%BF%AB%E6%8D%B7%E9%94%AE/</url>
+    <content><![CDATA[<p>在使用快捷键的时候下方蓝条有提示，如果快捷键不起作用可以注意一下下面的提示。</p>
+<ul>
+<li>折叠/展开所有函数<br>ctrl+k + ctrl+0(ctrl+k+0) /ctrl+k + ctrl+j(ctrl+k+j)</li>
+<li>折叠所有函数至第n层级：<br>ctrl+k + ctrl+n(ctrl+k+n)</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Vscode</category>
+        <category>快捷键</category>
+      </categories>
+      <tags>
+        <tag>vscode</tag>
+        <tag>快捷键</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Vscode-远程调试</title>
+    <url>/2022/06/25/Vscode/Vscode-%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/</url>
+    <content><![CDATA[<h2 id="利用vscode远程连接服务器，配置免密连接（亲测）"><a href="#利用vscode远程连接服务器，配置免密连接（亲测）" class="headerlink" title="利用vscode远程连接服务器，配置免密连接（亲测）"></a>利用vscode远程连接服务器，配置免密连接（亲测）</h2><ol>
+<li><p>在vscode扩展搜索并安装远程ssh连接插件<br>Remote-SSH 或者 Remote Development</p>
+</li>
+<li><p>在远程连接中打开配置文件<br>这里要选择后续免密登录生成密钥文件下的config文件，当然默认都是选择第一个<br><img src="https://i.loli.net/2021/08/03/HlPmu7O1VJxzIav.png" alt="image.png"><br>config里面的内容就是你ssh连接的ip，端口号等<br>创建ssh连接命令(p为端口号)  </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh usr@111.111.111.111 -p 123</span><br></pre></td></tr></table></figure></li>
+<li><p>免密登录设置<br>打开cmd，输入</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 4096 -C <span class="string">&quot;your_email@example.com&quot;</span></span><br></pre></td></tr></table></figure>
+<p> -t 指定密钥类型，默认即 rsa ，可以省略<br> -C 设置注释文字，比如你的邮箱，可以省略<br> 回车跳过，会在默认文件夹，也就是第二步骤中的config文件夹中生成私钥文件 id_rsa 和公钥文件 id_rsa.pub<br> <strong>注意，这里的公钥文件id_rsa.pub可以用于多个ssh链接，即一对多</strong></p>
+</li>
+<li><p>配置服务器端  </p>
+</li>
+</ol>
+<ul>
+<li>进入服务器的ssh文件夹，如果是Linux系统，一般是/home/usrname/.ssh</li>
+<li>打开authorized_keys文件，如果没有就新建一个</li>
+<li>将第三步中生成的公钥id_rsa.pub中的内容复制到authorized_keys文件中</li>
+<li>完成免密设置</li>
+</ul>
+<h2 id="vscode-远程服务器调试选择其他id的显卡"><a href="#vscode-远程服务器调试选择其他id的显卡" class="headerlink" title="vscode 远程服务器调试选择其他id的显卡"></a>vscode 远程服务器调试选择其他id的显卡</h2><p>在运行的配置中的env添加配置</p>
+<blockquote>
+<p>“CUDA_VISIBLE_DEVICES”: “1”</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Use IntelliSense to learn about possible attributes.</span></span><br><span class="line">    <span class="comment">// Hover to view descriptions of existing attributes.</span></span><br><span class="line">    <span class="comment">// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387</span></span><br><span class="line">    <span class="string">&quot;version&quot;</span>: <span class="string">&quot;0.2.0&quot;</span>,</span><br><span class="line">    <span class="string">&quot;configurations&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;name&quot;</span>: <span class="string">&quot;Python: 当前文件&quot;</span>,</span><br><span class="line">            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;python&quot;</span>,</span><br><span class="line">            <span class="string">&quot;request&quot;</span>: <span class="string">&quot;launch&quot;</span>,</span><br><span class="line">            <span class="string">&quot;program&quot;</span>: <span class="string">&quot;$&#123;file&#125;&quot;</span>,</span><br><span class="line">            <span class="string">&quot;console&quot;</span>: <span class="string">&quot;integratedTerminal&quot;</span>,</span><br><span class="line">            <span class="string">&quot;cwd&quot;</span>: <span class="string">&quot;$&#123;workspaceRoot&#125;&quot;</span>,</span><br><span class="line">            <span class="string">&quot;env&quot;</span>: &#123;<span class="string">&quot;PYTHONPATH&quot;</span>:<span class="string">&quot;$&#123;workspaceRoot&#125;&quot;</span>,</span><br><span class="line">                    <span class="string">&quot;CUDA_VISIBLE_DEVICES&quot;</span>: <span class="string">&quot;1&quot;</span>&#125;,</span><br><span class="line">            <span class="string">&quot;envFile&quot;</span>: <span class="string">&quot;$&#123;workspaceRoot&#125;/.env&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Vscode</category>
+        <category>远程调试</category>
+      </categories>
+      <tags>
+        <tag>vscode</tag>
+        <tag>ssh</tag>
+      </tags>
+  </entry>
+</search>
