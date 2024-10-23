@@ -1,0 +1,309 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Latex | xuedue</title><meta name="keywords" content="latex"><meta name="author" content="xuedue"><meta name="copyright" content="xuedue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="相关链接    Latex插图指南 Horizontal Line Options in LaTeX 文艺数字君  LaTex中输入空格以及换行参考链接    LaTex中输入空格以及换行  使用\表示空格    空格 代码 效果 解释    quad空格 a \qquad b $a \qquad b$ 两个m的宽度   quad空格 a \quad b $a \quad b$ 一个m的宽度">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Latex">
+<meta property="og:url" content="http://example.com/2022/06/25/Latex/Latex/index.html">
+<meta property="og:site_name" content="xuedue">
+<meta property="og:description" content="相关链接    Latex插图指南 Horizontal Line Options in LaTeX 文艺数字君  LaTex中输入空格以及换行参考链接    LaTex中输入空格以及换行  使用\表示空格    空格 代码 效果 解释    quad空格 a \qquad b $a \qquad b$ 两个m的宽度   quad空格 a \quad b $a \quad b$ 一个m的宽度">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg">
+<meta property="article:published_time" content="2022-06-25T07:20:37.000Z">
+<meta property="article:modified_time" content="2024-10-23T15:44:13.932Z">
+<meta property="article:author" content="xuedue">
+<meta property="article:tag" content="latex">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2022/06/25/Latex/Latex/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Latex',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-10-23 15:44:13'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/iconfont.css"><meta name="generator" content="Hexo 5.4.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/07/20/8I4hkX5vgNjQS6Y.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">33</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">40</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">34</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">xuedue</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Latex</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-06-25T07:20:37.000Z" title="发表于 2022-06-25 07:20:37">2022-06-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-10-23T15:44:13.932Z" title="更新于 2024-10-23 15:44:13">2024-10-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Latex/">Latex</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Latex"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><strong>相关链接</strong>  </p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://www.ctex.org/documents/latex/graphics/">Latex插图指南</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.techwalla.com/articles/horizontal-line-options-in-latex">Horizontal Line Options in LaTeX</a></li>
+<li><a target="_blank" rel="noopener" href="https://mathpretty.com/?s=latex">文艺数字君</a></li>
+</ul>
+<h2 id="LaTex中输入空格以及换行"><a href="#LaTex中输入空格以及换行" class="headerlink" title="LaTex中输入空格以及换行"></a>LaTex中输入空格以及换行</h2><p><strong>参考链接</strong>  </p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/luolang_103/article/details/81289529">LaTex中输入空格以及换行</a></p>
+</li>
+<li><p>使用\表示空格</p>
+<table>
+<thead>
+<tr>
+<th align="left">空格</th>
+<th align="left">代码</th>
+<th align="left">效果</th>
+<th align="left">解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">quad空格</td>
+<td align="left">a \qquad b</td>
+<td align="left">$a \qquad b$</td>
+<td align="left">两个m的宽度</td>
+</tr>
+<tr>
+<td align="left">quad空格</td>
+<td align="left">a \quad b</td>
+<td align="left">$a \quad b$</td>
+<td align="left">一个m的宽度</td>
+</tr>
+<tr>
+<td align="left">大空格</td>
+<td align="left">a\ b</td>
+<td align="left">$a \  b$</td>
+<td align="left">1/3m宽度</td>
+</tr>
+<tr>
+<td align="left">中等空格</td>
+<td align="left">a\;b</td>
+<td align="left">$a ; b$</td>
+<td align="left">2/7m宽度</td>
+</tr>
+<tr>
+<td align="left">小空格</td>
+<td align="left">a\,b</td>
+<td align="left">$a , b$</td>
+<td align="left">1/6m宽度</td>
+</tr>
+<tr>
+<td align="left">没有空格</td>
+<td align="left">ab</td>
+<td align="left">$ab$</td>
+<td align="left">无空格</td>
+</tr>
+<tr>
+<td align="left">紧贴</td>
+<td align="left">a\!b</td>
+<td align="left">$a ! b$</td>
+<td align="left">缩进1/6m宽度</td>
+</tr>
+</tbody></table>
+<p>  \quad、1em、em、m代表当前字体下接近字符‘M’的宽度。</p>
+</li>
+<li><p>使用\\表示换行</p>
+</li>
+</ul>
+<h2 id="Latex声调输入"><a href="#Latex声调输入" class="headerlink" title="Latex声调输入"></a>Latex声调输入</h2><p><strong>参考链接</strong>  </p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_43511299/article/details/113844504">Latex texstudio法国人名字上面的一撇，声调输入</a>(文章出错，下面已经改正四声)</p>
+</li>
+<li><p>声调表格</p>
+<table>
+<thead>
+<tr>
+<th align="left">声调</th>
+<th align="left">代码</th>
+<th align="left">效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">一声</td>
+<td align="left">\={a}</td>
+<td align="left">$={a}$</td>
+</tr>
+<tr>
+<td align="left">二声</td>
+<td align="left">\‘{a}</td>
+<td align="left">$&#39;{a}$</td>
+</tr>
+<tr>
+<td align="left">三声</td>
+<td align="left">\v{a}</td>
+<td align="left">$\v{a}$</td>
+</tr>
+<tr>
+<td align="left">四声</td>
+<td align="left">\`{a}</td>
+<td align="left">$`{a}$</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<h2 id="Latex长度单位"><a href="#Latex长度单位" class="headerlink" title="Latex长度单位"></a>Latex长度单位</h2><p><strong>参考链接</strong>  </p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/robert_chen1988/article/details/52739825">latex 中的长度单位，尺寸</a></p>
+</li>
+<li><p>latex中的通用长度单位如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">单位</th>
+<th align="left">名称</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">mm</td>
+<td align="left">毫米</td>
+<td align="left">1 mm = 2.845 pt</td>
+</tr>
+<tr>
+<td align="center">pt</td>
+<td align="left">点</td>
+<td align="left">1 pt = 0.351 mm</td>
+</tr>
+<tr>
+<td align="center">bp</td>
+<td align="left">大点</td>
+<td align="left">1 bp = 0.353 mm &gt; 1 pt</td>
+</tr>
+<tr>
+<td align="center">dd</td>
+<td align="left">迪多</td>
+<td align="left">1 dd = 0.376 mm = 1.07 p</td>
+</tr>
+<tr>
+<td align="center">pc</td>
+<td align="left">排卡</td>
+<td align="left">1 pc = 4.218 mm = 12 pt</td>
+</tr>
+<tr>
+<td align="center">sp</td>
+<td align="left">定标点</td>
+<td align="left">65536 sp = 1 pt</td>
+</tr>
+<tr>
+<td align="center">cm</td>
+<td align="left">厘米</td>
+<td align="left">1 cm= 10 mm= 28.453 pt</td>
+</tr>
+<tr>
+<td align="center">cc</td>
+<td align="left">西塞罗</td>
+<td align="left">1 cc= 4.513 mm= 12 dd = 12.84 pt</td>
+</tr>
+<tr>
+<td align="center">in</td>
+<td align="left">英寸</td>
+<td align="left">1 in = 25.4 mm = 72.27 pt</td>
+</tr>
+<tr>
+<td align="center">ex</td>
+<td align="left">ex</td>
+<td align="left">1 ex = 当前字体尺寸中 x 的高度</td>
+</tr>
+<tr>
+<td align="center">em</td>
+<td align="left">em</td>
+<td align="left">1 em = 当前字体尺寸中 M 的宽度</td>
+</tr>
+</tbody></table>
+<p>  对水平距离的设置常用 em ，而对垂直距离的设置，如行距，常用 ex。</p>
+</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">xuedue</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2022/06/25/Latex/Latex/">http://example.com/2022/06/25/Latex/Latex/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">xuedue</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/latex/">latex</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/06/27/Vscode/Vscode-C%E8%AF%AD%E8%A8%80/"><img class="prev-cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Vscode配置C语言</div></div></a></div><div class="next-post pull-right"><a href="/2022/06/25/Vscode/Vscode-%E4%BB%A3%E7%90%86%E8%AE%BE%E7%BD%AE/"><img class="next-cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Vscode-代理设置</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/07/20/8I4hkX5vgNjQS6Y.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">xuedue</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">33</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">40</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">34</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xuedue"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://bilibili.com" target="_blank" title="BiliBili"><i class="iconfont icon-bilibili-fill card_icon"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">今天超市薯片半价</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#LaTex%E4%B8%AD%E8%BE%93%E5%85%A5%E7%A9%BA%E6%A0%BC%E4%BB%A5%E5%8F%8A%E6%8D%A2%E8%A1%8C"><span class="toc-number">1.</span> <span class="toc-text">LaTex中输入空格以及换行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Latex%E5%A3%B0%E8%B0%83%E8%BE%93%E5%85%A5"><span class="toc-number">2.</span> <span class="toc-text">Latex声调输入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Latex%E9%95%BF%E5%BA%A6%E5%8D%95%E4%BD%8D"><span class="toc-number">3.</span> <span class="toc-text">Latex长度单位</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/10/23/hello-world/" title="Hello World">Hello World</a><time datetime="2024-10-23T15:44:13.936Z" title="发表于 2024-10-23 15:44:13">2024-10-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/10/23/C++/C&amp;C++%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/" title="C&amp;C++知识点整理">C&amp;C++知识点整理</a><time datetime="2024-10-23T15:44:13.932Z" title="发表于 2024-10-23 15:44:13">2024-10-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/10/16/OS/OS-Win-%E7%A3%81%E7%9B%98%E6%89%93%E4%B8%8D%E5%BC%80/" title="磁盘打不开，提示需要格式化">磁盘打不开，提示需要格式化</a><time datetime="2024-10-16T14:35:54.000Z" title="发表于 2024-10-16 14:35:54">2024-10-16</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By xuedue</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
