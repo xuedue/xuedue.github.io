@@ -1,0 +1,301 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>GAN Prior Embedded Network for Blind Face Restoration in the Wild | xuedue</title><meta name="author" content="xuedue"><meta name="copyright" content="xuedue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Paper:GAN Prior Embedded Network for Blind Face Restoration in the WildAccept:CVPR2021Code Problem:野外人脸复原(Blind face restoration)，属于人脸复原任务中的一种，类似于超分，inpainting等工作。文章为了解决野外人脸的退化复杂性(噪声，缺损，分辨率低等)，提出了解决方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GAN Prior Embedded Network for Blind Face Restoration in the Wild">
+<meta property="og:url" content="http://example.com/2021/09/12/Paper/Paper-Stylegan-GPEN/index.html">
+<meta property="og:site_name" content="xuedue">
+<meta property="og:description" content="Paper:GAN Prior Embedded Network for Blind Face Restoration in the WildAccept:CVPR2021Code Problem:野外人脸复原(Blind face restoration)，属于人脸复原任务中的一种，类似于超分，inpainting等工作。文章为了解决野外人脸的退化复杂性(噪声，缺损，分辨率低等)，提出了解决方法">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/default.jpg">
+<meta property="article:published_time" content="2021-09-12T15:37:58.000Z">
+<meta property="article:modified_time" content="2026-02-04T16:38:43.971Z">
+<meta property="article:author" content="xuedue">
+<meta property="article:tag" content="stylegan">
+<meta property="article:tag" content="blind face restoratio">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/default.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "GAN Prior Embedded Network for Blind Face Restoration in the Wild",
+  "url": "http://example.com/2021/09/12/Paper/Paper-Stylegan-GPEN/",
+  "image": "http://example.com/img/default.jpg",
+  "datePublished": "2021-09-12T15:37:58.000Z",
+  "dateModified": "2026-02-04T16:38:43.971Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "xuedue",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/09/12/Paper/Paper-Stylegan-GPEN/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'GAN Prior Embedded Network for Blind Face Restoration in the Wild',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 5.4.2"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/img/bg_img.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">xuedue</span></a><a class="nav-page-title" href="/"><span class="site-name">GAN Prior Embedded Network for Blind Face Restoration in the Wild</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">GAN Prior Embedded Network for Blind Face Restoration in the Wild</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-09-12T15:37:58.000Z" title="发表于 2021-09-12 15:37:58">2021-09-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-04T16:38:43.971Z" title="更新于 2026-02-04 16:38:43">2026-02-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/PAPER/">PAPER</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2026-02-04 16:38:43&quot;}" hidden></div><h1 id="Paper-GAN-Prior-Embedded-Network-for-Blind-Face-Restoration-in-the-Wild"><a href="#Paper-GAN-Prior-Embedded-Network-for-Blind-Face-Restoration-in-the-Wild" class="headerlink" title="Paper:GAN Prior Embedded Network for Blind Face Restoration in the Wild"></a>Paper:GAN Prior Embedded Network for Blind Face Restoration in the Wild</h1><p>Accept:CVPR2021<br><a target="_blank" rel="noopener" href="https://github.com/yangxy/GPEN">Code</a></p>
+<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem:"></a>Problem:</h2><p>野外人脸复原(Blind face restoration)，属于人脸复原任务中的一种，类似于超分，inpainting等工作。文章为了解决野外人脸的退化复杂性(噪声，缺损，分辨率低等)，提出了解决方法。</p>
+<h2 id="Framework"><a href="#Framework" class="headerlink" title="Framework"></a>Framework</h2><p><img src="https://z3.ax1x.com/2021/09/12/49IYlD.png" alt="49IYlD"><br>在原先的styelgan中，需要W和noise，也就是调制模块中的A和B。  </p>
+<ul>
+<li>w：<br>将W修改为encoder得到的z，再经过mapping网络得到W。</li>
+<li>noise:<br>使用encoder中的浅层空间信息，同时这里作者将原先直接add的方式修改为concat，并在后续的实验中验证这两种方式的优劣。<br>通过这种方法，作者认为可以比较好地结合全局信息(w,也就是z,感受野更大)和局部信息(noise,感受野更小)，从而使得生成图像的质量更好。<br>和之前基于stylegan的方法不同的是，作者这里对stylegan进行了finetune。</li>
+</ul>
+<embed src="https://arxiv.org/pdf/2105.06070.pdf#toolbar=1&navpanes=1&scrollbar=1" width="100%" height="1000" type="application/pdf"></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">xuedue</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2021/09/12/Paper/Paper-Stylegan-GPEN/">http://example.com/2021/09/12/Paper/Paper-Stylegan-GPEN/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">xuedue</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/stylegan/">stylegan</a><a class="post-meta__tags" href="/tags/blind-face-restoratio/">blind face restoratio</a></div><div class="post-share"><div class="social-share" data-image="/img/default.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2021/09/19/Paper/Paper-StyleGAN-V1/" title="Paper-StyleGAN-V1"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Paper-StyleGAN-V1</div></div><div class="info-2"><div class="info-item-1">A Style-Based Generator Architecture for Generative Adversarial NetworksAccept:CVPR2019code：github上一搜一大把(官方非官方，tf或者pytorch) Problem:生成更加真实多样且高清的图像 Framework  上图(a)为ProgressiveGAN(Progressive growing of GANs for improved quality, stability, and variation)，作者就是在这篇的基础上进行改进；   上图(b)为StyleGAN的框架。   隐空间变换首先通过8层的FC将随机采样的z改为了w，这样做的好处就是一般z都是从高斯分布进行采样，但是实际上高斯分布和真实数据的分布是不同的，因此将z变换到w空间能更好的对生成网络进行一个控制(个人觉得就是一个hard变为soft的过程，原先的先验采样z太hard了，如果转换到w空间，就能更好地拟合出真实样本的部分) 生成网络生成网络的输入不再是z，而是三部分，分别为上图(b)的Const 4×4×5...</div></div></div></a><a class="pagination-related" href="/2021/09/10/Proxy/v2rayN/" title="v2rayN"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">v2rayN</div></div><div class="info-2"><div class="info-item-1">解决最新版本v2rayN绕过大陆(PAC)设置问题 GitHub上的Wiki对代理模式进行了解释  清除系统代理: 每次启动/重启服务的时候,强制把windows系统(ie)的代理清除掉 自动配置系统代理: 每次启动/重启服务的时候,强制设定windows系统(ie)的代理 不改变系统代理: 每次启动/重启服务的时候,什么都不做.作用就是保留其他软件设定的代理   解决方法  v2rayN版本:4.20v2ray版本:4.25 在检查更新中更新 geoip 和 geosite 文件，这两个文件包含一些含一些国内IP和域名 依次点击设置-路由设置-基础功能-一键导入基础规则 选择启用高级路由，然后选择全局或者绕过大陆 在绕过大陆的规则中，可以自定义白名单，在规则功能中添加规则，选择代理或者直连，并填上你想要添加的网站，左边填域名，右边填IP 系统代理 选择 自动配置系统代理路由高级功能 选择 绕过大陆    </div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2021/09/19/Paper/Paper-StyleGAN-V1/" title="Paper-StyleGAN-V1"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-19</div><div class="info-item-2">Paper-StyleGAN-V1</div></div><div class="info-2"><div class="info-item-1">A Style-Based Generator Architecture for Generative Adversarial NetworksAccept:CVPR2019code：github上一搜一大把(官方非官方，tf或者pytorch) Problem:生成更加真实多样且高清的图像 Framework  上图(a)为ProgressiveGAN(Progressive growing of GANs for improved quality, stability, and variation)，作者就是在这篇的基础上进行改进；   上图(b)为StyleGAN的框架。   隐空间变换首先通过8层的FC将随机采样的z改为了w，这样做的好处就是一般z都是从高斯分布进行采样，但是实际上高斯分布和真实数据的分布是不同的，因此将z变换到w空间能更好的对生成网络进行一个控制(个人觉得就是一个hard变为soft的过程，原先的先验采样z太hard了，如果转换到w空间，就能更好地拟合出真实样本的部分) 生成网络生成网络的输入不再是z，而是三部分，分别为上图(b)的Const 4×4×5...</div></div></div></a><a class="pagination-related" href="/2021/09/19/Paper/Paper-Stylegan-Image2Stylegan/" title="Paper-Stylegan-Image2StylegGAN"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-19</div><div class="info-item-2">Paper-Stylegan-Image2StylegGAN</div></div><div class="info-2"><div class="info-item-1">Image2StyleGAN: How to Embed Images Into the StyleGAN Latent Space?Accept: 2019ICCV Problem：基于优化(optimized-based)的StyleGAN反转 Framework提出w+空间。即优化的latent code由原先stylegan的w变为w+(原先stylegan的w空间是通过复制然后送入styleblock进行调制，即18个w是完全相同的)  LOSS perceptual loss and pixel-wise MSE loss$$w^∗ = \min_{w}L_percept(G(w), I) + \frac{λ_{mse}}{N}{\begin{Vmatrix}G(w) −I\end{Vmatrix}}_2^2$$ perceptual loss$$L_{percept}(I_1, I_2) = \sum_{j=1}^4\frac{λ_j}{N_j}{\begin{Vmatrix}F_j (I_1) −F_j (I_2)\end{Vmatrix}}_2^2$$perce...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">xuedue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xuedue"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/xuedue" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://bilibili.com" target="_blank" title="BiliBili"><i class="fa-brands fa-bilibili" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">今天超市薯片半价</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Paper-GAN-Prior-Embedded-Network-for-Blind-Face-Restoration-in-the-Wild"><span class="toc-number">1.</span> <span class="toc-text">Paper:GAN Prior Embedded Network for Blind Face Restoration in the Wild</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Problem"><span class="toc-number">1.1.</span> <span class="toc-text">Problem:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Framework"><span class="toc-number">1.2.</span> <span class="toc-text">Framework</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%206G%E8%B0%83%E7%A0%94/" title="80211 6G调研">80211 6G调研</a><time datetime="2026-02-04T15:39:55.000Z" title="发表于 2026-02-04 15:39:55">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/20/Proxy/telegram%E7%99%BB%E5%BD%95/" title="Telegram需要旧手机验证/收不到验证码100%可用解决方法">Telegram需要旧手机验证/收不到验证码100%可用解决方法</a><time datetime="2026-01-20T16:02:09.000Z" title="发表于 2026-01-20 16:02:09">2026-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/18/%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%B0%83%E6%B5%8B%E5%B7%A5%E5%85%B7/" title="嵌入式调测工具">嵌入式调测工具</a><time datetime="2026-01-18T16:08:55.000Z" title="发表于 2026-01-18 16:08:55">2026-01-18</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/default.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By xuedue</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 5.4.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3"></script><script src="/js/main.js?v=5.5.3"></script><script src="/js/tw_cn.js?v=5.5.3"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liuy5uBHgv2OwgD3',
+      clientSecret: '5846745c3fef6377eeb8df8b4ad3aaf4cf0f1cb8',
+      repo: 'xuedue_comments',
+      owner: 'xuedue',
+      admin: ['xuedue'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'e37639d8de445f214e89137e9f67a8b6'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.3"></script></div></div></body></html>

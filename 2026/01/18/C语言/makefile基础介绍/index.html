@@ -1,0 +1,822 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>makefile基础介绍 | xuedue</title><meta name="author" content="xuedue"><meta name="copyright" content="xuedue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="简介Makefile 是一个文本文件，描述了一个或者多个目标-依赖关系以及目标对应的生成&#x2F;更新（后续统一称为更新）规则。 Makefile 由 make 命令一键解析并处理。 通过 Makefile+make 的支持，我们可以以层级的方式组织项目的成百上千个代码文件，并达到增量编译的目的、以减少编译时间。 本文的阅读方式本文只列出了我们工作中常用的 Makefile 语法，还有一些高级语法及特性没">
+<meta property="og:type" content="article">
+<meta property="og:title" content="makefile基础介绍">
+<meta property="og:url" content="http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/makefile%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:site_name" content="xuedue">
+<meta property="og:description" content="简介Makefile 是一个文本文件，描述了一个或者多个目标-依赖关系以及目标对应的生成&#x2F;更新（后续统一称为更新）规则。 Makefile 由 make 命令一键解析并处理。 通过 Makefile+make 的支持，我们可以以层级的方式组织项目的成百上千个代码文件，并达到增量编译的目的、以减少编译时间。 本文的阅读方式本文只列出了我们工作中常用的 Makefile 语法，还有一些高级语法及特性没">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/default.jpg">
+<meta property="article:published_time" content="2026-01-18T14:53:09.000Z">
+<meta property="article:modified_time" content="2026-02-04T16:38:43.924Z">
+<meta property="article:author" content="xuedue">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/default.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "makefile基础介绍",
+  "url": "http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/makefile%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/",
+  "image": "http://example.com/img/default.jpg",
+  "datePublished": "2026-01-18T14:53:09.000Z",
+  "dateModified": "2026-02-04T16:38:43.924Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "xuedue",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/makefile%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'makefile基础介绍',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 5.4.2"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/img/bg_img.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">xuedue</span></a><a class="nav-page-title" href="/"><span class="site-name">makefile基础介绍</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">makefile基础介绍</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-18T14:53:09.000Z" title="发表于 2026-01-18 14:53:09">2026-01-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-04T16:38:43.924Z" title="更新于 2026-02-04 16:38:43">2026-02-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/C-C/">C/C++</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2026-02-04 16:38:43&quot;}" hidden></div><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Makefile 是一个文本文件，描述了一个或者多个目标-依赖关系以及目标对应的生成/更新（后续统一称为更新）规则。</p>
+<p>Makefile 由 make 命令一键解析并处理。</p>
+<p>通过 Makefile+make 的支持，我们可以以层级的方式组织项目的成百上千个代码文件，并达到增量编译的目的、以减少编译时间。</p>
+<h3 id="本文的阅读方式"><a href="#本文的阅读方式" class="headerlink" title="本文的阅读方式"></a>本文的阅读方式</h3><p>本文只列出了我们工作中常用的 Makefile 语法，还有一些高级语法及特性没有没有讲解。</p>
+<p>本文出现的示例代码中：</p>
+<ul>
+<li><code>$</code>为命令行提示符，意为等待用户输入</li>
+<li><code>#</code>开头的为注释，也是 Makefile中 的注释符号</li>
+<li>部分示例可以直接保存到文件中运行，行首的的空格需要改为 Tab，否则编译会提示 <code>missing separator. Stop.</code></li>
+</ul>
+<h2 id="Makefile-基本组成"><a href="#Makefile-基本组成" class="headerlink" title="Makefile 基本组成"></a>Makefile 基本组成</h2><p>Makefile 由以下的基本结构外加其他一些特性（如变量定义、文件包含等）组成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">target(s) : prerequisite(s)</span><br><span class="line">    command(s)</span><br></pre></td></tr></table></figure>
+
+<p>我们通过以下一个简单的Makefile来讲解这个基本的结构：</p>
+<p>Makefile</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">main: main.o libtest.a test.h</span><br><span class="line">    cc -o main main.o -L. -ltest</span><br><span class="line"></span><br><span class="line"># 隐含规则</span><br><span class="line"># main.o: main.c</span><br><span class="line">#   cc -c main.c -o main.o</span><br><span class="line"></span><br><span class="line">libtest.a: test.c test.h</span><br><span class="line">    cc -c -o test.o test.c</span><br><span class="line">    ar rv libtest.a test.o</span><br><span class="line"></span><br><span class="line">.PHONY:</span><br><span class="line">clean:</span><br><span class="line">    -rm main.o main test.o libtest.a</span><br></pre></td></tr></table></figure>
+
+<p>main.c</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &quot;test.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    test();</span><br><span class="line">    printf(&quot;main sizeof struct TEST %d\n&quot;, sizeof(struct TEST));</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>test.c</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &quot;test.h&quot;</span><br><span class="line"></span><br><span class="line">int test(void)</span><br><span class="line">&#123;</span><br><span class="line">    printf(&quot;test sizeof struct TEST: %ld\n&quot;, sizeof(struct TEST));</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>test.h</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#ifndef _TEST_H_</span><br><span class="line">#define _TEST_H_</span><br><span class="line"></span><br><span class="line">struct TEST</span><br><span class="line">&#123;</span><br><span class="line">    int a;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int test(void);</span><br><span class="line"></span><br><span class="line">#endif /* _TEST_H_ */</span><br></pre></td></tr></table></figure>
+
+<p>该 Makefile支 持的功能有：</p>
+<ol>
+<li>执行 <code>make</code>或<code>make main</code>：编译 main.c 更新可执行程序 main</li>
+<li>执行 <code>make libtest.a</code>：编译 test.c 更新静态库 libtest.a</li>
+<li>执行 <code>make clean</code>：删除中间产物 main.o、test.o、libtest.a 及可执行程序 main</li>
+</ol>
+<h3 id="目标列表-targets"><a href="#目标列表-targets" class="headerlink" title="目标列表 targets"></a>目标列表 targets</h3><p>什么可以作为目标：</p>
+<ul>
+<li>一个文件，如可执行程序 main、静态库 libtest.a</li>
+<li>一个动作，如删除动作 clean<ul>
+<li>clean 动作未对应实际文件，因此也称作伪目标</li>
+<li>为避免当磁盘上存在一个名为 clean 文件时，目标 clean 对应规则无法执行，可通过 <code>.PHONY</code> 特殊目标将 clean 目标声明为伪目标</li>
+</ul>
+</li>
+</ul>
+<p>Makefile 可支持多个目标，Makefile 中出现的第一个目标，是 <code>make</code> 命令默认更新的目标。</p>
+<p>所以我们在更新 main 的时候，可以不用指定 main 目标，但要执行 clean 动作或者更新 libtest.a 时，就要在 <code>make</code> 时明确指定目标了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ make                    # 更新main无需指定</span><br><span class="line">cc    -c -o main.o main.c</span><br><span class="line">cc -c -o test.o test.c</span><br><span class="line">ar rv libtest.a test.o</span><br><span class="line">ar: creating libtest.a</span><br><span class="line">a - test.o</span><br><span class="line">cc -o main main.o -ltest</span><br><span class="line">$ make main               # 也可以指定main</span><br><span class="line">make: &#x27;main&#x27; is up to date.</span><br><span class="line">$ make clean              # 更新clean需指定</span><br><span class="line">rm main.o main test.o libtest.a</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="依赖列表-prerequisites"><a href="#依赖列表-prerequisites" class="headerlink" title="依赖列表 prerequisites"></a>依赖列表 prerequisites</h3><p>什么可以作为目标的依赖：</p>
+<ul>
+<li>一个或多个文件，如 main.o</li>
+<li>另外的一个或多个目标，如 libtest.a</li>
+<li>依赖可以为空</li>
+</ul>
+<p><code>make</code> 命令通过目标-依赖这个组合达到增量更新的目的：</p>
+<ul>
+<li>依赖的文件修改时间比目标文件更新（包含目标文件不存在），才触发执行规则<ul>
+<li>main.o、libtest.a 或 test.h 有一个比可执行文件 main 更新，则触发执行 <code>cc -o main main.o -ltest</code> 命令</li>
+<li>test.c 比 libtest.a 新，则触发执行对应 <code>cc</code> 和 <code>ar</code> 命令</li>
+</ul>
+</li>
+<li>如依赖是一个或多个目标，且依赖需要更新，则按书写顺序先递归更新依赖<ul>
+<li>判断是否需要更新 main 时，要先依次判断依赖 main.o 和 libtest.a 是否需要更新</li>
+</ul>
+</li>
+<li>特别的，伪目标没有对应文件，不管依赖文件是否更新，必然触发执行规则<ul>
+<li>clean 是伪目标，更新该目标时必然触发 <code>rm</code> 操作</li>
+</ul>
+</li>
+</ul>
+<p><strong>注意：C/C++ 头文件未出现在依赖中可能引发运行错误</strong></p>
+<p>对于 C/C++ 代码，编写的 Makefile 中依赖关系通常没有包含头文件，如果涉及头文件更新（如结构体新增一个字段），会导致包含该头文件的源文件没有被重新编译，进而导致运行时出错（不同源文件中结构体的大小不一致）。</p>
+<p>如果涉及有头文件更新，保险起见建议 clean 清除最终及中间产物后重新编译（或通过 <code>-B</code> 选项强制重建所有目标）。</p>
+<p>我们修改 Makefile 删除第一行 main 对 test.h 的依赖，TEST 结构体新增一个变量，然后 <code>touch test.c</code>，然后更新并执行 main 看会出现什么问题：</p>
+<p>修改后 Makefile：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">main: main.o libtest.a</span><br><span class="line">    cc -o main main.o -L. -ltest</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<p>修改后 test.h：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">struct TEST</span><br><span class="line">&#123;</span><br><span class="line">    int a;</span><br><span class="line">    int b;</span><br><span class="line">&#125;;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">cc -c -o test.o test.c</span><br><span class="line">ar rv libtest.a test.o</span><br><span class="line">r - test.o</span><br><span class="line">cc -o main main.o -L. -ltest</span><br><span class="line">$ ./main</span><br><span class="line">test sizeof struct TEST: 8</span><br><span class="line">main sizeof struct TEST: 4</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="执行命令-commands"><a href="#执行命令-commands" class="headerlink" title="执行命令 commands"></a>执行命令 commands</h3><p>执行命令是更新目标所执行的动作，由一组Shell命令组成，它们被顺序执行。需要注意：</p>
+<ul>
+<li>除了第一条命令可以跟在依赖列表之后、以分号分隔之外，命令<strong>必须以水平制表符 <code>TAB</code> 开头</strong>，否则会引发语法错误：</li>
+</ul>
+<p>libtest.a 更新规则可改写为（但一般不会这么做，命令单独书写看起来更美观）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">libtest.a: test.c test.h; cc -c -o test.o test.c</span><br><span class="line">  ar rv libtest.a test.o</span><br></pre></td></tr></table></figure>
+
+<p>将 Makefile 第9行编译 test.c 命令的 <code>cc</code> 前的 TAB 替换成空格：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">libtest.a: test.c test.h</span><br><span class="line"> cc -c -o test.o test.c</span><br><span class="line">  ar rv libtest.a test.o</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">Makefile:9: *** missing separator.  Stop.</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>每一行命令都在一个子 Shell 中执行，每一个子 Shell 都通过 <code>fork</code> 一个新的进程来执行，各个子Shell的运行结果不互相影响，因此<strong>特别注意</strong>：</p>
+<ul>
+<li>相互依赖的命令需要写在同一行</li>
+</ul>
+<p>看如下 Makefile 的执行的结果是否符合你的预期：</p>
+<p>我想在 /home/tp 目录下的 Makefile 中，获取到 /home/tp/test 目录的绝对路径：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: test</span><br><span class="line">test:</span><br><span class="line">    # 正确做法</span><br><span class="line">    @cd test; pwd</span><br><span class="line"></span><br><span class="line">    # 错误做法</span><br><span class="line">    @cd test</span><br><span class="line">    @pwd</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">/home/tp/test</span><br><span class="line">/home/tp</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Shell 的 <code>if</code>、<code>for</code> 等结构通过行连接符 <code>\</code> 连接成一行，否则会有语法错误：</li>
+</ul>
+<p>我想在 1 小于 2 的情况下打印”1 &lt; 2”，但如下 Makefile 将在 <code>make</code> 时报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: test</span><br><span class="line">test:</span><br><span class="line">    if [ 1 -lt 2 ]; then</span><br><span class="line">        echo &quot;1 &lt; 2&quot;;</span><br><span class="line">    fi</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">if true; then</span><br><span class="line">/bin/sh: -c: line 1: syntax error: unexpected end of file # if true; then和fi孤立存在，Shell if结构不完整导致报错</span><br><span class="line">Makefile:3: recipe for target &#x27;test&#x27; failed # 报错在Makefile第三行的Shell if</span><br><span class="line">make: *** [test] Error 1</span><br></pre></td></tr></table></figure>
+
+<p>修改后的 Makefile：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: test</span><br><span class="line">test:</span><br><span class="line">    if [ 1 -lt 2 ]; then \</span><br><span class="line">        echo &quot;1 &lt; 2&quot;; \</span><br><span class="line">    fi</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">1 &lt; 2</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>命令组不能孤立存在，必须置于目标下或命令包内</strong>，否则会出现语法错误</p>
+</li>
+</ul>
+<p>我们在 Makefile 的开始加上一行 <code>echo</code>，看会出现什么问题</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1   echo &quot;test&quot;</span><br><span class="line">2</span><br><span class="line">3 main: main.o libtest.a</span><br><span class="line">4   cc -o main main.o -L. -ltest</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">Makefile:1: *** recipe commences before first target.  Stop. # 新增的第一行echo命令报错</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="定义命令包-中阶"><a href="#定义命令包-中阶" class="headerlink" title="定义命令包 - 中阶"></a>定义命令包 - 中阶</h4><p>书写 Makefile 时，可能有多个目标的生成会使用相同的一组命令。我们可以把这一组命令定义成一个命令包，然后各个目标的执行规则中通过 <code>$(cmd-pack)</code> 调用对应命令包就可以。</p>
+<p>命令包的定义结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">define cmd-pack</span><br><span class="line">    Shell-cmd</span><br><span class="line">endef</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">define cc_compile</span><br><span class="line">    @cc -g -o $@ $^ # $@/$^是Makefile的自动变量，分别代表目标列表及依赖列表，自动变量一节</span><br><span class="line">endef</span><br><span class="line"></span><br><span class="line">main: main.c test.c</span><br><span class="line">    $(cc_compile)</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">cc -g -o main main.c test.c</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Makefile-的执行过程"><a href="#Makefile-的执行过程" class="headerlink" title="Makefile 的执行过程"></a>Makefile 的执行过程</h2><p>当我们在命令行中执行 <code>make</code> 命令时，后台执行了以下过程：</p>
+<ol>
+<li>读入 Makefile</li>
+<li>读入被 <code>include</code> 的其它 Makefile</li>
+<li>初始化文件中的变量</li>
+<li>推导隐含规则，并分析所有规则</li>
+<li>为所有的目标文件创建依赖关系链</li>
+<li>根据依赖关系，决定哪些目标要重新生成</li>
+<li>执行规则更新目标。</li>
+</ol>
+<p>我们以上的介绍中只介绍了 4-7 步骤相关的内容，接下来介绍 1-3 相关的内容。</p>
+<h2 id="文件包含-include命令-中阶"><a href="#文件包含-include命令-中阶" class="headerlink" title="文件包含 - include命令 - 中阶"></a>文件包含 - include命令 - 中阶</h2><p>我们使用 <code>include</code>命令包含其他文件，包括且不限于其他形式的Makefile，也可以是普通文本文件，一般我们会以 .mk 为后缀命名。</p>
+<p>这些文件一般包含变量定义及函数定义，类似于C语言的 <code>#include</code> 操作。</p>
+<p><code>include file</code> 之后我们就可以使用 file 中的定义了。</p>
+<h2 id="变量定义与使用-中阶"><a href="#变量定义与使用-中阶" class="headerlink" title="变量定义与使用 - 中阶"></a>变量定义与使用 - 中阶</h2><h3 id="变量定义"><a href="#变量定义" class="headerlink" title="变量定义"></a>变量定义</h3><p>变量定义常用有两种方式，他们的区别是：</p>
+<ul>
+<li>variable = value，递归展开式变量定义</li>
+</ul>
+<p>递归展开的含义是：在定义变量时，如果其包含对其它变量或函数的引用，则在<strong>引用此变量时才对其递归展开、进行文本替换</strong>。</p>
+<p>例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a = foo</span><br><span class="line">b = $(a)</span><br><span class="line">a = later</span><br><span class="line">all:; @echo $(b) # 即定义b时，b的值就是$(a)，在通过$(b)引用变量a时，才触发$(b)-&gt;$(a)-&gt;later的文本替换</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">later</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>variable := value，直接展开式变量定义</li>
+</ul>
+<p>直接展开的意思是，<strong>在定义变量时</strong>，变量值中对其他量或者函数的引用在定义变量时<strong>就已经被展开、进行文本替换了</strong>。</p>
+<p>例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a := foo</span><br><span class="line">b := $(a)</span><br><span class="line">a := later</span><br><span class="line">all:; @echo $(b) # 即定义a时，a的值就是$(b)，在通过$(a)引用变量a时，才触发$(a)-&gt;$(b)-&gt;$(c)-&gt;d的文本替换</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">foo</span><br></pre></td></tr></table></figure>
+
+<p>更多的赋值方式（条件赋值 <code>?=</code> 和 追加赋值 <code>+=</code>）可参考</p>
+<h3 id="变量使用"><a href="#变量使用" class="headerlink" title="变量使用"></a>变量使用</h3><p>如以上例子显示，通过 <code>$(val)</code> 或 <code>$&#123;var&#125;</code> 方式引用变量值。</p>
+<p>由于 Makefile 的执行规则中大部分都是 Shell 相关命令，Shell 命令中也可能包含变量定义。在 Makefile 的 Shell 语句中访问 Shell 变量时，需要对 <code>$</code> 进行转义，即通过 <code>$$var</code> 来访问Shell变量。</p>
+<blockquote>
+<p>如果要使用 <code>$</code> 的字面值，需要通过 <code>$$</code> 转义。</p>
+</blockquote>
+<p>例如，通过Shell for循环一次打印Makefile的list变量中的单词：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">list = 1 2 3</span><br><span class="line">all:</span><br><span class="line">    for i in $(list); do \</span><br><span class="line">        echo $$i; \</span><br><span class="line">    done</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="变量的高级用法"><a href="#变量的高级用法" class="headerlink" title="变量的高级用法"></a>变量的高级用法</h4><h5 id="变量的替换引用"><a href="#变量的替换引用" class="headerlink" title="变量的替换引用"></a>变量的替换引用</h5><p>对于一个已经定义的变量，可以使用替换引用将其值中的后缀字符串使用指定的字符字符串替换。</p>
+<p>格式为 <code>$(VAR:A=B)</code> ，意为替换变量 VAR 中所有 <code>A</code> 字符串的字为 <code>B</code> 结尾的字符串。</p>
+<p>例如，将二进制文件名替换成源文件名：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">obj_files := a.o b.o c</span><br><span class="line">src_files := $(obj_files:.o=.c)</span><br><span class="line">all:</span><br><span class="line">    @echo $src_files</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">a.c b.c c</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="变量作用域"><a href="#变量作用域" class="headerlink" title="变量作用域"></a>变量作用域</h3><p>当前文件中定义的变量默认只在当前 Makefile 生效。</p>
+<p>如果要生效在子 Makefile，需要通过 <code>export</code> 声明，或者通过命令行 <code>make var=val</code> 命令传入。当然也可通过 <code>include</code> 命令将变量定义引入到其他文件。</p>
+<p>例如：</p>
+<p>被下一个 Makefile 调用的 Makefile：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">all:</span><br><span class="line">    @echo $(export_var)</span><br><span class="line">    @echo $(cmd_line_var)</span><br></pre></td></tr></table></figure>
+
+<p>调用上面的 Makefile，并通过 <code>export</code> 和命令行传入变量：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">export export_var = &quot;export variable&quot;</span><br><span class="line"></span><br><span class="line">all:</span><br><span class="line">    @make -f makefile2 cmd_line_var=&quot;command line variable&quot;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">make[1]: Entering directory &#x27;/home/tp&#x27;</span><br><span class="line">export variable</span><br><span class="line">command line variable</span><br><span class="line">make[1]: Leaving directory &#x27;/home/tp&#x27;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="流程控制-中阶"><a href="#流程控制-中阶" class="headerlink" title="流程控制 - 中阶"></a>流程控制 - 中阶</h2><p>Shell 流程控制只支持<code>ifeq</code>/<code>ifneq</code>/<code>ifdef</code>/<code>ifndef</code>，其他流程控制如循环、<code>case</code>等需要函数或 Shell 命令支持。</p>
+<p><code>ifeq</code>/<code>ifneq</code>结构，判断 ARG1 与 ARG2 是否相等或不等：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ifeq (ARG1, ARG2)</span><br><span class="line">    texts # ARG1 == ARG2分支</span><br><span class="line">else</span><br><span class="line">    texts # ARG1 != ARG2分支</span><br><span class="line">endif</span><br></pre></td></tr></table></figure>
+
+<p><code>ifdef</code>/<code>ifndef</code>结构，判断变量是否定义或未定义：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ifdef var</span><br><span class="line">    texts # var定义执行分支</span><br><span class="line">else</span><br><span class="line">    texts # var未定义执行分支</span><br><span class="line">endif</span><br></pre></td></tr></table></figure>
+
+<p><code>ifeq</code>/<code>ifdef</code>结构均可嵌套使用。<code>else</code> 是可选分支。</p>
+<p>注意：<code>ifeq</code>/<code>ifneq</code>/<code>ifdef</code>/<code>ifndef</code>不是 Shell 命令，在执行规则中无需以制表符 TAB 开头；若最外层 <code>if</code> 以制表符开头，将会引发语法错误。</p>
+<p>示例：</p>
+<p>以下 Makefile 判断 var 是否定义，以及定义的情况下变量值是否为空：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">var = &quot; &quot; # 空格等空白字符必须由引号包含</span><br><span class="line"></span><br><span class="line">all:</span><br><span class="line">ifdef var</span><br><span class="line">ifeq ($(var), &quot; &quot;)</span><br><span class="line">    @echo &quot;var is space&quot;</span><br><span class="line">else</span><br><span class="line">    @echo &quot;var is not space&quot;</span><br><span class="line">endif</span><br><span class="line">endif</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">var is space</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="内置函数-中-高阶"><a href="#内置函数-中-高阶" class="headerlink" title="内置函数 - 中/高阶"></a>内置函数 - 中/高阶</h2><p>Makefile内置了一些常用函数，常用函数按功能分类主要有以下：</p>
+<ul>
+<li>字符串处理函数</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>调用方式及作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>patsubst</code></td>
+<td><code>$(patsubst pattern, replacement, text)</code>，模式字符串替换，将 text 末尾的 pattern 替换为 replacement</td>
+</tr>
+<tr>
+<td><code>subst</code></td>
+<td><code>$(subst from, to, text)</code>，字符串替换，将 text 中 from 替换为 to</td>
+</tr>
+<tr>
+<td><code>strip</code></td>
+<td><code>$(strip text)</code>，去掉字符串 text 的开头和结尾的空格，并且将其中的多个连续的空格合并成为一个空格</td>
+</tr>
+<tr>
+<td><code>findstring</code></td>
+<td><code>$(findstring sub, text)</code>，字符串查找，在 text 中查找 sub 字符串</td>
+</tr>
+<tr>
+<td><code>filter</code></td>
+<td><code>$(filter pattern, text)</code>，模式过滤，在 text 中过滤出符合 pattern 模式的字符串，pattern 可包含多个模式</td>
+</tr>
+<tr>
+<td><code>filter-out</code></td>
+<td><code>$(filter-out pattern, text)</code>，模式反过滤，在 text 中过滤出不符合 pattern 模式的字符串，pattern 可包含多个模式</td>
+</tr>
+<tr>
+<td><code>sort</code></td>
+<td><code>$(sort list)</code>，单词排列，对 list 中包含的单词去重后、按照升序排列</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>注意：以上 pattern中 一般需要包含模式字符 <code>%</code>，如 %.c 匹配C源文件。</p>
+</blockquote>
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">ori = 1.o       3.o 3.o 2.c</span><br><span class="line">striped = $(strip $(ori)) # 去除多余空格</span><br><span class="line">sorted = $(sort $(ori))   # 去重、排序</span><br><span class="line">patsubsted = $(patsubst %.o, %.c, $(ori)) # 模式替换</span><br><span class="line">substed = $(subst 2, 4, $(ori))           # 字符串替换：2.c替换成4.c</span><br><span class="line">find_string = $(findstring foo, foo bar)  # 查找字符串foo</span><br><span class="line">filtered = $(filter %.c, $(ori))          # 过滤出.c文件</span><br><span class="line">filtered_out = $(filter-out %.c, $(ori))  # 过滤出非.c文件</span><br><span class="line"></span><br><span class="line">all:</span><br><span class="line">  @echo &quot;ori: $(ori)&quot;</span><br><span class="line">  @echo &quot;striped: $(striped)&quot;</span><br><span class="line">  @echo &quot;sorted: $(sorted)&quot;</span><br><span class="line">  @echo &quot;patsubsted: $(patsubsted)&quot;</span><br><span class="line">  @echo &quot;substed: $(substed)&quot;</span><br><span class="line">  @echo &quot;find_string: $(find_string)&quot;</span><br><span class="line">  @echo &quot;filtered: $(filtered)&quot;</span><br><span class="line">  @echo &quot;filteredout: $(filtered_out)&quot;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">ori: 1.o       3.o 3.o 2.c</span><br><span class="line">striped: 1.o 3.o 3.o 2.c</span><br><span class="line">sorted: 1.o 2.c 3.o</span><br><span class="line">patsubsted:  1.c  3.c  3.c 2.c</span><br><span class="line">substed:  1.o       3.o 3.o  4.c</span><br><span class="line">find_string: foo</span><br><span class="line">filtered: 2.c</span><br><span class="line">filteredout: 1.o 3.o 3.o</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>文件名操作函数</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>调用方式及作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>wildcard</code></td>
+<td><code>$(wildcard pattern)</code>，列出当前目录下所有符合模式 pattern 格式的文件名（patter 中包含有通配符；pattern 中也可包含目录名）</td>
+</tr>
+<tr>
+<td><code>dir</code></td>
+<td><code>$(dir file_paths)</code>，取 file_paths 文件路径目录名部分（最后一个 <code>/</code>之前的内容）</td>
+</tr>
+<tr>
+<td><code>notdir</code></td>
+<td><code>$(notdir file_paths)</code>，取 file_paths 文件路径目录名部分（最后一个 <code>/</code> 之后的内容）</td>
+</tr>
+<tr>
+<td><code>basename</code></td>
+<td><code>$(notdir file_paths)</code>，取 file_paths 文件路径名的前缀部分（文件路径名中最后一个点号之前的部分）</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><code>*</code> 是我们经常使用的文件名通配符，代表符合某一规则的所有文件，如以下 src/*. c代表 src 目录下的所有 C 源文件</p>
+</blockquote>
+<p>示例：</p>
+<p>/home/tp/src 文件夹下有一 1.c 文件，通过 Makefile 获取其相关信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SRC = $(wildcard src/*.c)</span><br><span class="line"></span><br><span class="line">all:</span><br><span class="line">        @echo &quot;source file $(SRC):&quot;</span><br><span class="line">        @echo -e &quot;\tdir      - $(dir $(SRC))&quot;</span><br><span class="line">        @echo -e &quot;\tfilename - $(notdir $(SRC))&quot;</span><br><span class="line">        @echo -e &quot;\tbasename - $(basename $(SRC))&quot;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">source file src/1.c:</span><br><span class="line">        dir      - src/</span><br><span class="line">        filename - 1.c</span><br><span class="line">        basename - src/1</span><br></pre></td></tr></table></figure>
+
+<p>注意：<code>wildcard</code> 并不会自动帮你补全绝对路径，你需要自己处理。</p>
+<ul>
+<li>控制函数</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>调用方式及作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>if</code></td>
+<td><code>$(if conditon(s), then-part[, else-part])</code>，类似于 Shell if 功能，conditon(s) 展开结果非空时执行 then-part、否则执行 else-part，[] 代表 else-part 可选</td>
+</tr>
+<tr>
+<td><code>foreach</code></td>
+<td><code>$(foreach var, list, op)</code>，类似于 Shell for 功能，依次取 list 中单词赋值给 var ，然后在 var 上执行 op 操作</td>
+</tr>
+<tr>
+<td><code>warning</code></td>
+<td><code>$(warning text)</code>，输出一条警告信息</td>
+</tr>
+<tr>
+<td><code>error</code></td>
+<td><code>$(error text)</code>，输出一条错误信息、并退出 <code>make</code> 命令</td>
+</tr>
+</tbody></table>
+<p>示例一：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">texts = foo bar baz</span><br><span class="line">print_on_off =</span><br><span class="line"></span><br><span class="line">all:</span><br><span class="line">  @echo $(foreach i, $(texts), $(Shell echo *$i*)) # 依次为texts中单词两边加上星号*</span><br><span class="line">  @echo $(if $(print_on_off), print on, print off) # 查看打印开关print_on_off是否定义且非空</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">*foo* *bar* *baz*</span><br><span class="line">print off</span><br></pre></td></tr></table></figure>
+
+<p>示例二：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">all:</span><br><span class="line">  $(warning this is warning msg) # 打印一条警告信息</span><br><span class="line">  $(error this is error msg)     # 打印一条错误信息并退出</span><br><span class="line">  $(warning cannot reach me)     # error后的流程执行不到了</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">makefile:2: this is warning msg</span><br><span class="line">makefile:2: *** this is error msg.  Stop.</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>其他常用函数</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>调用方式及作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>shell</code></td>
+<td><code>$(shell shell-cmd)</code>，执行一条 Shell 命令、并返回执行结果，也可以用 Shell 的操作符 ``替代</td>
+</tr>
+</tbody></table>
+<p>Shell 函数示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PWD = $(Shell pwd)</span><br><span class="line">DIRS = `ls`</span><br><span class="line"></span><br><span class="line">all:</span><br><span class="line">  @echo &quot;current work directory is $(PWD)&quot;</span><br><span class="line">  @echo &quot;dirs under current directory: $(DIRS)&quot;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">current work directory is /home/tp</span><br><span class="line">dirs under current directory: Desktop Documents Downloads examples.desktop ...</span><br></pre></td></tr></table></figure>
+
+<p>call函数示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">reverse = $(2) $(1)</span><br><span class="line"></span><br><span class="line">define func</span><br><span class="line">  @echo $(1) $(2)</span><br><span class="line">endef</span><br><span class="line"></span><br><span class="line">all:</span><br><span class="line">  @echo $(call reverse, a, b)       # 翻转a b =&gt; b a</span><br><span class="line">  $(call func, hello, Li Lei)       # 通过call + func执行打印动作</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">b a</span><br><span class="line">hello Li Lei</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="其他常用特性-中阶"><a href="#其他常用特性-中阶" class="headerlink" title="其他常用特性 - 中阶"></a>其他常用特性 - 中阶</h2><h3 id="隐含规则"><a href="#隐含规则" class="headerlink" title="隐含规则"></a>隐含规则</h3><p>隐含规则为 <code>make</code> 提供了重建一类符合某一模式的目标文件的固定及通用方法，针对这类某的目标文件，无需显示的在Makefile中定义规则，<code>make</code> 命令会自动帮我们生成。</p>
+<p>make命令根据文件名后缀自动推导的规则，跟我们工作相关的常用隐含规则有：</p>
+<ul>
+<li>编译 C 程序：file.o 自动由 file.c 生成，执行命令为 <code>$(CC) -c $(CPPFLAGS) $(CFLAGS)</code></li>
+<li>编译 C++ 程序：file.o 自动由 file.cc 或 file.C 生成，执行命令为 <code>$(CXX) -c $(CPPFLAGS) $(CFLAGS)</code></li>
+<li>链接单一的 object 文件：exe 自动由 exe.o 生成，执行命令是 <code>$(CC) $(LDFLAGS) N.o $(LOADLIBES) $(LDLIBS)</code></li>
+</ul>
+<blockquote>
+<p>建议针对所有目标显示定义执行规则，隐式规则在 Makefile 中不可见，并且可能与我们的需求不符</p>
+</blockquote>
+<p>从文章开头的示例 Makefile 的执行结果可以看到，虽然我们并没有在 Makefile 中为 main.o 显示的定义规则，但 <code>make</code> 命令还是执行了 <code>cc</code> 编译命令：</p>
+<p>Makefile 截取片段：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">main: main.o libtest.a test.h</span><br><span class="line">    cc -o main main.o -L. -ltest</span><br><span class="line"></span><br><span class="line"># 隐含规则</span><br><span class="line"># main.o: main.c</span><br><span class="line">#   cc -c main.c -o main.o</span><br><span class="line"></span><br><span class="line"># ...</span><br></pre></td></tr></table></figure>
+
+<p>执行结果截取片段：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ make                    # 更新main无需指定</span><br><span class="line">cc    -c -o main.o main.c</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="静态模式规则"><a href="#静态模式规则" class="headerlink" title="静态模式规则"></a>静态模式规则</h3><p>静态模式规则的基本语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">target(s): target-pattern: prereq-pattern(s)</span><br><span class="line">    command(s)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>targets，列出了静态规则适用的所有目标；可以省略，省略时意味着对该文件中所有符合 target-pattern 的目标生效</li>
+<li>target-pattern，描述了目标文件的模式、需包含模式字符 <code>%</code></li>
+<li>prereq-patterns，描述了依赖文件所包含的模式组合、需包含模式字符 <code>%</code></li>
+</ul>
+<p>以以下编译当前目录下 main.c test.c other.c 生成对应目标文件的 Makefile 为例，说明该语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">OBJS = main.o test.o # OBJS中可以包含非.o文件，但make时会报警，不建议这么做</span><br><span class="line">OTHER = other.c</span><br><span class="line"></span><br><span class="line">all: $(OBJS) $(OTHER)</span><br><span class="line"></span><br><span class="line">$(OBJS): %.o: %.c    # 改为%.o: %.c，看看目标other.o是不是也由该规则生成</span><br><span class="line">    cc -g -c -o $@ $&lt;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">cc -g -c -o main.o main.c   # main.o和test.o使用静态模式规则生成</span><br><span class="line">cc -g -c -o test.o test.c</span><br><span class="line">cc    -c -o other.o other.c # other.o由隐含规则生成</span><br></pre></td></tr></table></figure>
+
+<p>该 Makefile 的执行过程是：</p>
+<ol>
+<li><code>make</code> 命令默认生成 all，检查其依赖目标 main.o test.o 是否需要更新；</li>
+<li>根据静态规则的描述，目标文件应以 .o 为后缀，并依赖于同名的后缀为 .c 的源文件，即 main.o 依赖于 main.c、test.o 依赖于 test.c;</li>
+<li>查找 main.c 文件是否存在，且比 main.o 更新，是则执行 <code>cc</code> 命令更新 main.o；test.o 也是同样处理；</li>
+<li>main.o test.o 更新完毕，all 是伪目标，每次 <code>make</code> 都需要更新，但执行规则为空，所以没有执行什么指令。</li>
+</ol>
+<h3 id="自动变量"><a href="#自动变量" class="headerlink" title="自动变量"></a>自动变量</h3><p>关于自动化变量可以理解为由 Makefile 自动产生的变量。</p>
+<p>在以上描述的静态模式规则中，依赖文件和目标文件可能是变动的，显然在命令中不能出现具体的文件名称，否则模式规则将失去意义。</p>
+<p>那么模式规则命令中该如何表示文件呢？就需要使用自动化变量，常用的自动化变量有：</p>
+<table>
+<thead>
+<tr>
+<th>自动化变量</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>$@</code></td>
+<td>表示规则的目标文件名，在多目标模式规则中，它代表的是触发规则被执行的文件名。</td>
+</tr>
+<tr>
+<td><code>$&lt;</code></td>
+<td>规则的第一个依赖的文件名。如果是一个目标文件使用隐含的规则来重建，则它代表由隐含规则加入的第一个依赖文件。</td>
+</tr>
+<tr>
+<td><code>$^</code></td>
+<td>代表的是所有依赖文件列表，使用空格分隔</td>
+</tr>
+</tbody></table>
+<p>简单改动下静态模式规则的示例来查看这些自动变量：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">OBJS = main.o test.o</span><br><span class="line"></span><br><span class="line">all: $(OBJS)</span><br><span class="line">    @echo &quot;$$^ is $^&quot; # $^中的$有特殊含义，需要通过转义字符$转义</span><br><span class="line">    @echo &quot;$$&lt; is $&lt;&quot; # $&lt;中的$有特殊含义，需要通过转义字符$转义</span><br><span class="line"></span><br><span class="line">%.o: %.c</span><br><span class="line">    @echo &quot;target: $@, prereq: $&lt;&quot;</span><br><span class="line">    @cc -g -c -o $@ $&lt;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">target: main.o, prereq: main.c</span><br><span class="line">target: test.o, prereq: test.c</span><br><span class="line">\^ is main.o test.o</span><br><span class="line">\&lt; is main.o</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="常用命令前缀"><a href="#常用命令前缀" class="headerlink" title="常用命令前缀"></a>常用命令前缀</h3><p>可以使用一些命令前缀控制命令的行为，常用的有：</p>
+<ul>
+<li><code>@cmd</code>，命令执行时不回显（回显为默认行为）</li>
+<li><code>-cmd</code>，cmd 执行错误时、忽略错误</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">all: $(OBJS)</span><br><span class="line">    echo &quot;echo&quot;</span><br><span class="line">    @echo &quot;no echo&quot;</span><br><span class="line"></span><br><span class="line">    @-rm test</span><br><span class="line">    @rm test</span><br><span class="line"></span><br><span class="line">    @echo &quot;cannot reach me&quot;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">echo &quot;echo&quot; # echo &quot;echo&quot;命令的回显</span><br><span class="line">echo        # echo &quot;echo&quot;命令的执行结果</span><br><span class="line">no echo     # @echo &quot;no echo&quot;的执行结果</span><br><span class="line">rm: cannot remove &#x27;test&#x27;: Is a directory</span><br><span class="line">Makefile:2: recipe for target &#x27;all&#x27; failed</span><br><span class="line">make: [all] Error 1 (ignored) # @-rm test删除不存在test文件的错误被忽略</span><br><span class="line">rm: cannot remove &#x27;test&#x27;: Is a directory</span><br><span class="line">Makefile:2: recipe for target &#x27;all&#x27; failed</span><br><span class="line">make: *** [all] Error 1 # @rm test删除不存在test文件的错误导致make提前退出</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="make命令常用选项"><a href="#make命令常用选项" class="headerlink" title="make命令常用选项"></a>make命令常用选项</h2><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>释义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-B</code></td>
+<td>强制重建所有目标</td>
+</tr>
+<tr>
+<td><code>-C dir</code></td>
+<td>切换到 dir 目录执行 <code>make</code> 命令</td>
+</tr>
+<tr>
+<td><code>-f file</code></td>
+<td>指定要读入并执行的 Makefile ，<code>make</code> 命令默认读入并执行当前目录下的名为 Makefile、makefile 的文件</td>
+</tr>
+<tr>
+<td><code>-j [N]</code></td>
+<td>指定并行 <code>make</code> 的任务数，不带 N 时不限制并行任务数</td>
+</tr>
+<tr>
+<td><code>-n</code></td>
+<td>只打印、不执行命令，做调试用</td>
+</tr>
+<tr>
+<td><code>-d</code></td>
+<td>在正常处理信息之外打印调试信息，做调试用</td>
+</tr>
+</tbody></table>
+<h3 id="通过-C-选项实现代码层级结构组织"><a href="#通过-C-选项实现代码层级结构组织" class="headerlink" title="通过 -C 选项实现代码层级结构组织"></a>通过 -C 选项实现代码层级结构组织</h3><p>一般情况下，我们单个工程的代码文件还是比较多的。如果按照模块将文件组织在不同的目录及子目录当中，那么我们在查找及管理文件时效率就比较高了。</p>
+<p>通过在工程每个父目录的 Makefile 中添加 <code>make -C sub_dir</code> 这样一条指令，我们可以达到编译整个工程目录树的目的。</p>
+<p>我们将开头的示例改造一下以展示该功能：</p>
+<p>首先将功能相关的文件组织成一下方式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ tree</span><br><span class="line">.</span><br><span class="line">├── main.c</span><br><span class="line">└── test</span><br><span class="line">    ├── test.c</span><br><span class="line">    └── test.h</span><br><span class="line"></span><br><span class="line">1 directory, 3 files</span><br></pre></td></tr></table></figure>
+
+<p>然后分别在当前目录及 test 子目录添加 Makefile：</p>
+<p>当前目录 Makefile：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">main: main.o</span><br><span class="line">    make -C test/      # 进入test 目录，查找 Makefile，并更新默认目标</span><br><span class="line">    cc -o main main.o -Ltest/ -ltest</span><br><span class="line"></span><br><span class="line">clean:</span><br><span class="line">    -rm main main.o</span><br><span class="line">    make -C test clean # 进入 test 目录，查找 Makefile，并更新 clean 目标</span><br></pre></td></tr></table></figure>
+
+<p>test 子目录 Makefile：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">libtest.a: test.c</span><br><span class="line">    cc -c -o test.o test.c</span><br><span class="line">    ar rv libtest.a test.o</span><br><span class="line"></span><br><span class="line">clean:</span><br><span class="line">    -rm libtest.a test.o</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录执行 <code>make</code> 命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">make -C test/</span><br><span class="line">make[1]: Entering directory &#x27;/home/tp/test&#x27; # make命令进入test 目录，执行 make 动作</span><br><span class="line">cc -c -o test.o test.c</span><br><span class="line">ar rv libtest.a test.o</span><br><span class="line">ar: creating libtest.a</span><br><span class="line">a - test.o</span><br><span class="line">make[1]: Leaving directory &#x27;/home/tp/test&#x27; # test目录make完成，返回上一级父目录，继续在父目录中执行规则中的剩余动作</span><br><span class="line">cc -o main main.o -Ltest/ -ltest</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Makefile调试"><a href="#Makefile调试" class="headerlink" title="Makefile调试"></a>Makefile调试</h2><p>我们调试 Makefile 一般采用两种方式：</p>
+<ul>
+<li>通过 <code>echo</code> 在关键位置添加打印信息</li>
+<li>通过以上 <code>-n</code> 或 <code>-d</code> 命令查看 <code>make</code> 命令输出的信息</li>
+</ul>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="参考书目"><a href="#参考书目" class="headerlink" title="参考书目"></a>参考书目</h3><p>《GNU+makefile中文手册》</p>
+<p>《跟我一起写Makefile》</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">xuedue</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/makefile%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/">http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/makefile%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">xuedue</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/C-C/">C/C++</a></div><div class="post-share"><div class="social-share" data-image="/img/default.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E7%AE%80%E4%BB%8B/" title="GDB简介"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">GDB简介</div></div><div class="info-2"><div class="info-item-1">简介GDB，又称 GNU 调试器，是用来帮助调试我们程序的工具。 GDB有如下两种使用方式  调试会崩溃、有逻辑错误的程序； 调试程序崩溃时自动生成的 core dump；  GDB 可以干以下几件事：  给程序设置（特定条件下的）断点，包括某块内存的内容改变时触发断点，如果某个变量不知被哪段代码意外篡改了，可以使用 GDB 打数据断点抓到肇事者。 当程序停在断点处时，我们查看所有变量、寄存器的值 当程序停在断点处时，我们除了能查看所有变量的值以外，还能在不改变源代码的情况下改变这些值  安装1sudo apt-get install gdb    编译被测程序被测程序需修改 Makefile，将 CFLAGS 添加 -O0 -g 重新编译并且保证不去符号。如果不加 -g ，gdb 加载后将提示 No symbol table is loaded。缺少调试信息，调试起来会比较麻烦。 如果不使用 -O0 而是-O1、 -O2、-O3，代码优化后，给调试带来难度。 make 编译时，后面需要加 STRIP=/bin/true，当然如果 Makefile 里没有调用 strip 去符号...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GCC/" title="GCC"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">GCC</div></div><div class="info-2"><div class="info-item-1">简介Linux 下最常用的 C 编译器是 GCC，大多数发行版本都默认安装了 GCC。我们可以用以下 GCC 命令，把 test.c 编译成可执行文件 test：gcc -g test.c -o test。 如果大家习惯了 Visual Studio 等集成开发环境的话，会觉得上述的命令很费解。但掌握 GCC 等工具的用法，是一个程序员所必备的技能。 回到上面的 GCC 命令，它的作用是编译源文件 test.c 并生成可执行文件。其中 -o 表示生成的可执行文件名为 test，-g 表明要在可执行文件中添加调试信息。如果要使用 GDB 单步调试程序，必须使用 -g 参数。 可以看到，GCC 的行为是通过命令行参数进行指定的。所以，要掌握 GCC，重点在于熟悉 GCC 的各种参数上。但 GCC 的参数实在太多了，所以更普遍的做法是掌握其常用参数，并在遇到不认识的参数时多查资料进行学习。 GCC 的常用参数-c 作用：只对源文件进行编译操作。 例子: gcc -c test.c 说明：这将生成目标文件（object file）test.o。 -E 作用：只对源文件进行预处理操作。 例...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E8%B0%83%E8%AF%95%E5%8E%9F%E7%90%86/" title="GDB调试原理"><img class="cover" src="/img/default.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">GDB调试原理</div></div><div class="info-2"><div class="info-item-1">前言这篇文章来聊聊大名鼎鼎的 GDB，它的豪门背景咱就不提了，和它的兄弟 GCC 一样是含着金钥匙出生的，在 GNU 的家族中的地位不可撼动。  我们都知道，在使用 GCC 编译时，可以使用 -g 选项在可执行文件中嵌入更多的调试信息，那么具体嵌入了哪些调试信息？这些调试信息是如何与二进制的指令之间进行相互交互？在调试的时候，调试信息中是如何获取函数调用栈中的上下文信息？ GDB调试模型GDB 调试包括 2 个程序：gdb 程序和被调试程序。根据这 2 个程序是否运行在同一台电脑中，可以把 GDB 的调试模型分为 2 种:  本地调试 远程调试  本地调试：调试程序和被调试程序运行在同一台电脑中。  远程调试：调试程序运行在一台电脑中，被调试程序运行在另一台电脑中。  关于可视化调试程序并不是重点，它只是一个用来封装 GDB 的外壳而已。我们既可以用黑乎乎的终端窗口来手动输入调试命令；也可以选择集成开发环境(IDE)，这个 IDE 中已经嵌入了器调试，这样就可以使用各种 button 来代替手动输入调试命令了。 与本地调试相比，远程调试中多了一个 GdbServer 程序，它和目...</div></div></div></a><a class="pagination-related" href="/2021/07/22/C%E8%AF%AD%E8%A8%80/C&C++%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/" title="C&#x2F;C++知识点整理"><img class="cover" src="/img/default.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-22</div><div class="info-item-2">C&#x2F;C++知识点整理</div></div><div class="info-2"><div class="info-item-1">C++关键词const 指向常量的指针int const *p;const int *p;   指针本身是常量int *const p;分辨:从右往左看，看const离谁近   const修饰成员函数void func() const{} 常成员函数，可以使用类中的所有成员变量，但是不能修改它们，一般用于返回成员变量；  define(预处理阶段)  define 在预处理阶段进行替换  define函数  1define add(a,b) &#123;a++; b++; cout&lt;&lt;a+b&lt;&lt;endl;&#125; inline(编译阶段)内联函数和普通函数的区别：当编译器处理调用内联函数的语句时，不会将该语句编译成函数调用的指令，而是直接将整个函数体的代码插人调用语句处，就像整个函数体在调用处被重写了一遍一样。    优点: 有了内联函数，就能像调用一个函数那样方便地重复使用一段代码，而不需要付出执行函数调用的额外开销。 缺点:  使用内联函数会使最终可执行程序的体积增加。以空间换时间，或增加空间消耗来节省时间，这是计算机学科中常用的方法;  inli...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/%E7%BC%96%E8%AF%91%E9%93%BE%E6%8E%A5%E5%8E%9F%E7%90%86/" title="编译链接原理"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">编译链接原理</div></div><div class="info-2"><div class="info-item-1">1.  前言学过 C 语言同学，第一个接触的例子应该就是著名的 “hello world” 程序，即便时隔多年，也能行云流水般敲出以下代码： 1234567#include &lt;stdio.h&gt;int main (void)&#123;    printf (&quot;hello world!\n&quot;);    return 0;&#125;  然后使用 GCC 一气呵成地编译链接出可执行文件，并运行： 123$ gcc main.c -o test$ ./test hello world!  看着屏幕输出我们想要的显示，开始难免会有一丝兴奋，原来这么简单就可以控制屏幕输出。但事实上真的有这么简单吗？#include 是做什么用的，gcc 在背后帮我们做了什么事情，./test 开始运行时背后又有什么故事。这就是本文的重点：编译、链接、装载。 实际上，一个 c 文件到最后运行，一般会经历以下过程，背后的故事，很长：  2. 预处理预处理是将头文件进行展开，并进行相关的宏替换和处理，删除注释等，最后生成 .i 文件，使用命令 gcc -E hello.c -o ...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E7%AE%80%E4%BB%8B/" title="GDB简介"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">GDB简介</div></div><div class="info-2"><div class="info-item-1">简介GDB，又称 GNU 调试器，是用来帮助调试我们程序的工具。 GDB有如下两种使用方式  调试会崩溃、有逻辑错误的程序； 调试程序崩溃时自动生成的 core dump；  GDB 可以干以下几件事：  给程序设置（特定条件下的）断点，包括某块内存的内容改变时触发断点，如果某个变量不知被哪段代码意外篡改了，可以使用 GDB 打数据断点抓到肇事者。 当程序停在断点处时，我们查看所有变量、寄存器的值 当程序停在断点处时，我们除了能查看所有变量的值以外，还能在不改变源代码的情况下改变这些值  安装1sudo apt-get install gdb    编译被测程序被测程序需修改 Makefile，将 CFLAGS 添加 -O0 -g 重新编译并且保证不去符号。如果不加 -g ，gdb 加载后将提示 No symbol table is loaded。缺少调试信息，调试起来会比较麻烦。 如果不使用 -O0 而是-O1、 -O2、-O3，代码优化后，给调试带来难度。 make 编译时，后面需要加 STRIP=/bin/true，当然如果 Makefile 里没有调用 strip 去符号...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GCC/" title="GCC"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">GCC</div></div><div class="info-2"><div class="info-item-1">简介Linux 下最常用的 C 编译器是 GCC，大多数发行版本都默认安装了 GCC。我们可以用以下 GCC 命令，把 test.c 编译成可执行文件 test：gcc -g test.c -o test。 如果大家习惯了 Visual Studio 等集成开发环境的话，会觉得上述的命令很费解。但掌握 GCC 等工具的用法，是一个程序员所必备的技能。 回到上面的 GCC 命令，它的作用是编译源文件 test.c 并生成可执行文件。其中 -o 表示生成的可执行文件名为 test，-g 表明要在可执行文件中添加调试信息。如果要使用 GDB 单步调试程序，必须使用 -g 参数。 可以看到，GCC 的行为是通过命令行参数进行指定的。所以，要掌握 GCC，重点在于熟悉 GCC 的各种参数上。但 GCC 的参数实在太多了，所以更普遍的做法是掌握其常用参数，并在遇到不认识的参数时多查资料进行学习。 GCC 的常用参数-c 作用：只对源文件进行编译操作。 例子: gcc -c test.c 说明：这将生成目标文件（object file）test.o。 -E 作用：只对源文件进行预处理操作。 例...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">xuedue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xuedue"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/xuedue" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://bilibili.com" target="_blank" title="BiliBili"><i class="fa-brands fa-bilibili" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">今天超市薯片半价</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E6%96%87%E7%9A%84%E9%98%85%E8%AF%BB%E6%96%B9%E5%BC%8F"><span class="toc-number">1.1.</span> <span class="toc-text">本文的阅读方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Makefile-%E5%9F%BA%E6%9C%AC%E7%BB%84%E6%88%90"><span class="toc-number">2.</span> <span class="toc-text">Makefile 基本组成</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E5%88%97%E8%A1%A8-targets"><span class="toc-number">2.1.</span> <span class="toc-text">目标列表 targets</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96%E5%88%97%E8%A1%A8-prerequisites"><span class="toc-number">2.2.</span> <span class="toc-text">依赖列表 prerequisites</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4-commands"><span class="toc-number">2.3.</span> <span class="toc-text">执行命令 commands</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E5%91%BD%E4%BB%A4%E5%8C%85-%E4%B8%AD%E9%98%B6"><span class="toc-number">2.3.1.</span> <span class="toc-text">定义命令包 - 中阶</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Makefile-%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">Makefile 的执行过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB-include%E5%91%BD%E4%BB%A4-%E4%B8%AD%E9%98%B6"><span class="toc-number">4.</span> <span class="toc-text">文件包含 - include命令 - 中阶</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E5%AE%9A%E4%B9%89%E4%B8%8E%E4%BD%BF%E7%94%A8-%E4%B8%AD%E9%98%B6"><span class="toc-number">5.</span> <span class="toc-text">变量定义与使用 - 中阶</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E5%AE%9A%E4%B9%89"><span class="toc-number">5.1.</span> <span class="toc-text">变量定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E4%BD%BF%E7%94%A8"><span class="toc-number">5.2.</span> <span class="toc-text">变量使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E7%9A%84%E9%AB%98%E7%BA%A7%E7%94%A8%E6%B3%95"><span class="toc-number">5.2.1.</span> <span class="toc-text">变量的高级用法</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E7%9A%84%E6%9B%BF%E6%8D%A2%E5%BC%95%E7%94%A8"><span class="toc-number">5.2.1.1.</span> <span class="toc-text">变量的替换引用</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-number">5.3.</span> <span class="toc-text">变量作用域</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6-%E4%B8%AD%E9%98%B6"><span class="toc-number">6.</span> <span class="toc-text">流程控制 - 中阶</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%AE%E5%87%BD%E6%95%B0-%E4%B8%AD-%E9%AB%98%E9%98%B6"><span class="toc-number">7.</span> <span class="toc-text">内置函数 - 中&#x2F;高阶</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%B8%B8%E7%94%A8%E7%89%B9%E6%80%A7-%E4%B8%AD%E9%98%B6"><span class="toc-number">8.</span> <span class="toc-text">其他常用特性 - 中阶</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99"><span class="toc-number">8.1.</span> <span class="toc-text">隐含规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E6%A8%A1%E5%BC%8F%E8%A7%84%E5%88%99"><span class="toc-number">8.2.</span> <span class="toc-text">静态模式规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8%E5%8F%98%E9%87%8F"><span class="toc-number">8.3.</span> <span class="toc-text">自动变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%89%8D%E7%BC%80"><span class="toc-number">8.4.</span> <span class="toc-text">常用命令前缀</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#make%E5%91%BD%E4%BB%A4%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9"><span class="toc-number">9.</span> <span class="toc-text">make命令常用选项</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87-C-%E9%80%89%E9%A1%B9%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81%E5%B1%82%E7%BA%A7%E7%BB%93%E6%9E%84%E7%BB%84%E7%BB%87"><span class="toc-number">9.1.</span> <span class="toc-text">通过 -C 选项实现代码层级结构组织</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Makefile%E8%B0%83%E8%AF%95"><span class="toc-number">10.</span> <span class="toc-text">Makefile调试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95"><span class="toc-number">11.</span> <span class="toc-text">附录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E4%B9%A6%E7%9B%AE"><span class="toc-number">11.1.</span> <span class="toc-text">参考书目</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%206G%E8%B0%83%E7%A0%94/" title="80211 6G调研">80211 6G调研</a><time datetime="2026-02-04T15:39:55.000Z" title="发表于 2026-02-04 15:39:55">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/20/Proxy/telegram%E7%99%BB%E5%BD%95/" title="Telegram需要旧手机验证/收不到验证码100%可用解决方法">Telegram需要旧手机验证/收不到验证码100%可用解决方法</a><time datetime="2026-01-20T16:02:09.000Z" title="发表于 2026-01-20 16:02:09">2026-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/18/%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%B0%83%E6%B5%8B%E5%B7%A5%E5%85%B7/" title="嵌入式调测工具">嵌入式调测工具</a><time datetime="2026-01-18T16:08:55.000Z" title="发表于 2026-01-18 16:08:55">2026-01-18</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/default.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By xuedue</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 5.4.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3"></script><script src="/js/main.js?v=5.5.3"></script><script src="/js/tw_cn.js?v=5.5.3"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liuy5uBHgv2OwgD3',
+      clientSecret: '5846745c3fef6377eeb8df8b4ad3aaf4cf0f1cb8',
+      repo: 'xuedue_comments',
+      owner: 'xuedue',
+      admin: ['xuedue'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '9845829c3131b56386ac743d042a2e01'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.3"></script></div></div></body></html>

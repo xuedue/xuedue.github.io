@@ -1,0 +1,234 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>xuedue</title><meta name="author" content="xuedue"><meta name="copyright" content="xuedue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta property="og:type" content="website">
+<meta property="og:title" content="xuedue">
+<meta property="og:url" content="http://example.com/page/5/index.html">
+<meta property="og:site_name" content="xuedue">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/avatar.jpg">
+<meta property="article:author" content="xuedue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/avatar.jpg"><script type="application/ld+json"></script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/page/5/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'xuedue',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'home'
+}</script><meta name="generator" content="Hexo 5.4.2"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/img/bg_img.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">xuedue</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><h1 class="title-seo">xuedue</h1></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="post_cover left"><a href="/2021/07/22/Pytorch/Pytorch-visdom/" title="Pytorch visdom相关"><img class="post-bg" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Pytorch visdom相关"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/07/22/Pytorch/Pytorch-visdom/" title="Pytorch visdom相关">Pytorch visdom相关</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2021-07-22T17:09:38.000Z" title="发表于 2021-07-22 17:09:38">2021-07-22</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Pytorch/">Pytorch</a></span></div><div class="content">Visdom远程连接此方法同样适用于tensorboard,streamlit(已知，且亲自尝试过)  连接ssh时，将服务器的8097端口重定向到自己机器上的18097端口：1ssh -L 18097:127.0.0.1:8097 xuedue@125.216.231.147  在服务器上使用8097端口正常启动Visdom1visdom 在本地浏览器中输入local host地址再加上重定向的端口号：1http://127.0.0.1:18097/  </div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2021/07/22/Anaconda/Anaconda%E5%91%BD%E4%BB%A4%E5%92%8C%E7%8E%AF%E5%A2%83/" title="Anaconda命令和环境"><img class="post-bg" src="/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Anaconda命令和环境"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/07/22/Anaconda/Anaconda%E5%91%BD%E4%BB%A4%E5%92%8C%E7%8E%AF%E5%A2%83/" title="Anaconda命令和环境">Anaconda命令和环境</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2021-07-22T16:12:13.000Z" title="发表于 2021-07-22 16:12:13">2021-07-22</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Anaconda/">Anaconda</a></span></div><div class="content">Anaconda命令和环境conda常用命令 创建一个名为xuedue的环境，指定Python版本是3.6(优先寻找3.6.x的最新版本), 这里的–name可以简化为-n1conda create --name xuedue python=3.6   安装好后，使用activate激活某个环境1source activate xuedue  如果想返回普通环境，运行1source(conda) deactivate 删除一个已有的环境1conda remove --name xuedue --all 复制一个已有的环境1conda create -n xuedue_clone --clone xuedue 查看已经安装的环境1conda info --env conda安装scipy1conda install scipy 查看已经安装的packages1conda list 查看某个指定环境的已安装包1conda list -n xuedue 查找package信息1conda search numpy 安装某个指定环境的package(如果不用-n指定环境名称，则被安装在当...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2021/07/22/C%E8%AF%AD%E8%A8%80/C&amp;C++%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/" title="C/C++知识点整理"><img class="post-bg" src="/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="C/C++知识点整理"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/07/22/C%E8%AF%AD%E8%A8%80/C&amp;C++%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/" title="C/C++知识点整理">C/C++知识点整理</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2021-07-22T15:16:33.000Z" title="发表于 2021-07-22 15:16:33">2021-07-22</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/C-C/">C/C++</a></span></div><div class="content">C++关键词const 指向常量的指针int const *p;const int *p;   指针本身是常量int *const p;分辨:从右往左看，看const离谁近   const修饰成员函数void func() const{} 常成员函数，可以使用类中的所有成员变量，但是不能修改它们，一般用于返回成员变量；  define(预处理阶段)  define 在预处理阶段进行替换  define函数  1define add(a,b) &#123;a++; b++; cout&lt;&lt;a+b&lt;&lt;endl;&#125; inline(编译阶段)内联函数和普通函数的区别：当编译器处理调用内联函数的语句时，不会将该语句编译成函数调用的指令，而是直接将整个函数体的代码插人调用语句处，就像整个函数体在调用处被重写了一遍一样。    优点: 有了内联函数，就能像调用一个函数那样方便地重复使用一段代码，而不需要付出执行函数调用的额外开销。 缺点:  使用内联函数会使最终可执行程序的体积增加。以空间换时间，或增加空间消耗来节省时间，这是计算机学科中常用的方法;  inli...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2021/07/22/Github/Github-Q&amp;A/" title="Github/Git 相关问题"><img class="post-bg" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Github/Git 相关问题"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/07/22/Github/Github-Q&amp;A/" title="Github/Git 相关问题">Github/Git 相关问题</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2021-07-22T15:16:33.000Z" title="发表于 2021-07-22 15:16:33">2021-07-22</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Github/">Github</a></span></div><div class="content">解决git clone 速度慢的问题利用国内镜像替换  github.com.cnpmjs.orggit.sdut.me  方法  #我们准备clone的链接git clone https://github.com/example#使用镜像git clone https://github.com.cnpmjs.org/example  git push时登录显示密码错误依次进入界面 全部勾选并生成token，token便是git push登录时需要输入的密码（只会出现一次，记得复制！ pip install git报错利用git安装github上的项目报错ERROR: Command errored out with exit status 128: git clone -q https://github.com/xxx/xxx.git /tmp/pip-req-build-88ue_mql Check the logs for full command output. 解决方法将github网页中的http://换成git:// 1234# 本来是pip install git...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2021/07/22/OS/OS-Linux-Q&amp;A/" title="Linux命令和问题"><img class="post-bg" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Linux命令和问题"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/07/22/OS/OS-Linux-Q&amp;A/" title="Linux命令和问题">Linux命令和问题</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2021-07-22T14:33:54.000Z" title="发表于 2021-07-22 14:33:54">2021-07-22</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Operating-System/">Operating System</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Operating-System/Linux/">Linux</a></span></div><div class="content">解决ubuntu 16.4解压后中文乱码zip格式没有指定编码格式，window下的zip编码是GBK/GB2312等 使用命令进行解压 1unzip -O CP936  xxx.zip  其中字符可以是CP936、GBK、GB18030三种中的任一一种 Linux查看占用GPU的进程1sudo fuser -v /dev/nvidia*  </div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2021/07/20/Hexo/Hexo_buildweb/" title="利用Hexo搭建博客+更换主题以及后续问题记录"><img class="post-bg" src="/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="利用Hexo搭建博客+更换主题以及后续问题记录"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/07/20/Hexo/Hexo_buildweb/" title="利用Hexo搭建博客+更换主题以及后续问题记录">利用Hexo搭建博客+更换主题以及后续问题记录</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2021-07-20T17:10:48.000Z" title="发表于 2021-07-20 17:10:48">2021-07-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Hexo/">Hexo</a></span></div><div class="content">利用Hexo搭建博客参考文章  Hexo(2)-部署博客及更新博文  算是一次自己成功尝试的记录 Github创建个人仓库点击GitHub中的New repository创建新仓库，仓库名应该为：用户名.github.io 这个用户名使用自己的GitHub帐号名称代替 安装Git任意位置右键选择Git Bash Here   12git config --global user.name xuedue  #改成你的GitHub用户名  git config --global user.email 1515****06@qq.com  #改成你自己的GitHub注册邮箱&quot;  生成ssh密钥文件： 1ssh-keygen -t rsa -C 1515****06@qq.com #改成你自己的GitHub注册邮箱  然后直接三个回车即可，默认不需要设置密码然后找到生成的.ssh的文件夹中的id_rsa.pub密钥，打开文件并复制内容 打开GitHub_Settings_keys 页面，新建new SSH Key Title为标题，随便填，将上面复制的id_rsa.pub的内容...</div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/4/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/#content-inner">4</a><span class="page-number current">5</span></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">xuedue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xuedue"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/xuedue" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://bilibili.com" target="_blank" title="BiliBili"><i class="fa-brands fa-bilibili" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">今天超市薯片半价</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%206G%E8%B0%83%E7%A0%94/" title="80211 6G调研">80211 6G调研</a><time datetime="2026-02-04T15:39:55.000Z" title="发表于 2026-02-04 15:39:55">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/20/Proxy/telegram%E7%99%BB%E5%BD%95/" title="Telegram需要旧手机验证/收不到验证码100%可用解决方法">Telegram需要旧手机验证/收不到验证码100%可用解决方法</a><time datetime="2026-01-20T16:02:09.000Z" title="发表于 2026-01-20 16:02:09">2026-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/18/%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%B0%83%E6%B5%8B%E5%B7%A5%E5%85%B7/" title="嵌入式调测工具">嵌入式调测工具</a><time datetime="2026-01-18T16:08:55.000Z" title="发表于 2026-01-18 16:08:55">2026-01-18</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>分类</span>
+            
+          </div>
+          <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Anaconda/"><span class="card-category-list-name">Anaconda</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Android/"><span class="card-category-list-name">Android</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/C-C/"><span class="card-category-list-name">C/C++</span><span class="card-category-list-count">6</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Github/"><span class="card-category-list-name">Github</span><span class="card-category-list-count">3</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Hexo/"><span class="card-category-list-name">Hexo</span><span class="card-category-list-count">4</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Latex/"><span class="card-category-list-name">Latex</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Operating-System/"><span class="card-category-list-name">Operating System</span><span class="card-category-list-count">5</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Operating-System/Linux/"><span class="card-category-list-name">Linux</span><span class="card-category-list-count">4</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Operating-System/Windows/"><span class="card-category-list-name">Windows</span><span class="card-category-list-count">1</span></a></li></ul></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/PAPER/"><span class="card-category-list-name">PAPER</span><span class="card-category-list-count">6</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/PROXY/"><span class="card-category-list-name">PROXY</span><span class="card-category-list-count">2</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/PROXY/Telegram/"><span class="card-category-list-name">Telegram</span><span class="card-category-list-count">1</span></a></li></ul></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/PYTHON/"><span class="card-category-list-name">PYTHON</span><span class="card-category-list-count">3</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Pytorch/"><span class="card-category-list-name">Pytorch</span><span class="card-category-list-count">5</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/VSCODE/"><span class="card-category-list-name">VSCODE</span><span class="card-category-list-count">4</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"><span class="card-category-list-name">计算机网络</span><span class="card-category-list-count">3</span></a></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/%E8%A7%A3%E5%8E%8B/" style="font-size: 1.1em; color: #999">解压</a> <a href="/tags/Windows/" style="font-size: 1.1em; color: #999">Windows</a> <a href="/tags/VirtualBox/" style="font-size: 1.1em; color: #999">VirtualBox</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 1.1em; color: #999">计算机网络</a> <a href="/tags/blind-face-restoratio/" style="font-size: 1.1em; color: #999">blind face restoratio</a> <a href="/tags/gan/" style="font-size: 1.2em; color: #999da3">gan</a> <a href="/tags/streamlit/" style="font-size: 1.1em; color: #999">streamlit</a> <a href="/tags/nvidia%E9%A9%B1%E5%8A%A8/" style="font-size: 1.1em; color: #999">nvidia驱动</a> <a href="/tags/Plt/" style="font-size: 1.1em; color: #999">Plt</a> <a href="/tags/stylegan/" style="font-size: 1.3em; color: #99a1ac">stylegan</a> <a href="/tags/C-C/" style="font-size: 1.5em; color: #99a9bf">C/C++</a> <a href="/tags/inversion/" style="font-size: 1.1em; color: #999">inversion</a> <a href="/tags/proxy/" style="font-size: 1.2em; color: #999da3">proxy</a> <a href="/tags/Anaconda/" style="font-size: 1.1em; color: #999">Anaconda</a> <a href="/tags/Github/" style="font-size: 1.4em; color: #99a5b6">Github</a> <a href="/tags/Hexo/" style="font-size: 1.4em; color: #99a5b6">Hexo</a> <a href="/tags/Python/" style="font-size: 1.1em; color: #999">Python</a> <a href="/tags/screen/" style="font-size: 1.1em; color: #999">screen</a> <a href="/tags/LLM/" style="font-size: 1.1em; color: #999">LLM</a> <a href="/tags/visdom/" style="font-size: 1.1em; color: #999">visdom</a> <a href="/tags/Android/" style="font-size: 1.1em; color: #999">Android</a> <a href="/tags/aging/" style="font-size: 1.1em; color: #999">aging</a> <a href="/tags/pytorch/" style="font-size: 1.1em; color: #999">pytorch</a> <a href="/tags/Linux/" style="font-size: 1.4em; color: #99a5b6">Linux</a> <a href="/tags/latex/" style="font-size: 1.1em; color: #999">latex</a> <a href="/tags/python/" style="font-size: 1.2em; color: #999da3">python</a> <a href="/tags/802-11/" style="font-size: 1.2em; color: #999da3">802.11</a> <a href="/tags/INN/" style="font-size: 1.1em; color: #999">INN</a> <a href="/tags/vscode/" style="font-size: 1.4em; color: #99a5b6">vscode</a> <a href="/tags/Pytorch/" style="font-size: 1.4em; color: #99a5b6">Pytorch</a> <a href="/tags/Markdown/" style="font-size: 1.1em; color: #999">Markdown</a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>归档</span>
+      <a class="card-more-btn" href="/archives/"
+            title="查看更多">
+            <i class="fas fa-angle-right"></i>
+          </a>
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/02/">
+            <span class="card-archive-list-date">
+              二月 2026
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/01/">
+            <span class="card-archive-list-date">
+              一月 2026
+            </span>
+            <span class="card-archive-list-count">10</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/02/">
+            <span class="card-archive-list-date">
+              二月 2025
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/10/">
+            <span class="card-archive-list-date">
+              十月 2024
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2023/10/">
+            <span class="card-archive-list-date">
+              十月 2023
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2022/06/">
+            <span class="card-archive-list-date">
+              六月 2022
+            </span>
+            <span class="card-archive-list-count">5</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2021/11/">
+            <span class="card-archive-list-date">
+              十一月 2021
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2021/10/">
+            <span class="card-archive-list-date">
+              十月 2021
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">46</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-02-04T16:39:07.967Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/default.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By xuedue</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 5.4.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3"></script><script src="/js/main.js?v=5.5.3"></script><script src="/js/tw_cn.js?v=5.5.3"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.3"></script></div></div></body></html>

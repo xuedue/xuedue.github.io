@@ -1,0 +1,800 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>802.11无线网络 | xuedue</title><meta name="author" content="xuedue"><meta name="copyright" content="xuedue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="802.11 PHY协议基础通信系统模型  信源：产生需要传递给信宿的比特信息。  调制器：将比特信息通过一系列调制方法“放置在”电磁波上，生成调制信号。  信道：调制信号从发送端传递给接收端经过的传输媒介。  解调器：从调制信号中 “提取出”比特信息，是调制器的逆过程。  信宿：接收比特信息。   通信质量指标 有效性：传输效率，可用通信速率来评估。 可靠性：传输质量，可用误符号率来评估。 安全">
+<meta property="og:type" content="article">
+<meta property="og:title" content="802.11无线网络">
+<meta property="og:url" content="http://example.com/2026/01/18/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C/index.html">
+<meta property="og:site_name" content="xuedue">
+<meta property="og:description" content="802.11 PHY协议基础通信系统模型  信源：产生需要传递给信宿的比特信息。  调制器：将比特信息通过一系列调制方法“放置在”电磁波上，生成调制信号。  信道：调制信号从发送端传递给接收端经过的传输媒介。  解调器：从调制信号中 “提取出”比特信息，是调制器的逆过程。  信宿：接收比特信息。   通信质量指标 有效性：传输效率，可用通信速率来评估。 可靠性：传输质量，可用误符号率来评估。 安全">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/default.jpg">
+<meta property="article:published_time" content="2026-01-18T15:18:23.000Z">
+<meta property="article:modified_time" content="2026-02-04T16:38:43.973Z">
+<meta property="article:author" content="xuedue">
+<meta property="article:tag" content="802.11">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/default.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "802.11无线网络",
+  "url": "http://example.com/2026/01/18/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C/",
+  "image": "http://example.com/img/default.jpg",
+  "datePublished": "2026-01-18T15:18:23.000Z",
+  "dateModified": "2026-02-04T16:38:43.973Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "xuedue",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2026/01/18/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '802.11无线网络',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 5.4.2"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/img/bg_img.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">xuedue</span></a><a class="nav-page-title" href="/"><span class="site-name">802.11无线网络</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">802.11无线网络</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-18T15:18:23.000Z" title="发表于 2026-01-18 15:18:23">2026-01-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-04T16:38:43.973Z" title="更新于 2026-02-04 16:38:43">2026-02-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2026-02-04 16:38:43&quot;}" hidden></div><h2 id="802-11-PHY协议基础"><a href="#802-11-PHY协议基础" class="headerlink" title="802.11 PHY协议基础"></a>802.11 PHY协议基础</h2><h3 id="通信系统模型"><a href="#通信系统模型" class="headerlink" title="通信系统模型"></a>通信系统模型</h3><p><img src="%E9%80%9A%E4%BF%A1%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9E%8B.png" alt="image-20231115155106166"></p>
+<ul>
+<li><p>信源：产生需要传递给信宿的比特信息。</p>
+</li>
+<li><p>调制器：将比特信息通过一系列调制方法“放置在”电磁波上，生成调制信号。</p>
+</li>
+<li><p>信道：调制信号从发送端传递给接收端经过的传输媒介。</p>
+</li>
+<li><p>解调器：从调制信号中 “提取出”比特信息，是调制器的逆过程。</p>
+</li>
+<li><p>信宿：接收比特信息。</p>
+</li>
+</ul>
+<h3 id="通信质量指标"><a href="#通信质量指标" class="headerlink" title="通信质量指标"></a>通信质量指标</h3><ul>
+<li>有效性：传输效率，可用通信速率来评估。</li>
+<li>可靠性：传输质量，可用误符号率来评估。</li>
+<li>安全性：通信安全，涉及加密解密技术。</li>
+</ul>
+<blockquote>
+<p>注：有效性和可靠性不可兼得，需要两者权衡</p>
+</blockquote>
+<h3 id="涉及参数"><a href="#涉及参数" class="headerlink" title="涉及参数"></a>涉及参数</h3><ul>
+<li>频率：通信载波频率。目前WiFi使用的频率段包括2.4G、5G和6G。</li>
+<li>带宽：信号占用频带宽度。带宽越大，速率越高。</li>
+<li>功率：发射信号强度。提高功率可提高传输质量，但会加强对其他通信链路的干扰。</li>
+<li>速率：每秒传输的比特数量。一般以Mbps/Gbps为单位。</li>
+<li>天线数量：可使用多跟天线进行信号发射和接收，一般接收天线数量要大于有效发射天线数量。</li>
+</ul>
+<h2 id="802-11-MAC层"><a href="#802-11-MAC层" class="headerlink" title="802.11 MAC层"></a>802.11 MAC层</h2><h3 id="MAC层介绍"><a href="#MAC层介绍" class="headerlink" title="MAC层介绍"></a>MAC层介绍</h3><p>MAC层，即Medium Access Control，顾名思义其主要工作就是：</p>
+<ol>
+<li>通过管理帧对设备接入进行管控；</li>
+<li>通过信道接入规则对信道使用权进行分配，有序管理多终端，进行信道分时使用；</li>
+<li>通过控制帧对PHY层的通信过程进行管理调度，实现数据的有效传输；</li>
+</ol>
+<p><img src="%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82.png" alt="image-20231115170736998"></p>
+<p>在OSI七层模型中，物理层对应于OSI模型中的最低层，MAC和OSI第二层的下层相对应，该层和逻辑链路控制(LLC)层构成了OSI的第二层。</p>
+<p>802.2规定了数据链路层的LLC子层，802.3和802.11都处在物理层和数据链路层的MAC子层。802.3定义了LAN的以太网实现方法，802.11定义了WLAN的以太网实现方法。</p>
+<p>有线和无线数据帧格式最重要的区别在于七层模型的下两层，802.11标准仅限于物理层(PHY)和媒介访问控制(MAC)</p>
+<p><img src="MAC%E5%B1%82%E4%BB%8B%E7%BB%8D.png" alt="image-20231115161910799"></p>
+<p>mac层的通信过程</p>
+<p><img src="MAC%E5%B1%82%E9%80%9A%E4%BF%A1.png" alt="image-20231115162138754"></p>
+<h3 id="DCF"><a href="#DCF" class="headerlink" title="DCF"></a>DCF</h3><p>IEEE802.11协议定义了两种接入方式，在信道争用期的分布式协调功能(Distributed Coordination Function，简称DCF)与非信道争用期的点协调功能(Point Coordination Function，简称PCF)，其中DCF是必备功能，而PCF由各WLAN设备硬件厂商来决定是否实现。</p>
+<p>802.11根据Multi-Access时是否有中心控制设备，来分为Point Coordination Function（PCF）和Distributed Coordination Function（DCF）。</p>
+<ul>
+<li>PCF:通过点协调者（即AP）的中心控制权，实现无竞争服务。(可选)</li>
+<li>DCF:没有中心控制设备，实现竞争服务。(强制)</li>
+</ul>
+<p>其中DCF是必备功能，而PCF由各WLAN设备硬件厂商来决定是否实现，实际上，几乎没有厂商使用PCF，通常都是采用DCF作为802.11无线通信的基础。</p>
+<h4 id="CSMA"><a href="#CSMA" class="headerlink" title="CSMA"></a>CSMA</h4><p>DCF采用载波侦听多路访问冲突避免(CSMA/CA)的媒体存取方式,节点(STA)在发送数据前要先检测信道是否空闲，如果信道空闲则准备发送MAC业务数据单元(MSDU) 。如果2个STA同时检测到信道空闲并开始发送数据就会发生冲突，为此，802.11定义了冲突避免(CA)机制来降低发生冲突的概率。</p>
+<p><strong>载波侦听多路访问</strong>（英语：Carrier Sense Multiple Access，缩写：CSMA）是一种介质访问控制（MAC）的协议。</p>
+<ul>
+<li><p><strong>载波侦听</strong>（Carrier Sense） 指任何连接到介质的设备在欲发送帧前，必须对介质进行侦听，当确认其空闲时，才可以发送。 </p>
+<p>物理载波监听：实际信号检测<br>虚拟载波监听：帧的解析</p>
+</li>
+<li><p><strong>多路访问</strong>（Multiple Access） 指多个设备可以同时访问介质，一个设备发送的帧也可以被多个设备接收。</p>
+</li>
+</ul>
+<p><strong>CD:collision deteced</strong>（冲突检测）<br><strong>CA:collision avoid</strong>（冲突避免）</p>
+<blockquote>
+<p>Ethernet采用CSMA/CD，而IEEE802.11采用CSMA/CA</p>
+</blockquote>
+<p>CSMA/CA过程见文章 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/20721272">DCF与CSMA/CA</a></p>
+<h4 id="RTS-CTS"><a href="#RTS-CTS" class="headerlink" title="RTS/CTS"></a>RTS/CTS</h4><p>为解决CSMA方式引起的“隐藏节点”问题，802.11定义了请求发送/清除发送(RTS/CTS)机制。在传送数据帧以前STA先发送一个短RTS帧，接收方接收到RTS后立即发送一个CTS帧，RTS和CTS帧都包含了下一个数据帧的长度信息。因此STA附近的其他STA及接收数据的STA附近的“隐藏节点”通过设置网络分配向量 (NAV)定时器，在NAV规定的时间内不发送数据以避免数据冲突。RTS/CTS和NAV机制可以有效保护长数据 帧免受“隐藏节点”的碰撞。</p>
+<h3 id="PCF"><a href="#PCF" class="headerlink" title="PCF"></a>PCF</h3><p>上述DCF操作中，由于各STA在发送数据前需要对信道进行争用，因此DCF无法对时延敏感的业务提供QoS保障。因此，802.11协议定义了点协调功能(PCF)来保证STA以一定的优先权接入到无线信道中。</p>
+<p>STA的优先权由点协调器(PC)来协调，一般来说是AP。PCF发起数据传输的等待时间间隔称为PIFS，PIFS介于SIFS和DIFS之间，因而PCF比DCF的优先级高。PCF的传输时间被划分为重复的周期，即交替出现的竞争周期(CP)和非竞争周期(CFP)。</p>
+<p>CP和随后的CFP一起组成超帧。在CFP阶段采用PCF机制接入无线信道，在CP阶段则使用DCF机制传输数据。超帧由信标帧(Beacon)开始。信标帧是一种管理帧，它维持STA内本地定时器的同步，并负责传送协议相关的参数。</p>
+<p>PC周期性地产生信标帧，下一个信标帧到来的时间被称为目标信标帧传输时间(TBTT)，每个信标帧都携带该信息。每个STA被PC轮询后发送数据，因而不会发生冲突。PC通过发送CF-Poll帧轮询有数据要发送的STA，STA接收到轮询帧以后给出确认。若PC在等待了一个PIFS的时间后没有收到STA的响应，可以继续轮询其他的STA，一直到CFP的结束。PC通过发送一个特殊的控制帧CF-End来指示CFP的结束。</p>
+<p>DCF与PCF的联系在于：它们都是IEEE802.11协议定义的接入方式，前者是在避免冲突前提下，确保各个移动终端可以公平接入信道，如果其中有一个终端占用信道，其它则处在监听状态，而后者则是保证STA以一定的优先权接入到无线信道中；它们可以在资源分配的不同阶段使用，即在CFP阶段使用PCF，在CP阶段使用DCF方式。</p>
+<h2 id="802-11和802-3协议差异"><a href="#802-11和802-3协议差异" class="headerlink" title="802.11和802.3协议差异"></a>802.11和802.3协议差异</h2><p>在OSI七层模型中，802.2规定了数据链路层的LLC子层，802.3和802.11都处在物理层和数据链路层的MAC子层。</p>
+<p>802.3定义了LAN的以太网实现方法，802.11定义了WLAN（Wireless Local Area Network，无线局域网）的以太网实现方法。</p>
+<p>区别主要表现在</p>
+<p><strong>MAC标准</strong></p>
+<p>802.3定义了CAMA/CD规则，即载波监听多路访问/冲突检测(Carrier Sense Multiple Access with Collision Detection)，成为以太网通信的标准。</p>
+<p>在802.11无线局域网协议中，冲突的检测存在一定的问题，这个问题称为”Near/Far”现象，这是由于要检测冲突，设备必须能够一边接受数据信号一边传送数据信号，而这在无线系统中是无法办到的。802.11对CSMA/CD的进行了修改，定义了适合无线传输的CAMA/CA（Carrier Sense Multiple Access with Collision Avoidance）标准。与802.3不同，CSMA/CA并不是采用冲突检测来判断数据是否需要重发，而是利用ACK信号来判断数据是否成功发送，也就是说，只有当客户端收到网络上返回的ACK信号后才确认送出的数据已经正确到达目的。如果冲突发生了，则数据就会出错，然后接收方就不会返回一个ACK信号，发送方于是启动重发机制。可见处理冲突导致的错误帧和其它原因导致的错误帧的处理方式是一样的，CSMA/CA本身不能判断冲突是否发生，而是一种尽可能避免冲突发生的机制。CSMA/CA的具体工作机制见“DCF和PC联系”该题。</p>
+<p>CSMA/CA通过这种方式来提供无线的共享访问，这种显式的ACK机制在处理无线问题时非常有效。然而不管是对于802.11还是802.3来说，这种方式都增加了额外的负担，所以802.11网络和类似的Ethernet网比较总是在性能上稍逊一筹。另一个的无线MAC层问题是”hidden node”问题。两个相反的工作站利用一个中心接入点进行连接，这两个工作站都能够”听”到中心接入点的存在，而互相之间则可能由于障碍或者距离原因无法感知到对方的存在。为了解决这个问题，802.11在MAC层上引入了一个新的Send/Clear to Send(RTS/CTS)选项，当这个选项打开后，一个发送工作站传送一个RTS信号，随后等待访问接入点回送RTS信号，由于所有的网络中的工作站能够”听”到访问接入点发出的信号，所以CTS能够让他们停止传送数据，这样发送端就可以发送数据和接受ACK信号而不会造成数据的冲突，这就间接解决了”hidden node”问题。由于RTS/CTS需要占用网络资源而增加了额外的网络负担，一般只是在那些大数据报上采用(重传大数据报会耗费较大)。</p>
+<p>最后，802.11MAC子层提供了另两个强壮的功能，CRC校验和包分片。在802.11协议中，每一个在无线网络中传输的数据报都被附加上了校验位以保证它在传送的时候没有出现错误，这和Ethernet中通过上层TCP/IP协议来对数据进行校验有所不同。包分片的功能允许大的数据报在传送的时候被分成较小的部分分批传送。这在网络十分拥挤或者存在干扰的情况下(大数据报在这种环境下传送非常容易遭到破坏)是一个非常有用的特性。这项技术大大减少了许多情况下数据报被重传的概率，从而提高了无线网络的整体性能。MAC子层负责将收到的被分片的大数据报进行重新组装，对于上层协议这个分片的过程是完全透明的。</p>
+<p><strong>PHY标准</strong></p>
+<p>802.3规定了10Base-2、10Base-T、10Base-FB、10Base-TX、10Base-FX等以太网标准。</p>
+<p>802.11规定了跳频技术（FHSS：frequency-hopping spread-spectrum）、直接序列展频技术（DSSS：direct-sequence spread-spectrum）、红外线技术（IR：infrared PHY）等无线以太网标准，并采用BPSK和QPSK两种调制方式。</p>
+<p><strong>体系结构</strong></p>
+<p>802.11网络包含四个基本单元：无线站点STA（station），无线接入点AP（access point），独立基本服务组IBSS（independent basic service set），基本服务组BSS（basic service set），分布式系统DS（distribution system）和扩展服务组ESS（extended service set）。802.3以太网中没有分布式系统、接入点的概念，使用的是有线介质。</p>
+<p><strong>帧结构</strong></p>
+<p>802.11的MAC层帧结构比802.3复杂的多，它包含很多控制信息，如多址方式，信道共享模式以及网络结构和安全性等，同时地址字段一般有四个。</p>
+<h2 id="802-11协议"><a href="#802-11协议" class="headerlink" title="802.11协议"></a>802.11协议</h2><h3 id="协议发展"><a href="#协议发展" class="headerlink" title="协议发展"></a>协议发展</h3><p>早在20世纪九十年代初，工作在900MHZ、2.4GHZ和5GHZ频率上的无线局域网就已经出现。但是由于价格、性能、通用性等种种原因，没有得到广泛的应用。1997年6月，第一个WLAN标准IEEE802.11正式颁布实施，为WLAN的物理层与MAC层制定了统一的标准，有力推动了该技术的发展。此后，又先后出台了802.11a、802.11b、802.11g等标准，使无线局域网的通信速率从2M提升到108M。随着无线网络技术的进一步发展，无线传输速率将不断高。</p>
+<p><img src="%E5%8D%8F%E8%AE%AE%E5%8F%98%E5%8C%96.png" alt="image-20230921170606892"></p>
+<h3 id="频段信道"><a href="#频段信道" class="headerlink" title="频段信道"></a>频段信道</h3><p>2.4G：2.4GHz-2.483GHz共83MHz的频段划分成13个信道，每个信道带宽22MHz。</p>
+<p>5G：国内使用三个频段，共13个信道</p>
+<ol>
+<li>5.150GHz-5.250GHz</li>
+<li>5.250GHz-5.350GHz</li>
+<li>5.725GHz-5.850GHz</li>
+</ol>
+<p>5GHz信道中心频率与信道编号N的关系如下：</p>
+<p>信道中心频率=5000+5×N(MHz)；(N=0, 1, …, 199)</p>
+<p><img src="5G%E9%A2%91%E6%AE%B5%E4%BF%A1%E9%81%93.png" alt="image-20231115161034400"></p>
+<h3 id="11n技术"><a href="#11n技术" class="headerlink" title="11n技术"></a>11n技术</h3><ul>
+<li>AMSDU</li>
+<li>BA</li>
+<li>MCS速率表</li>
+</ul>
+<p><img src="MCS%E9%80%9F%E7%8E%87%E8%A1%A8.png" alt="image-20231115162609896"></p>
+<h3 id="11ac技术"><a href="#11ac技术" class="headerlink" title="11ac技术"></a>11ac技术</h3><ul>
+<li><p>频分复用（OFDMA）技术</p>
+</li>
+<li><p>上行MU-MIMO</p>
+</li>
+</ul>
+<p>一条空间流的MCS速率表</p>
+<p><img src="ac-MCS%E9%80%9F%E7%8E%87%E8%A1%A8-%E5%8D%95%E7%A9%BA%E9%97%B4%E6%B5%81.png" alt="image-20231115162814920"></p>
+<h3 id="11be"><a href="#11be" class="headerlink" title="11be"></a>11be</h3><p>11be定义的物理层叫做EHT PHY</p>
+<p>EHT PHY支持的频段为2.4G、5G、6G</p>
+<table>
+<thead>
+<tr>
+<th>2.4G·</th>
+<th>5G</th>
+<th>6G</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NON-HT</td>
+<td>NON-HT</td>
+<td>NON-HT</td>
+</tr>
+<tr>
+<td>HT</td>
+<td>HT</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>VHT</td>
+<td></td>
+</tr>
+<tr>
+<td>HE</td>
+<td>HE</td>
+<td>HE</td>
+</tr>
+<tr>
+<td>EHT</td>
+<td>EHT</td>
+<td>EHT</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>6G频段范围为：5.925GHz ~ 7.125GHz</p>
+</blockquote>
+<h2 id="帧聚合"><a href="#帧聚合" class="headerlink" title="帧聚合"></a>帧聚合</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>无线Legacy Tx数据帧的原子操作如下</p>
+<ul>
+<li>竞争到信道，只能发送一个data帧</li>
+<li>通过ACK帧来确认该data帧Tx成功</li>
+</ul>
+<p>MAC层 Tx 效率 = payload_time/(payload_time+overhead)</p>
+<p>Payload time：MAC层报文Tx时间(速率变化，速率选择相关）</p>
+<p>Overhead包括：</p>
+<ul>
+<li><p>DIFS、Random backoff以及碰撞开销、SIFS</p>
+</li>
+<li><p>PLCP Time</p>
+</li>
+<li><p>ACK Time（RTS/CTS）</p>
+</li>
+</ul>
+<p>因此提高MAC层效率的措施有</p>
+<p>数据突发（Burst）</p>
+<p>即单次竞争到信道，此TXOP（Transmission Opportunity）时间内可以发送多个数据帧，减小DIFS、信道竞争、概率引入冲突造成的开销。</p>
+<p>块确认和聚合</p>
+<ul>
+<li><p>将多个ACK帧组合成一个帧表示接收（Block ACK），减少ACK</p>
+</li>
+<li><p>多个数据帧组合成一个发送（聚合），减少SIFS</p>
+</li>
+</ul>
+<h3 id="Block-Ack机制"><a href="#Block-Ack机制" class="headerlink" title="Block Ack机制"></a>Block Ack机制</h3><p>将多个ACK聚合到一个帧中发出，一次性表示多个数据帧接收情况的一种机制。</p>
+<ul>
+<li><p>减少ACK数量，提高信道的利用率</p>
+</li>
+<li><p>面向会话，以&lt;RA, TA, TID&gt;条目标识</p>
+</li>
+<li><p>发起端更灵活的发送QoS数据（用TID区分不同优先级报文）</p>
+<p>对多个具有相同TID且分布在多个TXOP传输的MPDU，它们的Ack可以组合到一个BA（block ack）中</p>
+<p>在不同的TXOP进行数据传输和确认</p>
+</li>
+</ul>
+<p>Block Ack分为</p>
+<p>Immediate Block Ack：在同一个TXOP内发起BAR和响应BA</p>
+<p>Delayed Block Ack：在不同的TXOP内发起BAR和响应BA</p>
+<p>Block Ack基本过程如下</p>
+<p><img src="BA%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B.png" alt="alt text"></p>
+<p><strong>setup</strong></p>
+<p><strong>ADDBA Request/Response建立Block Ack</strong></p>
+<ul>
+<li><p>QoS Data才能BA，BA的协商是Per TID</p>
+</li>
+<li><p> 协商是由双向各自进行的，由Tx端发起</p>
+</li>
+<li><p>载体为Action管理帧，协商内容：</p>
+<ul>
+<li>ADDBA Request/Response通过Dialog Token字段配对</li>
+<li>Originator决定要发送的第一个数据帧seqno（SSN）</li>
+<li>协商BA window size、Block Ack的种类</li>
+</ul>
+</li>
+<li><p>Status Code</p>
+<ul>
+<li>0表示Successful</li>
+<li>1表示failed</li>
+</ul>
+</li>
+</ul>
+<p><strong>QoS data MPDU传输</strong></p>
+<ul>
+<li>Originator一个TXOP内容连续传输多个QoS data MPDU(Data Block)，MPDU有各自的SeqNo</li>
+<li>SIFS间隔</li>
+</ul>
+<p><strong>Block Ack Request/Block Ack</strong></p>
+<ul>
+<li>Originator发送BAR请求，Recipient回复BA</li>
+<li>BA的帧格式根据BAR的格式确定</li>
+<li>Originator根据BA中Bitmap字段（对应MPDU的SeqNo）确定Recipient未收到的帧，并重新发送</li>
+</ul>
+<p><strong>DELBA Request拆除Block Ack（Tear Down）</strong></p>
+<ul>
+<li>载体为Action帧</li>
+<li>由Originator或Recipient任意一方发起</li>
+<li>单方向决定，无Response</li>
+</ul>
+<h3 id="帧聚合-1"><a href="#帧聚合-1" class="headerlink" title="帧聚合"></a>帧聚合</h3><p>帧聚合（Frame Aggregation）是802.11中为了提升传输效率的一种方式，自802.11n开始被引入。帧聚合是将多个无线帧组合成单个更长的无线帧传输，然后一次进行传输，以此来减少竞争开销，提高吞吐量，最终提高整体网络效率。</p>
+<p>帧聚合分为A-MSDU和A-MPDU。</p>
+<p>A-MSDU（Aggregate MAC Service Data Unit，聚合MAC服务数据单元）。 A-MSDU 聚合，将多个 MAC 级业务数据单元 （MSDU） 聚合到单个 MPDU 中。</p>
+<p>A-MPDU(Aggregate MAC Protocol Data Unit ，聚合MAC协议数据单元)。 A-MPDU 聚合，将多个 MAC 级协议数据单元 （MPDU） 聚合到单个 PHY 协议数据单元 （PPDU） 中。</p>
+<p>MSDU是Ethernet报文，本质是802.11数据帧的第3-7层有效载荷(即Payload)，一般MSDU的最大size是2304（不含加密信息部分）。</p>
+<p>MPDU是MSDU经过添加完整性校验MIC、分帧、省电模式下报文缓存、加密、序列号赋值、CRC校验、MAC头之后成为MPDU，MPDU就是指的经过802.11协议封装过的数据帧。</p>
+<p><img src="amsdu%E5%92%8Campdu%E5%AF%B9%E6%AF%94.png" alt="image-20231115164302072"></p>
+<p><strong>A-MSDU</strong>：多个MSDU帧聚合为一个802.11帧中进行传输</p>
+<ul>
+<li>子帧的DA都是发往同一个RA和同一个TID</li>
+<li>由ADDBA协商是否支持</li>
+<li>HT Qos字段中标记是否为AMSDU</li>
+</ul>
+<p>单个MPDU传输多个MSDU帧。稀释MAC帧头开销，但所有MSDU只用一个FCS较验，一个MSDU错误，整个聚合帧全错；</p>
+<p>4地址AMSDU报文</p>
+<ul>
+<li><p>A3/A4地址相同</p>
+</li>
+<li><p>不同子帧的SA/DA可能不同（ DA都是发往同一个RA和同TID即可 ）</p>
+</li>
+</ul>
+<p><img src="amsdu1.png" alt="image-20231115164030382"></p>
+<p><img src="amsdu.png" alt="image-20230928195323101"></p>
+<p><strong>A-MPDU</strong>：多个MPDU帧聚合为一个无线帧中进行传输</p>
+<ul>
+<li>均为QOS数据</li>
+<li>所有子帧的RA相同</li>
+<li>属于同一TID</li>
+</ul>
+<p>单个PPDU传输多个MPDU帧。稀释前导、PHY帧头开销，每个MPDU帧都有各自的MAC层信息，加密和FCS是对MPDU子帧各自进行，单个子帧出现误码不影响其他子帧。</p>
+<p><img src="ampdu.png" alt="image-20230928195417252"></p>
+<h2 id="802-11网络"><a href="#802-11网络" class="headerlink" title="802.11网络"></a>802.11网络</h2><p>802.11定义了网络系统、系统中涉及的角色，规定了说话方式：</p>
+<p><strong>Wi-Fi</strong>：Wireless-Fidelity的缩写，无线相容性认证</p>
+<p><strong>WLAN</strong>：Wireless Local Area Network的缩写，无线局域网</p>
+<p><strong>STA</strong>：站点（Station），802.11里一般指非AP设备。</p>
+<p><strong>AP</strong>：接入点（Access Point），提供访问DS服务的设备。</p>
+<p><strong>BSS</strong>：基础服务集（Basic Service Set），完成规定操作加入同一服务的逻辑集合，对应的标识称为BSSID。</p>
+<p><strong>BSSID</strong>：每个BSS都会被赋予一个BSSID，它是一个长度为48位的二进制标识符，用来识别不同的BSS。在infrastructure BSS（基础结构型基本服务集）中，BSSID就是创建该BSS的接入点上无线接口（interface）的MAC地址。</p>
+<p><strong>DS</strong>：分布式系统（Distribution System），用于将多个BSS和LAN组成一个扩展服务集。</p>
+<p><strong>ESS</strong>：扩展服务集（Extended Service Set），由一个或多个相关BSS组成的服务集合，对STA来说，在链路控制层只表现为一个逻辑BSS。</p>
+<p><img src="%E5%AE%B6%E5%BA%ADWIFI%E7%BD%91%E7%BB%9C.png" alt="image-20231115165139954"> <img src="802.11%E5%85%B8%E5%9E%8B%E7%BD%91%E7%BB%9C.png" alt="image-20231115165244239"></p>
+<p><strong>802.11工作模式</strong></p>
+<ul>
+<li><p>ad hoc（对等）模式/IBSS（独立基本服务集）：</p>
+<p>在ad hoc模式中，至少需要包含两个STA，每两个STA之间直接相连实现资源共享，不需要AP和分布式系统，由此构成的无线局域网也称为IBSS网络。</p>
+</li>
+<li><p>infrastructure（架构）模式：</p>
+<p>在infrastructure模式中，各无线站点STA通过AP与现有的骨干网相连接，这种配置组成一个BSS。在BSS中，AP不仅提供STA之间通信的桥接功能，还提供STA与有线局域网的连接，以便无线用户访问有线网络上的设备或服务(如文件服务器、打印机、互联网链接等等)。多个BSS互相连接即组成一个ESS。ESS支持漫游功能（移动性），无线站点STA可以在ESS内不同的BSS之间漫游。分布式系统DS是用于BSS互联的逻辑组成单元，由它提供STA在BSS之间漫游的分配服务。</p>
+</li>
+</ul>
+<h2 id="802-11帧类型"><a href="#802-11帧类型" class="headerlink" title="802.11帧类型"></a>802.11帧类型</h2><h3 id="管理帧"><a href="#管理帧" class="headerlink" title="管理帧"></a>管理帧</h3><p>负责链路层的各种维护功能(Beacon, Probe, Auth)</p>
+<p><strong>管理帧的结构</strong></p>
+<p><img src="%E7%AE%A1%E7%90%86%E5%B8%A7%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84.png" alt="alt text"></p>
+<p>地址字段</p>
+<p>Fixed Fields:特定帧中长度和出现顺序都确定的</p>
+<p>Information elements:可选的，长度可变的</p>
+<h3 id="控制帧"><a href="#控制帧" class="headerlink" title="控制帧"></a>控制帧</h3><p>管理无线媒介的访问(RTS, CTS, … )</p>
+<p>提供MAC层的可靠性(ACK, BA, PS-Poll, … )</p>
+<h3 id="数据帧"><a href="#数据帧" class="headerlink" title="数据帧"></a>数据帧</h3><p>将上层协议的数据置于帧主体中加以传递(Data)</p>
+<p>省电模式管理(NULL)</p>
+<h4 id="WDS（Wireless-Distribution-System）"><a href="#WDS（Wireless-Distribution-System）" class="headerlink" title="WDS（Wireless Distribution System）"></a>WDS（Wireless Distribution System）</h4><p>WDS（Wireless Distribution System），即无线网络部署延展系统的简称，是指用多个无线网络相互联结的方式构成一个整体的无线网络。简单来说，WDS就是利用两个（或以上）无线宽带路由器/AP通过相互连接的方式将无线信号向更深远的范围延伸。WDS的作用主要是连接距离较远的有线网和扩展无线网络的范围。</p>
+<p>STA通过控制无线帧头的字段中的两个标志位From/To DS位，以表示无线帧的来源与目的方向</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>To DS=0</th>
+<th>To DS=1</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>From DS=0</strong></td>
+<td>所有的管理帧和控制帧，以及IBSS网络中的数据帧。</td>
+<td>Infra. BSS网络中无线STA传输的数据帧。</td>
+</tr>
+<tr>
+<td><strong>From DS=1</strong></td>
+<td>Infra. BSS网络中从无线STA接收到的数据帧。</td>
+<td>无线网桥上的数据帧。</td>
+</tr>
+</tbody></table>
+<p>在IEEE 802.11协议中定义的帧格式中，帧的控制域（Frame Control field）里面包含了ToDS和FromDS，不同的这些值表达的含义如下：</p>
+<table>
+<thead>
+<tr>
+<th><strong>To/From DS值</strong></th>
+<th><strong>含义</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>To DS = 0, From DS = 0</td>
+<td>在同一个独立的基本服务集合（IBSS）里面，一个数据帧（所有管理和控制类型的帧也是）直接从一个STA到另一个STA</td>
+</tr>
+<tr>
+<td>To DS = 0, From DS = 1</td>
+<td>数据帧离开DS</td>
+</tr>
+<tr>
+<td>To DS = 1, From DS = 0</td>
+<td>数据帧进入DS</td>
+</tr>
+<tr>
+<td>To DS = 1, From DS = 1</td>
+<td>无线分布式系统（WDS）帧正在从一个AP传到另一个AP</td>
+</tr>
+</tbody></table>
+<p>地址字段在数据帧中的用法</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>To DS</th>
+<th>From DS</th>
+<th>Address1 (receiver 接收端)</th>
+<th>Address2(sender 发送端)</th>
+<th>address3</th>
+<th>address4</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IBSS（独立基本服务集）</td>
+<td>0</td>
+<td>0</td>
+<td>DA</td>
+<td>SA</td>
+<td>BSSID</td>
+<td>未使用</td>
+</tr>
+<tr>
+<td>To AP  (infra. 基础结构型)</td>
+<td>1</td>
+<td>0</td>
+<td>BSSID</td>
+<td>SA</td>
+<td>DA</td>
+<td>未使用</td>
+</tr>
+<tr>
+<td>From AP  (infra. 基础结构型)</td>
+<td>0</td>
+<td>1</td>
+<td>DA</td>
+<td>BSSID</td>
+<td>SA</td>
+<td>未使用</td>
+</tr>
+<tr>
+<td>WDS  (bridge 桥接器)</td>
+<td>1</td>
+<td>1</td>
+<td>RA</td>
+<td>TA</td>
+<td>DA</td>
+<td>SA</td>
+</tr>
+</tbody></table>
+<p>其中一个无线芯片上（PHY），可以在软件层面虚拟出多个接入点（Virtual AP，即VAP），这些VAP共用无线PHY层相关参数，如信道、带宽等。而VAP根据模式的不同分为APVAP和STAVAP。</p>
+<p>WDS桥接分为三地址桥接和四地址桥接</p>
+<h2 id="认证关联过程"><a href="#认证关联过程" class="headerlink" title="认证关联过程"></a>认证关联过程</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">发布网络	        AP发布</span><br><span class="line">搜索网络	        主动搜索/被动搜索</span><br><span class="line">认证			AP、STA两者交互</span><br><span class="line">关联			AP、STA两者交互</span><br><span class="line">握手			WPA/WPA-PSK安全认证时使用</span><br><span class="line"></span><br><span class="line">STA		Probe Request 		AP</span><br><span class="line">		Probe Respond</span><br><span class="line">		Auth</span><br><span class="line">		Auth</span><br><span class="line">		Assoc Request</span><br><span class="line">		Assoc Respond</span><br></pre></td></tr></table></figure>
+
+<p><strong>发布网络</strong></p>
+<p>由AP完成。AP开启，选择合适信道，周期性发送Beacon帧，宣布网络存在。</p>
+<p><strong>搜索网络</strong></p>
+<ul>
+<li>主动(Active Scanning)<br>发送Probe Request,等待Probe ResponseProbe Request的内容有两项――主机的SSID和支持的速率。其它STA或AP通过收到的探针请求帧的内容来判断是否允许该主机加入网络。</li>
+<li>被动(Passive Scanning)<br>监听Beacon帧</li>
+</ul>
+<p>在Infrastructure networks中，Probe Request由STA发出，并由AP发回Probe Response。如果STA的SSID和支持的速率与网络所支持的兼容，则AP发回一个探针回复；否则就不发回复，也不会有后续的认证和连接。探针回复帧的内容包括网络中的基本信息参数，使STA能够使用合适参数来加入该网络。</p>
+<p>可见，Probe（探针）是检测STA能否与它试图加入的网络兼容的一种手段。只有确定兼容了，才有可能建立连接。因此，作这种检测是建立连接的第一步，是必要的。</p>
+<p><strong>认证过程</strong></p>
+<p>由于无线网中没有物理介质上的限定，无线局域网中没有物理接入这一过程。无线网是通过“认证”服务来实现类似于有线网中的接入这一过程。</p>
+<p>由于认证有两种模式（开放式系统认证和共享密钥认证），认证过程也不相同。</p>
+<ul>
+<li><p>开放系统认证</p>
+<p>开放式系统认证是802.11默认的认证模式，使用明文传输。该模式下，STA先发送一个管理帧表明自己身份并向AP提出认证请求，AP随后返回一个确认帧。开放式系统认证模式下，任何STA都被认为是合法的，所以开放式系统认证实际上没有提供安全服务。</p>
+<p>802.11帧中的Auth Algorithm字段为0（open system）</p>
+</li>
+<li><p>共享密钥认证</p>
+<p>共享密钥认证需要经过四次交互，使用经WEP加密的密文传输。</p>
+<p>a)  同开放式认证，STA先发送一个管理帧表明自己身份并向AP提出认证请求；</p>
+<p>b)  AP做出响应并在响应帧中包含一个由WEP算法产生的随机“挑战信息”（challenge text）；</p>
+<p>c)  STA对信息用共享密钥加密发回给AP；</p>
+<p>d)  AP对加密结果用共享密钥进行解密，如果解密结果与挑战信息一致则认证成功，否则认证失败。</p>
+<p>认证是提供一种合法接入，避免非法用户进入局域网的一种手段。只有通过认证的用户才能建立连接。</p>
+<p>802.11帧中的Auth Algorithm字段为1（shared key）</p>
+</li>
+</ul>
+<p><strong>关联过程</strong></p>
+<p>“关联”服务使工作站（STA）找到给自己服务的AP。每台主机只拥有一个AP，而一个AP可以联合多台主机。一旦联合建立起来，主机便能通过AP充分利用DS进行通信。关联是由移动主机主动发起的而不是AP。</p>
+<p>STA发起关联请求(Association Request)</p>
+<p>AP回应关联应答(Association Response)</p>
+<h3 id="以太帧-amp-无线帧"><a href="#以太帧-amp-无线帧" class="headerlink" title="以太帧&amp;无线帧"></a>以太帧&amp;无线帧</h3><p><img src="%E4%BB%A5%E5%A4%AA%E6%97%A0%E7%BA%BF%E5%B8%A7%E8%BD%AC%E6%8D%A2.png" alt="image-20230928194416280"></p>
+<p><img src="psdu.png" alt="image-20230928195157956"></p>
+<ul>
+<li><p><strong>Sequence Control</strong>：帧序号，控制帧类型无此部分。</p>
+</li>
+<li><p><strong>QoS</strong> <strong>Control</strong>：802.11e协议新增，QoS（Quality of Service）数据帧携带，用于载荷数据的优先级控制。</p>
+</li>
+<li><p><strong>HT Control</strong>：802.11n协议新增，用于处理链路信息控制。</p>
+</li>
+<li><p><strong>Frame Body</strong>：帧载荷部分，长度从最小0字节到协议限定的最大允许值。</p>
+</li>
+<li><p><strong>FCS</strong>：帧校验（Frame Check Sum），覆盖MAC header、Frame Body的32-bit CRC校验。</p>
+</li>
+</ul>
+<p>各层之间传输使用的服务数据</p>
+<p><img src="msdu.png" alt="image-20230928194223798"></p>
+<h2 id="无线吞吐量"><a href="#无线吞吐量" class="headerlink" title="无线吞吐量"></a>无线吞吐量</h2><h3 id="数据链路层效率"><a href="#数据链路层效率" class="headerlink" title="数据链路层效率"></a>数据链路层效率</h3><p>什么是 【<strong>信道利用率</strong>】与【<strong>空时</strong>】？</p>
+<ul>
+<li><p>信道利用率（Channel Utilization）是指信道非空闲时间所占的比例。</p>
+<p>信道空闲是通过接收机进行检测的，其过程称为CS/CCA（Carrier Sense/Clear Channel Assessment），一共有两种机制同时进行检测：</p>
+<ol>
+<li>CCA-ED：即Energy-Detection CCA，通过检测信道能量强度进行判决——如果信道能量强度高于一定阈值，则认为是信道繁忙；</li>
+<li>CCA-SD：即Signal-Detection CCA，通过对信号的自相关性进行检查来判别当前信号是否是802.11报文——如果通过自相关性检验，则认为是信道繁忙；</li>
+</ol>
+</li>
+<li><p>空时（Airtime）是指报文在信道（空口）中占用的时长</p>
+<p>受到报文长度、PHY速率等影响，空时会发生改变，通过无线抓包，可以对报文的空时进行统计分析，明确信道的分配情况。</p>
+</li>
+</ul>
+<p>信道利用率受到什么影响？</p>
+<ol>
+<li>Self BSS（本BSS）的Tx/Rx空时；（My Tx/Rx）</li>
+<li>Overlapping BSS（其他同信道BSS）的Tx/Rx空时；(OBSS Tx/Rx)</li>
+<li>Self BSS在Tx/Rx时与OBSS同时Tx形成冲突所浪费的空时情况；（竞争冲突/隐藏节点）</li>
+<li>各类干扰造成的空口占用；（Interference）</li>
+</ol>
+<h2 id="802-11安全"><a href="#802-11安全" class="headerlink" title="802.11安全"></a>802.11安全</h2><p>802.11为IEEE（电机电子工程师协会，The Institute of Electrical and Electronics Engineers）于1997年公告的无线区域网路标准，适用于有线站台与无线用户或无线用户之间的沟通连结。</p>
+<p>涉及到无线连接会存在安全问题，主要有下面几个原因：</p>
+<ol>
+<li><p>信道开放，无法阻止攻击者窃听、恶意修改并转发。</p>
+</li>
+<li><p>传输媒质为无线电波，在空气中传播会因多种原因发生信号衰减，导致信息不稳定甚至丢失。</p>
+</li>
+<li><p>需常常移动设备（尤其是移动用户），设备易丢失或失窃。</p>
+</li>
+<li><p>用户不必与网络实际连接，使攻击者伪装合法用户更为容易。</p>
+</li>
+</ol>
+<p>IEEE 802.11涉及到的概念有如下这些：</p>
+<ol>
+<li><p>认证。在被允许在无线网络中进行信息交换之前，无线节点必须先通过存取节点的认证，认证分为开放式系统认证和共享金钥认证两种，其过程前面已经论述，这里不再赘述。802.11协议中无线AP还能通过WLAN ESSID来判断是否提供服务。这种方法是在每个AP中都写入一个服务区域认证ID，无线客户端要连上AP时，AP要检查它的ESSID是否与自己的相同，如果不同则拒绝提供服务。</p>
+</li>
+<li><p>加密。在发送无线数据包之前，无线网络节点首先对数据进行加密（使用WEP方法）以确保数据的机密性。</p>
+</li>
+<li><p>数据完整。在发送无线数据包之前，无线网络节点需要在被加密部分加入一个完整性检验值ICV (integrity check value)，这样接收端就可以确定在传输过程中这个数据包的内容没有被修改。</p>
+</li>
+</ol>
+<p>802.11安全性缺陷（802.1x草案详细描述了802.11的安全缺陷）：</p>
+<ol>
+<li><p>初始化向量（IV）太小。WEP使用的是24bit的IV,容易被解密。</p>
+</li>
+<li><p>完整性检查值（ICV）基于CRC-32多项式，ICV的已知数学漏洞可以改变加密帧和ICV，由于该漏洞，AP或客户机会将被更改过的帧接收为有效帧。</p>
+</li>
+<li><p>没有重发保护。攻击者可以通过发送一系列预先捕获的帧来尝试获得接入或者修改数据。</p>
+</li>
+<li><p>密钥一旦被设置，所有客户端、AP都直接使用这把密钥（都是同一把），而且没有提供一种更新密钥的方法，存在安全隐患。802.1x标准在分析802.11安全局限性的同时提出了一个密钥管理方案。</p>
+</li>
+</ol>
+<p> 在认证方面，802.11不能提供基于用户的身份辨认及认证（per-user identification and authentication），没有中心（集中式）认证（central authentication）机制。</p>
+<p> 其他安全措施</p>
+<p>1、WI-FI保护接入(WPA)</p>
+<p>WPA是Wi-Fi联盟签发的最新安全指南，它包括新兴802.11i标准提供的数据加密和网络访问控制机制，与当前的WEP标准增强了安全保护能力。在加密方面，WPA提供了临时密钥加密协议(TKIP)，它采用与WEP相同的加密算法，但以不同方式构建密钥。在访问控制方法，WPA采用IEEE 802.1x协议。</p>
+<p>TKIP: 增强了加密，改善了入侵检测功能。仅WEP设备可以与采用WEP支持TKIP的设备互操作。</p>
+<p>802.1x: 在设备和边缘网络设施之间提供了网络登录功能。它为实现各种认证方案提供了体系架构，通常调查服务器，简化认证。</p>
+<p>2、802.11i</p>
+<p>IEEE规范802.11i是实现更强大的加密和私密性的下一个标准化方法。它把改进的加密和认证结合在一起。它用两种加密方法代替较弱的WEP协议：TKIP和AES。TKIP是一种临时方法，它通过软件升级支持传统客户端和接入点。另一种方案基于AES，提供了更强大的安全保护能力。</p>
+<p>802.11i的主要组成要素包括：</p>
+<p>高级加密标准(AES): AES密钥长度可以配置成128位、192位或256位。</p>
+<p>EAP: 提供集中认证和动态密钥分布的架构。它实现了无线客户端适配器，可以支持不同的认证类型，与不同的后端服务器通信，如远程认证拨入用户服务(RADIUS)。</p>
+<p>强健安全网络(RSN): 动态协商接入点和无线客户端之间通信使用的认证和加密算法，这意味可以发现新的威胁，并可以增加新的算法。</p>
+<p>802.11的安全建议：</p>
+<p>改变默认的口令</p>
+<p>安装最新的固化软件升级程序</p>
+<p>为系统提供最强大的安全保护功能：WEP, WPA或802.11i (如果提供)</p>
+<p>把SSID默认名称变成独特的名称</p>
+<p>禁用SSID广播功能，在可能时使用MAC地址过滤功能</p>
+<p>在可能时，使用基于IPSec的接入点或防火墙，其可以从最终用户到接入点建立VPN隧道</p>
+<p>使用硬件防火墙，把WLAN与有线局域网隔开</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">xuedue</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2026/01/18/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C/">http://example.com/2026/01/18/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">xuedue</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/802-11/">802.11</a></div><div class="post-share"><div class="social-share" data-image="/img/default.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/01/18/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/" title="计算机网络基础"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">计算机网络基础</div></div><div class="info-2"><div class="info-item-1">网络基础知识网络主要设备及作用   设备 作用    网卡 使计算机连网的设备   中继器（Repeater） 从物理层上延长网络的设备   网桥（Bridge）/2层交换机 从数据链路层上延长网络的设备   路由器（Router）/3层交换机 通过网络层转发分组数据的设备   4~7层交换机 处理传输层以上各层网络传输的设备   网关（gateway） 转换协议的设备    传输速率与吞吐量 两个设备之间数据流动的物理速度称为传输速率（每秒比特数 bps），传输速率高不是指单位数据流动的速度有多快，而是指单位时间内传输的数据量有多少（各传输媒介中信号的流动速度时恒定的）。 主机之间实际的传输速率被称为吞吐量（每秒比特数 bps）,吞吐量不仅衡量带宽，同时也衡量主机的CPU处理能力、网络的拥堵程度、报文中数据字段的占有份额（不含报文首部，只计算数据字段本身）等信息。  中继器 中继器是对减弱的信号进行放大和发送的设备，由电缆传过来的电信号或光信号经由中继器的波形调整和放大再传给另一个电缆； 中继器通过物理层的连接延长网络； 即使在数据链路层出现某些错误，中继器仍然转发数据； 中继...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E7%AE%80%E4%BB%8B/" title="GDB简介"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">GDB简介</div></div><div class="info-2"><div class="info-item-1">简介GDB，又称 GNU 调试器，是用来帮助调试我们程序的工具。 GDB有如下两种使用方式  调试会崩溃、有逻辑错误的程序； 调试程序崩溃时自动生成的 core dump；  GDB 可以干以下几件事：  给程序设置（特定条件下的）断点，包括某块内存的内容改变时触发断点，如果某个变量不知被哪段代码意外篡改了，可以使用 GDB 打数据断点抓到肇事者。 当程序停在断点处时，我们查看所有变量、寄存器的值 当程序停在断点处时，我们除了能查看所有变量的值以外，还能在不改变源代码的情况下改变这些值  安装1sudo apt-get install gdb    编译被测程序被测程序需修改 Makefile，将 CFLAGS 添加 -O0 -g 重新编译并且保证不去符号。如果不加 -g ，gdb 加载后将提示 No symbol table is loaded。缺少调试信息，调试起来会比较麻烦。 如果不使用 -O0 而是-O1、 -O2、-O3，代码优化后，给调试带来难度。 make 编译时，后面需要加 STRIP=/bin/true，当然如果 Makefile 里没有调用 strip 去符号...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/02/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%206G%E8%B0%83%E7%A0%94/" title="80211 6G调研"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-02-04</div><div class="info-item-2">80211 6G调研</div></div><div class="info-2"><div class="info-item-1">引言WiFi7 (Extremely High Throughput，简称 EHT)，其目标为提高WLAN网络的吞吐量至30Gbps，时延控制在5ms之内，为此引入了多项新技术如320MHz带宽、4096-QAM调制、Multi-RU、多链路操作、增强MU-MIMO、多AP协作等技术。在传输速率方面，WiFi7通过引入6G 320MHz带宽、4096-QAM调制技术使得单链路最大理论速率达到46.1Gbps。对于如手机、PC、网卡等常用终端，相同流数的情况下，WiFi7 6G 320MHz带宽相比WiFi6 160M峰值理论吞吐量直接提升一倍。虽然国内目前尚不支持6G频段，但后续仍存在6G开放给WIFI使用的可能。    参数描述 WIFI6(11ax) WIFI7(11be)    频段 2.4GHz、5GHz、6GHz（仅Wi-Fi 6E） 2.4GHz、5GHz、6GHz   最大带宽 160MHz 320MHz   调制方式 OFDMA，最高1024QAM OFDMA，最高4096QAM   最大理论速率 9.6Gbps 46.1Gbps   MIMO 8×8 16×16...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">xuedue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xuedue"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/xuedue" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://bilibili.com" target="_blank" title="BiliBili"><i class="fa-brands fa-bilibili" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">今天超市薯片半价</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#802-11-PHY%E5%8D%8F%E8%AE%AE%E5%9F%BA%E7%A1%80"><span class="toc-number">1.</span> <span class="toc-text">802.11 PHY协议基础</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E4%BF%A1%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.1.</span> <span class="toc-text">通信系统模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E4%BF%A1%E8%B4%A8%E9%87%8F%E6%8C%87%E6%A0%87"><span class="toc-number">1.2.</span> <span class="toc-text">通信质量指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%89%E5%8F%8A%E5%8F%82%E6%95%B0"><span class="toc-number">1.3.</span> <span class="toc-text">涉及参数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#802-11-MAC%E5%B1%82"><span class="toc-number">2.</span> <span class="toc-text">802.11 MAC层</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MAC%E5%B1%82%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.1.</span> <span class="toc-text">MAC层介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DCF"><span class="toc-number">2.2.</span> <span class="toc-text">DCF</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CSMA"><span class="toc-number">2.2.1.</span> <span class="toc-text">CSMA</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#RTS-CTS"><span class="toc-number">2.2.2.</span> <span class="toc-text">RTS&#x2F;CTS</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PCF"><span class="toc-number">2.3.</span> <span class="toc-text">PCF</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#802-11%E5%92%8C802-3%E5%8D%8F%E8%AE%AE%E5%B7%AE%E5%BC%82"><span class="toc-number">3.</span> <span class="toc-text">802.11和802.3协议差异</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#802-11%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.</span> <span class="toc-text">802.11协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E5%8F%91%E5%B1%95"><span class="toc-number">4.1.</span> <span class="toc-text">协议发展</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%91%E6%AE%B5%E4%BF%A1%E9%81%93"><span class="toc-number">4.2.</span> <span class="toc-text">频段信道</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11n%E6%8A%80%E6%9C%AF"><span class="toc-number">4.3.</span> <span class="toc-text">11n技术</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11ac%E6%8A%80%E6%9C%AF"><span class="toc-number">4.4.</span> <span class="toc-text">11ac技术</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11be"><span class="toc-number">4.5.</span> <span class="toc-text">11be</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%A7%E8%81%9A%E5%90%88"><span class="toc-number">5.</span> <span class="toc-text">帧聚合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-number">5.1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Block-Ack%E6%9C%BA%E5%88%B6"><span class="toc-number">5.2.</span> <span class="toc-text">Block Ack机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%A7%E8%81%9A%E5%90%88-1"><span class="toc-number">5.3.</span> <span class="toc-text">帧聚合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#802-11%E7%BD%91%E7%BB%9C"><span class="toc-number">6.</span> <span class="toc-text">802.11网络</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#802-11%E5%B8%A7%E7%B1%BB%E5%9E%8B"><span class="toc-number">7.</span> <span class="toc-text">802.11帧类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%A1%E7%90%86%E5%B8%A7"><span class="toc-number">7.1.</span> <span class="toc-text">管理帧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E5%B8%A7"><span class="toc-number">7.2.</span> <span class="toc-text">控制帧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%B8%A7"><span class="toc-number">7.3.</span> <span class="toc-text">数据帧</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#WDS%EF%BC%88Wireless-Distribution-System%EF%BC%89"><span class="toc-number">7.3.1.</span> <span class="toc-text">WDS（Wireless Distribution System）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A4%E8%AF%81%E5%85%B3%E8%81%94%E8%BF%87%E7%A8%8B"><span class="toc-number">8.</span> <span class="toc-text">认证关联过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A5%E5%A4%AA%E5%B8%A7-amp-%E6%97%A0%E7%BA%BF%E5%B8%A7"><span class="toc-number">8.1.</span> <span class="toc-text">以太帧&amp;无线帧</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A0%E7%BA%BF%E5%90%9E%E5%90%90%E9%87%8F"><span class="toc-number">9.</span> <span class="toc-text">无线吞吐量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82%E6%95%88%E7%8E%87"><span class="toc-number">9.1.</span> <span class="toc-text">数据链路层效率</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#802-11%E5%AE%89%E5%85%A8"><span class="toc-number">10.</span> <span class="toc-text">802.11安全</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%206G%E8%B0%83%E7%A0%94/" title="80211 6G调研">80211 6G调研</a><time datetime="2026-02-04T15:39:55.000Z" title="发表于 2026-02-04 15:39:55">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/20/Proxy/telegram%E7%99%BB%E5%BD%95/" title="Telegram需要旧手机验证/收不到验证码100%可用解决方法">Telegram需要旧手机验证/收不到验证码100%可用解决方法</a><time datetime="2026-01-20T16:02:09.000Z" title="发表于 2026-01-20 16:02:09">2026-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/18/%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%B0%83%E6%B5%8B%E5%B7%A5%E5%85%B7/" title="嵌入式调测工具">嵌入式调测工具</a><time datetime="2026-01-18T16:08:55.000Z" title="发表于 2026-01-18 16:08:55">2026-01-18</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/default.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By xuedue</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 5.4.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3"></script><script src="/js/main.js?v=5.5.3"></script><script src="/js/tw_cn.js?v=5.5.3"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liuy5uBHgv2OwgD3',
+      clientSecret: '5846745c3fef6377eeb8df8b4ad3aaf4cf0f1cb8',
+      repo: 'xuedue_comments',
+      owner: 'xuedue',
+      admin: ['xuedue'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '431963cfb8c1f1bd7e280364113ce0d2'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.3"></script></div></div></body></html>

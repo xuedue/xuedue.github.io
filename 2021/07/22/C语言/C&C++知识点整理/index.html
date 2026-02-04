@@ -1,0 +1,377 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>C/C++知识点整理 | xuedue</title><meta name="author" content="xuedue"><meta name="copyright" content="xuedue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="C++关键词const 指向常量的指针int const *p;const int *p;   指针本身是常量int *const p;分辨:从右往左看，看const离谁近   const修饰成员函数void func() const{} 常成员函数，可以使用类中的所有成员变量，但是不能修改它们，一般用于返回成员变量；  define(预处理阶段)  define 在预处理阶段进行替换  defi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C&#x2F;C++知识点整理">
+<meta property="og:url" content="http://example.com/2021/07/22/C%E8%AF%AD%E8%A8%80/C&C++%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/index.html">
+<meta property="og:site_name" content="xuedue">
+<meta property="og:description" content="C++关键词const 指向常量的指针int const *p;const int *p;   指针本身是常量int *const p;分辨:从右往左看，看const离谁近   const修饰成员函数void func() const{} 常成员函数，可以使用类中的所有成员变量，但是不能修改它们，一般用于返回成员变量；  define(预处理阶段)  define 在预处理阶段进行替换  defi">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/default.jpg">
+<meta property="article:published_time" content="2021-07-22T15:16:33.000Z">
+<meta property="article:modified_time" content="2026-02-04T16:38:43.913Z">
+<meta property="article:author" content="xuedue">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/default.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "C/C++知识点整理",
+  "url": "http://example.com/2021/07/22/C%E8%AF%AD%E8%A8%80/C&C++%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/",
+  "image": "http://example.com/img/default.jpg",
+  "datePublished": "2021-07-22T15:16:33.000Z",
+  "dateModified": "2026-02-04T16:38:43.913Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "xuedue",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/07/22/C%E8%AF%AD%E8%A8%80/C&amp;C++%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'C/C++知识点整理',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 5.4.2"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/img/bg_img.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">xuedue</span></a><a class="nav-page-title" href="/"><span class="site-name">C/C++知识点整理</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">C/C++知识点整理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-07-22T15:16:33.000Z" title="发表于 2021-07-22 15:16:33">2021-07-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-04T16:38:43.913Z" title="更新于 2026-02-04 16:38:43">2026-02-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/C-C/">C/C++</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2026-02-04 16:38:43&quot;}" hidden></div><h1 id="C-关键词"><a href="#C-关键词" class="headerlink" title="C++关键词"></a>C++关键词</h1><h2 id="const"><a href="#const" class="headerlink" title="const"></a>const</h2><ul>
+<li>指向常量的指针<br>int const *p;<br>const int *p;  </li>
+<li>指针本身是常量<br>int *const p;<br>分辨:从右往左看，看const离谁近  </li>
+<li>const修饰成员函数<br>void func() const{} 常成员函数，可以使用类中的所有成员变量，但是不能修改它们，一般用于返回成员变量；</li>
+</ul>
+<h2 id="define-预处理阶段"><a href="#define-预处理阶段" class="headerlink" title="define(预处理阶段)"></a>define(预处理阶段)</h2><p>  define 在预处理阶段进行替换<br>  define函数<br>  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">define <span class="title">add</span><span class="params">(a,b)</span> </span>&#123;a++; b++; cout&lt;&lt;a+b&lt;&lt;endl;&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="inline-编译阶段"><a href="#inline-编译阶段" class="headerlink" title="inline(编译阶段)"></a>inline(编译阶段)</h2><p><strong>内联函数和普通函数的区别</strong>：当编译器处理调用内联函数的语句时，不会将该语句编译成函数调用的指令，而是直接将整个函数体的代码插人调用语句处，就像整个函数体在调用处被重写了一遍一样。  </p>
+<ul>
+<li>优点: 有了内联函数，就能像调用一个函数那样方便地重复使用一段代码，而不需要付出执行函数调用的额外开销。</li>
+<li>缺点: <ul>
+<li>使用内联函数会使最终可执行程序的体积增加。以空间换时间，或增加空间消耗来节省时间，这是计算机学科中常用的方法; </li>
+<li>inline造成代码膨胀会导致额外的换页行为，降低指令高速缓存装置的命中率，以及伴随这些而来的效率降低。——-摘自effective</li>
+</ul>
+</li>
+</ul>
+<p>内联函数中的代码应该只是很简单、执行很快的几条语句。如果一个函数较为复杂，它执行的时间可能上万倍于函数调用的额外开销，那么将其作为内联函数处理的结果是付出让代码体积增加不少的代价，却只使速度提高了万分之一，这显然是不划算的。</p>
+<p><strong>内联函数和宏的区别</strong>：宏是由预处理器对宏进行替代，而内联函数是通过编译器控制来实现的，而且内联函数是真正的函数。</p>
+<p>Q: 类中的构造函数和析构函数可以是内联的吗？<br>A: 你当然可以将其声明为内联的，因为你有权利向编译器建议任何函数为内联的。哈哈，当然我们应该换一种问法，类中的构造函数和析构函数适合作为内联函数吗？effective里面说，构造函数和析构函数往往是inlining的糟糕候选人。因为编译器在编译期间会给你的构造函数和析构函数额外加入很多的代码，像成员函数的构造析构等代码，所以通常构造析构函数比表面上看起来的要多，并不适合作为内联函数。</p>
+<h2 id="static"><a href="#static" class="headerlink" title="static"></a>static</h2><ol>
+<li><p><strong>全局静态变量</strong><br>在全局变量前加上关键字static，全局变量就定义成一个全局静态变量。<br>静态存储区，在整个程序运行期间一直存在。<br>初始化：未经初始化的全局静态变量会被自动初始化为0（自动对象的值是任意的，除非他被显式初始化）；<br>作用域：全局静态变量在声明他的文件之外是不可见的，准确地说是从定义之处开始，到文件结尾。</p>
+</li>
+<li><p><strong>局部静态变量</strong><br>在局部变量之前加上关键字static，局部变量就成为一个局部静态变量。<br>内存中的位置：静态存储区<br>初始化：未经初始化的全局静态变量会被自动初始化为0（自动对象的值是任意的，除非他被显式初始化）；<br>作用域：作用域仍为局部作用域，当定义它的函数或者语句块结束的时候，作用域结束。但是当局部静态变量离开作用域后，并没有销毁，而是仍然驻留在内存当中，只不过我们不能再对它进行访问，直到该函数再次被调用，并且值不变；</p>
+</li>
+<li><p><strong>静态函数</strong><br>在函数返回类型前加static，函数就定义为静态函数。函数的定义和声明在默认情况下都是extern的，但静态函数只是在<strong>声明他的文件当中可见，不能被其他文件所用</strong>。<br>函数的实现使用static修饰，那么这个函数只可在本cpp内使用，不会同其他cpp中的同名函数引起冲突；<br>warning：不要再头文件中声明static的全局函数，不要在cpp内声明非static的全局函数，如果你要在多个cpp中复用该函数，就把它的声明提到头文件里去，否则cpp内部声明需加上static修饰；</p>
+</li>
+<li><p><strong>类的静态成员</strong><br>static修饰的变量先于对象存在，所以<strong>static修饰的变量要在类外初始化</strong>。因为static是所有对象共享的东西嘛，必须要比对象先存在的。<strong>初始化不受private和protected访问限制</strong>，但是若是private，下面main函数就无法访问。</p>
+ <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Test</span>&#123;</span><br><span class="line">  <span class="keyword">private</span>:</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    <span class="type">static</span> <span class="type">int</span> i; <span class="comment">//声明</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> Test::i = <span class="number">100</span>;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span>:&#123;</span></span><br><span class="line">  cout&lt;&lt;Test::i&lt;&lt;endl;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 通常，非static数据成员存在于类类型的每个对象中。然而，static数据成员<strong>独立于该类的任意对象而存在</strong>；每个static数据成员是<strong>与类关联的对象，而不是与该类的对象相关联</strong>。<br> static数据成员定义：  </p>
+<ul>
+<li>一般情况下，static数据成员是类内声明，类外定义;</li>
+<li>static成员不通过类构造函数初始化，而是在定义时进行初始化；</li>
+<li>一个例外：初始化式为常量表达式，整型static const 数据成员（static const int） 可以在类的定义体内进行初始化：</li>
+</ul>
+</li>
+<li><p><strong>类的静态函数</strong><br>静态成员函数和静态数据成员一样，它们都属于类的静态成员，它们都不是对象成员。因此，对静态成员的引用不需要用对象名。<br>在静态成员函数的实现中<strong>不能直接引用类中说明的非静态成员</strong>（没有this指针），<strong>可以引用类中说明的静态成员</strong>（这点非常重要）。如果静态成员函数中要引用非静态成员时，可通过对象来引用。从中可看出，调用静态成员函数使用如下格式：&lt;类名&gt;::&lt;静态成员函数名&gt;(&lt;参数表&gt;);<br>注意：类的<strong>非static成员函数</strong>是可以直接访问类的<strong>static和非static成员</strong>，而不用作用域操作符。<br>使用static成员的优点：  </p>
+<ul>
+<li>避免命名冲突：static成员的名字在类的作用域中，因此可以避免与其他类的成员或全局对象名字冲突。</li>
+<li>可以实施封装：static成员可以是私有成员，而全局对象不可以。</li>
+<li>易读性：static成员是与特定类关联的，可显示程序员的意图。</li>
+</ul>
+</li>
+</ol>
+<h2 id="extern"><a href="#extern" class="headerlink" title="extern"></a>extern</h2><p>extern有两个作用: </p>
+<ol>
+<li>extern “C”:当它与”C”一起连用时，如: extern “C” void fun(int a, int b);则告诉编译器在编译fun这个函数名时按着C的规则去翻译相应的函数名而不是C++的，C++的规则在翻译这个函数名时会把fun这个名字变得面目全非，可能是fun@aBc_int_int#%$也可能是别的，这要看编译器的”脾气”了(不同的编译器采用的方法不一样)</li>
+<li>extern:当extern不与”C”在一起修饰变量或函数时，如在头文件中: extern int g_Int; 它的作用就是<strong>声明函数或全局变量的作用范围</strong>的关键字，其声明的函数和变量可以在本模块或其他模块中使用，记住它是一个声明不是定义!也就是说B模块(编译单元)要是引用模块(编译单元)A中定义的全局变量或函数时，它只要包含A模块的头文件即可,在编译阶段，模块B虽然找不到该函数或变量，但它不会报错，它会在连接时从模块A生成的目标代码中找到此函数。</li>
+</ol>
+<h2 id="volatile"><a href="#volatile" class="headerlink" title="volatile"></a>volatile</h2><p>定义为volatile的变量是说这变量可能会被意想不到地改变，即在你程序运行过程中一直会变，你希望这个值被正确的处理，每次从内存中去读这个值，而不是因编译器优化从缓存的地方读取，比如读取缓存在寄存器中的数值，从而保证volatile变量被正确的读取。</p>
+<h1 id="C-模板以及底层实现"><a href="#C-模板以及底层实现" class="headerlink" title="C++模板以及底层实现"></a>C++模板以及底层实现</h1><ol>
+<li>编译器并不是把函数模板处理成能够处理任意类的函数；编译器从函数模板通过具体类型产生不同的函数；编译器会对函数模板进行<strong>两次编译</strong>：在<strong>声明的地方</strong>对模板代码本身进行编译，在<strong>调用的地方</strong>对参数替换后的代码进行编译。</li>
+<li>这是因为函数模板要被实例化后才能成为真正的函数，在使用函数模板的源文件中包含函数模板的头文件，如果该头文件中只有声明，没有定义，那编译器无法实例化该模板，最终导致链接错误。</li>
+</ol>
+<h1 id="include-“”和include-lt-gt-区别"><a href="#include-“”和include-lt-gt-区别" class="headerlink" title="include “”和include&lt;&gt;区别"></a>include “”和include&lt;&gt;区别</h1><ul>
+<li>include “”查找头文件路径顺序<br>当前头文件目录(比如D:\MyProjects\tmp\ )<br>编译器设置的头文件路径(编译器可使用-I显式指定搜索路径)(比如C:\Keil\c51\INC\ )<br>系统变量CPLUS_INCLUDE_PATH/C_INCLUDE_PATH指定的头文件路径  </li>
+<li>include&lt;&gt;查找头文件的路径顺序为：<br>编译器设置的头文件路径(编译器可使用-I显式指定搜索路径)<br>系统变量CPLUS_INCLUDE_PATH/C_INCLUDE_PATH指定的头文件路径</li>
+</ul>
+<h1 id="指针和引用的区别"><a href="#指针和引用的区别" class="headerlink" title="指针和引用的区别"></a>指针和引用的区别</h1><ol>
+<li>指针有自己的一块空间，而引用只是一个别名；</li>
+<li>使用sizeof看一个指针的大小是4，而引用则是被引用对象的大小；</li>
+<li>指针可以被初始化为NULL，而引用必须被初始化且必须是一个已有对象的引用；</li>
+<li>作为参数传递时，指针需要被解引用才可以对对象进行操作，而直接对引用的修改都会改变引用所指向的对象；</li>
+<li>指针在使用中可以指向其它对象，但是引用只能是一个对象的引用，不能被改变；</li>
+<li>指针可以有多级指针（**p），而引用只有一级；</li>
+<li>指针和引用使用++运算符的意义不一样(一个指针本身的大小是4字节)； <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span>* p1,<span class="type">double</span>* p2;</span><br><span class="line"><span class="type">int</span> a=<span class="number">1</span>,<span class="type">double</span> b=<span class="number">2</span>;</span><br><span class="line">p1=&amp;a,p2=&amp;b;</span><br><span class="line">cout&lt;&lt;p1&lt;&lt;<span class="string">&quot; &quot;</span>&lt;&lt;p2&lt;&lt;endl;</span><br><span class="line">p1++;	p2++;</span><br><span class="line"><span class="comment">//指向的内存空间+1，所以和类型有关，第一个+4，第二个+8</span></span><br><span class="line">cout&lt;&lt;p1&lt;&lt;<span class="string">&quot; &quot;</span>&lt;&lt;p2&lt;&lt;endl;	</span><br><span class="line"><span class="comment">//本身内存空间+1，所以两个地址值都是+4</span></span><br><span class="line">cout&lt;&lt;(&amp;p1<span class="number">+1</span>)&lt;&lt;<span class="string">&quot; &quot;</span>&lt;&lt;(&amp;p2<span class="number">+1</span>);</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="调用赋值构造函数还是拷贝（复制）构造函数的情况（历史悠久，还没理清）"><a href="#调用赋值构造函数还是拷贝（复制）构造函数的情况（历史悠久，还没理清）" class="headerlink" title="调用赋值构造函数还是拷贝（复制）构造函数的情况（历史悠久，还没理清）"></a>调用赋值构造函数还是拷贝（复制）构造函数的情况（历史悠久，还没理清）</h1><p>总结，还没初始化的调用拷贝构造函数，已经初始化过的调用赋值构造函数。</p>
+<h1 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h1>  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">funtion</span><span class="params">()</span> </span>&#123;函数体&#125;</span><br><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">funtion</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>虚函数，在基类声明，在其派生类中根据需要进行重写(不需要可以不重写，继承基类的虚函数)。<br>而声明纯虚函数的类为抽象类，不可定义对象，由其派生的子类想要使用该虚函数，必须重新实现该虚函数，不会自动继承抽象类的虚函数。有纯虚函数的类为抽象类，不能定义抽象类的对象，它的子类要么实现它所有的纯虚函数变为一个普通类，要么还是一个抽象类。</p>
+<h1 id="虚函数实现"><a href="#虚函数实现" class="headerlink" title="虚函数实现"></a>虚函数实现</h1><p>虚函数表：类的虚函数表是一块连续的内存，每个内存单元中记录一个JMP指令的地址。</p>
+<p>编译器会为每个有虚函数的类创建一个虚函数表，该虚函数表将被该类的所有对象共享。类的每个虚函数占据虚函数表中的一块。如果类中有N个虚函数，那么其虚函数表将有N*4字节的大小。</p>
+<p>虚函数表是在编译阶段创建，运行时动态绑定虚函数</p>
+<p>编译器另外还为每个特定类的对象提供了一个虚表指针（即vptr），这个指针指向了对象所属类的虚表。在程序运行时，根据对象的类型去初始化vptr，从而让vptr正确的指向所属类的虚表，从而在调用虚函数时，就能够找到正确的函数。</p>
+<ol>
+<li>一个类中的某个方法被声明为虚函数，则它将放在虚函数表中。</li>
+<li>当一个类继承了另一个类，就会继承它的虚函数表，虚函数表中所包含的函数，如果在子类中有重写，则指向当前重写的实现，否则指向基类实现。若在子类中定义了新的虚函数，则该虚函数指针在虚函数表的后面。</li>
+<li>在继承或多级继承中，要用一个祖先类的指针调用一个后代类实例的方法，若想体现出多态，则必须在该祖先类中就将需要的方法声明为虚函数，否则虽然后代类的虚函数表中有这个方法在后代类中的实现，但对祖先类指针的方法调用依然是早绑定的。</li>
+</ol>
+<p>有虚函数或虚继承的类实例化后的对象大小至少为4字节（确切的说是一个指针的字节数；说至少是因为还要加上其他非静态数据成员，还要考虑对齐问题）；没有虚函数和虚继承的类实例化后的对象大小至少为1字节（没有非静态数据成员的情况下也要有1个字节来记录它的地址）。</p>
+<h1 id="构造函数能否使用虚函数，析构函数呢"><a href="#构造函数能否使用虚函数，析构函数呢" class="headerlink" title="构造函数能否使用虚函数，析构函数呢"></a>构造函数能否使用虚函数，析构函数呢</h1><ul>
+<li>构造函数<strong>不能</strong>为虚函数：构造函数在进行调用时还不存在父类和子类的概念，父类只会调用父类的构造函数，子类调用子类的，因此不存在动态绑定的概念；但是构造函数中可以调用虚函数，不过并没有动态效果，只会调用本类中的对应函数；</li>
+<li>析构函数<strong>可以</strong>为虚函数：对象已经创建，虚表指针存放析构函数的地址，基类与派生类都含有析构虚函数，创建基类与子类对象，都含有各类的虚表指针，当写通用函数时，运行根据传入对象的类型确定析构函数的地址，然后调用该析构函数。<br>析构函数可以是纯虚函数，但是必须提供纯虚析构函数的定义。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">awov</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"><span class="keyword">virtual</span> ~<span class="built_in">awov</span>() = <span class="number">0</span>; <span class="comment">// 声明一个纯虚析构函数</span></span><br><span class="line">&#125;;</span><br><span class="line">awov::~<span class="built_in">awov</span>() &#123;&#125; <span class="comment">// 纯虚析构函数的定义</span></span><br></pre></td></tr></table></figure>
+这个定义是必需的，因为虚析构函数工作的方式是：最底层的派生类的析构函数最先被调用，然后各个基类的析构函数被调用。这就是说，即使是抽象类，编译器也要产生对~awov的调用，所以要保证为它提供函数体。如果不这么做，链接器就会检测出来，最后还是得回去把它添上.</li>
+</ul>
+<h1 id="虚继承"><a href="#虚继承" class="headerlink" title="虚继承"></a>虚继承</h1></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">xuedue</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2021/07/22/C%E8%AF%AD%E8%A8%80/C&amp;C++%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/">http://example.com/2021/07/22/C%E8%AF%AD%E8%A8%80/C&amp;C++%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">xuedue</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/C-C/">C/C++</a></div><div class="post-share"><div class="social-share" data-image="/img/default.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2021/07/22/Github/Github-Q&amp;A/" title="Github/Git 相关问题"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Github/Git 相关问题</div></div><div class="info-2"><div class="info-item-1">解决git clone 速度慢的问题利用国内镜像替换  github.com.cnpmjs.orggit.sdut.me  方法  #我们准备clone的链接git clone https://github.com/example#使用镜像git clone https://github.com.cnpmjs.org/example  git push时登录显示密码错误依次进入界面 全部勾选并生成token，token便是git push登录时需要输入的密码（只会出现一次，记得复制！ pip install git报错利用git安装github上的项目报错ERROR: Command errored out with exit status 128: git clone -q https://github.com/xxx/xxx.git /tmp/pip-req-build-88ue_mql Check the logs for full command output. 解决方法将github网页中的http://换成git:// 1234# 本来是pip install git...</div></div></div></a><a class="pagination-related" href="/2021/07/22/OS/OS-Linux-Q&amp;A/" title="Linux命令和问题"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Linux命令和问题</div></div><div class="info-2"><div class="info-item-1">解决ubuntu 16.4解压后中文乱码zip格式没有指定编码格式，window下的zip编码是GBK/GB2312等 使用命令进行解压 1unzip -O CP936  xxx.zip  其中字符可以是CP936、GBK、GB18030三种中的任一一种 Linux查看占用GPU的进程1sudo fuser -v /dev/nvidia*  </div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E7%AE%80%E4%BB%8B/" title="GDB简介"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">GDB简介</div></div><div class="info-2"><div class="info-item-1">简介GDB，又称 GNU 调试器，是用来帮助调试我们程序的工具。 GDB有如下两种使用方式  调试会崩溃、有逻辑错误的程序； 调试程序崩溃时自动生成的 core dump；  GDB 可以干以下几件事：  给程序设置（特定条件下的）断点，包括某块内存的内容改变时触发断点，如果某个变量不知被哪段代码意外篡改了，可以使用 GDB 打数据断点抓到肇事者。 当程序停在断点处时，我们查看所有变量、寄存器的值 当程序停在断点处时，我们除了能查看所有变量的值以外，还能在不改变源代码的情况下改变这些值  安装1sudo apt-get install gdb    编译被测程序被测程序需修改 Makefile，将 CFLAGS 添加 -O0 -g 重新编译并且保证不去符号。如果不加 -g ，gdb 加载后将提示 No symbol table is loaded。缺少调试信息，调试起来会比较麻烦。 如果不使用 -O0 而是-O1、 -O2、-O3，代码优化后，给调试带来难度。 make 编译时，后面需要加 STRIP=/bin/true，当然如果 Makefile 里没有调用 strip 去符号...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E8%B0%83%E8%AF%95%E5%8E%9F%E7%90%86/" title="GDB调试原理"><img class="cover" src="/img/default.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">GDB调试原理</div></div><div class="info-2"><div class="info-item-1">前言这篇文章来聊聊大名鼎鼎的 GDB，它的豪门背景咱就不提了，和它的兄弟 GCC 一样是含着金钥匙出生的，在 GNU 的家族中的地位不可撼动。  我们都知道，在使用 GCC 编译时，可以使用 -g 选项在可执行文件中嵌入更多的调试信息，那么具体嵌入了哪些调试信息？这些调试信息是如何与二进制的指令之间进行相互交互？在调试的时候，调试信息中是如何获取函数调用栈中的上下文信息？ GDB调试模型GDB 调试包括 2 个程序：gdb 程序和被调试程序。根据这 2 个程序是否运行在同一台电脑中，可以把 GDB 的调试模型分为 2 种:  本地调试 远程调试  本地调试：调试程序和被调试程序运行在同一台电脑中。  远程调试：调试程序运行在一台电脑中，被调试程序运行在另一台电脑中。  关于可视化调试程序并不是重点，它只是一个用来封装 GDB 的外壳而已。我们既可以用黑乎乎的终端窗口来手动输入调试命令；也可以选择集成开发环境(IDE)，这个 IDE 中已经嵌入了器调试，这样就可以使用各种 button 来代替手动输入调试命令了。 与本地调试相比，远程调试中多了一个 GdbServer 程序，它和目...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/%E7%BC%96%E8%AF%91%E9%93%BE%E6%8E%A5%E5%8E%9F%E7%90%86/" title="编译链接原理"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">编译链接原理</div></div><div class="info-2"><div class="info-item-1">1.  前言学过 C 语言同学，第一个接触的例子应该就是著名的 “hello world” 程序，即便时隔多年，也能行云流水般敲出以下代码： 1234567#include &lt;stdio.h&gt;int main (void)&#123;    printf (&quot;hello world!\n&quot;);    return 0;&#125;  然后使用 GCC 一气呵成地编译链接出可执行文件，并运行： 123$ gcc main.c -o test$ ./test hello world!  看着屏幕输出我们想要的显示，开始难免会有一丝兴奋，原来这么简单就可以控制屏幕输出。但事实上真的有这么简单吗？#include 是做什么用的，gcc 在背后帮我们做了什么事情，./test 开始运行时背后又有什么故事。这就是本文的重点：编译、链接、装载。 实际上，一个 c 文件到最后运行，一般会经历以下过程，背后的故事，很长：  2. 预处理预处理是将头文件进行展开，并进行相关的宏替换和处理，删除注释等，最后生成 .i 文件，使用命令 gcc -E hello.c -o ...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GCC/" title="GCC"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">GCC</div></div><div class="info-2"><div class="info-item-1">简介Linux 下最常用的 C 编译器是 GCC，大多数发行版本都默认安装了 GCC。我们可以用以下 GCC 命令，把 test.c 编译成可执行文件 test：gcc -g test.c -o test。 如果大家习惯了 Visual Studio 等集成开发环境的话，会觉得上述的命令很费解。但掌握 GCC 等工具的用法，是一个程序员所必备的技能。 回到上面的 GCC 命令，它的作用是编译源文件 test.c 并生成可执行文件。其中 -o 表示生成的可执行文件名为 test，-g 表明要在可执行文件中添加调试信息。如果要使用 GDB 单步调试程序，必须使用 -g 参数。 可以看到，GCC 的行为是通过命令行参数进行指定的。所以，要掌握 GCC，重点在于熟悉 GCC 的各种参数上。但 GCC 的参数实在太多了，所以更普遍的做法是掌握其常用参数，并在遇到不认识的参数时多查资料进行学习。 GCC 的常用参数-c 作用：只对源文件进行编译操作。 例子: gcc -c test.c 说明：这将生成目标文件（object file）test.o。 -E 作用：只对源文件进行预处理操作。 例...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/makefile%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/" title="makefile基础介绍"><img class="cover" src="/img/default.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">makefile基础介绍</div></div><div class="info-2"><div class="info-item-1">简介Makefile 是一个文本文件，描述了一个或者多个目标-依赖关系以及目标对应的生成/更新（后续统一称为更新）规则。 Makefile 由 make 命令一键解析并处理。 通过 Makefile+make 的支持，我们可以以层级的方式组织项目的成百上千个代码文件，并达到增量编译的目的、以减少编译时间。 本文的阅读方式本文只列出了我们工作中常用的 Makefile 语法，还有一些高级语法及特性没有没有讲解。 本文出现的示例代码中：  $为命令行提示符，意为等待用户输入 #开头的为注释，也是 Makefile中 的注释符号 部分示例可以直接保存到文件中运行，行首的的空格需要改为 Tab，否则编译会提示 missing separator. Stop.  Makefile 基本组成Makefile 由以下的基本结构外加其他一些特性（如变量定义、文件包含等）组成： 12target(s) : prerequisite(s)    command(s)  我们通过以下一个简单的Makefile来讲解这个基本的结构： Makefile 1234567891011121314main: m...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">xuedue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xuedue"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/xuedue" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://bilibili.com" target="_blank" title="BiliBili"><i class="fa-brands fa-bilibili" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">今天超市薯片半价</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#C-%E5%85%B3%E9%94%AE%E8%AF%8D"><span class="toc-number">1.</span> <span class="toc-text">C++关键词</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#const"><span class="toc-number">1.1.</span> <span class="toc-text">const</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#define-%E9%A2%84%E5%A4%84%E7%90%86%E9%98%B6%E6%AE%B5"><span class="toc-number">1.2.</span> <span class="toc-text">define(预处理阶段)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#inline-%E7%BC%96%E8%AF%91%E9%98%B6%E6%AE%B5"><span class="toc-number">1.3.</span> <span class="toc-text">inline(编译阶段)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#static"><span class="toc-number">1.4.</span> <span class="toc-text">static</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#extern"><span class="toc-number">1.5.</span> <span class="toc-text">extern</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile"><span class="toc-number">1.6.</span> <span class="toc-text">volatile</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#C-%E6%A8%A1%E6%9D%BF%E4%BB%A5%E5%8F%8A%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">C++模板以及底层实现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#include-%E2%80%9C%E2%80%9D%E5%92%8Cinclude-lt-gt-%E5%8C%BA%E5%88%AB"><span class="toc-number">3.</span> <span class="toc-text">include “”和include&lt;&gt;区别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8C%87%E9%92%88%E5%92%8C%E5%BC%95%E7%94%A8%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">4.</span> <span class="toc-text">指针和引用的区别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E8%B5%8B%E5%80%BC%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E8%BF%98%E6%98%AF%E6%8B%B7%E8%B4%9D%EF%BC%88%E5%A4%8D%E5%88%B6%EF%BC%89%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%E6%83%85%E5%86%B5%EF%BC%88%E5%8E%86%E5%8F%B2%E6%82%A0%E4%B9%85%EF%BC%8C%E8%BF%98%E6%B2%A1%E7%90%86%E6%B8%85%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">调用赋值构造函数还是拷贝（复制）构造函数的情况（历史悠久，还没理清）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%99%9A%E5%87%BD%E6%95%B0"><span class="toc-number">6.</span> <span class="toc-text">虚函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%99%9A%E5%87%BD%E6%95%B0%E5%AE%9E%E7%8E%B0"><span class="toc-number">7.</span> <span class="toc-text">虚函数实现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E8%83%BD%E5%90%A6%E4%BD%BF%E7%94%A8%E8%99%9A%E5%87%BD%E6%95%B0%EF%BC%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E5%91%A2"><span class="toc-number">8.</span> <span class="toc-text">构造函数能否使用虚函数，析构函数呢</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%99%9A%E7%BB%A7%E6%89%BF"><span class="toc-number">9.</span> <span class="toc-text">虚继承</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%206G%E8%B0%83%E7%A0%94/" title="80211 6G调研">80211 6G调研</a><time datetime="2026-02-04T15:39:55.000Z" title="发表于 2026-02-04 15:39:55">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/20/Proxy/telegram%E7%99%BB%E5%BD%95/" title="Telegram需要旧手机验证/收不到验证码100%可用解决方法">Telegram需要旧手机验证/收不到验证码100%可用解决方法</a><time datetime="2026-01-20T16:02:09.000Z" title="发表于 2026-01-20 16:02:09">2026-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/18/%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%B0%83%E6%B5%8B%E5%B7%A5%E5%85%B7/" title="嵌入式调测工具">嵌入式调测工具</a><time datetime="2026-01-18T16:08:55.000Z" title="发表于 2026-01-18 16:08:55">2026-01-18</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/default.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By xuedue</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 5.4.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3"></script><script src="/js/main.js?v=5.5.3"></script><script src="/js/tw_cn.js?v=5.5.3"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liuy5uBHgv2OwgD3',
+      clientSecret: '5846745c3fef6377eeb8df8b4ad3aaf4cf0f1cb8',
+      repo: 'xuedue_comments',
+      owner: 'xuedue',
+      admin: ['xuedue'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'a31db85646ebea0e0878e79cdefd25a3'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.3"></script></div></div></body></html>

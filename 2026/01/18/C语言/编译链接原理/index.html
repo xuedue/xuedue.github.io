@@ -1,0 +1,888 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>编译链接原理 | xuedue</title><meta name="author" content="xuedue"><meta name="copyright" content="xuedue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1.  前言学过 C 语言同学，第一个接触的例子应该就是著名的 “hello world” 程序，即便时隔多年，也能行云流水般敲出以下代码： 1234567#include &lt;stdio.h&gt;int main (void)&amp;#123;    printf (&quot;hello world!\n&quot;);    return 0;&amp;#125;  然后使用 GCC 一气呵成地编译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编译链接原理">
+<meta property="og:url" content="http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/%E7%BC%96%E8%AF%91%E9%93%BE%E6%8E%A5%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="xuedue">
+<meta property="og:description" content="1.  前言学过 C 语言同学，第一个接触的例子应该就是著名的 “hello world” 程序，即便时隔多年，也能行云流水般敲出以下代码： 1234567#include &lt;stdio.h&gt;int main (void)&amp;#123;    printf (&quot;hello world!\n&quot;);    return 0;&amp;#125;  然后使用 GCC 一气呵成地编译">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg">
+<meta property="article:published_time" content="2026-01-18T13:30:31.000Z">
+<meta property="article:modified_time" content="2026-02-04T16:38:43.924Z">
+<meta property="article:author" content="xuedue">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "编译链接原理",
+  "url": "http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/%E7%BC%96%E8%AF%91%E9%93%BE%E6%8E%A5%E5%8E%9F%E7%90%86/",
+  "image": "https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg",
+  "datePublished": "2026-01-18T13:30:31.000Z",
+  "dateModified": "2026-02-04T16:38:43.924Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "xuedue",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/%E7%BC%96%E8%AF%91%E9%93%BE%E6%8E%A5%E5%8E%9F%E7%90%86/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '编译链接原理',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 5.4.2"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/img/bg_img.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">xuedue</span></a><a class="nav-page-title" href="/"><span class="site-name">编译链接原理</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">编译链接原理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-18T13:30:31.000Z" title="发表于 2026-01-18 13:30:31">2026-01-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-04T16:38:43.924Z" title="更新于 2026-02-04 16:38:43">2026-02-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/C-C/">C/C++</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2026-02-04 16:38:43&quot;}" hidden></div><h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.  前言"></a>1.  前言</h1><p>学过 C 语言同学，第一个接触的例子应该就是著名的 “hello world” 程序，即便时隔多年，也能行云流水般敲出以下代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span> <span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;hello world!\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后使用 GCC 一气呵成地编译链接出可执行文件，并运行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gcc main.c -o <span class="built_in">test</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./test</span> </span><br><span class="line">hello world!</span><br></pre></td></tr></table></figure>
+
+<p>看着屏幕输出我们想要的显示，开始难免会有一丝兴奋，原来这么简单就可以控制屏幕输出。但事实上真的有这么简单吗？<code>#include</code> 是做什么用的，<code>gcc</code> 在背后帮我们做了什么事情，<code>./test</code> 开始运行时背后又有什么故事。这就是本文的重点：编译、链接、装载。</p>
+<p>实际上，一个 c 文件到最后运行，一般会经历以下过程，背后的故事，很长：</p>
+<p><img src="c%E6%96%87%E4%BB%B6%E5%88%B0%E8%BF%90%E8%A1%8C.jpg" alt="img"></p>
+<h1 id="2-预处理"><a href="#2-预处理" class="headerlink" title="2. 预处理"></a>2. 预处理</h1><p>预处理是将头文件进行展开，并进行相关的宏替换和处理，删除注释等，最后生成 .i 文件，使用命令 <code>gcc -E hello.c -o hello.i </code>可 以生成预处理文件 ，其后缀为<code>.i</code>，<code>.i </code>文件是一个可读文本，并不包含任何宏定义，预处理过程主要处理源代码内以 “<code>#</code>” 开始的编译指令，如 “<code>#include</code>” ， “<code>#define</code>”，它的主要处理规则如下：</p>
+<ul>
+<li>将所有 <code>#define</code> 删除，并展开所有宏定义。</li>
+<li>处理所有条件编译指令，如 <code>#if</code> ， <code>#ifdef</code> ， <code>#elif</code> 等。</li>
+<li>处理 <code>#include</code> 预编译指令，将被包含的文件插入到预编译指令的位置，这个过程是递归的，被包含的文件可能也包含其他文件。</li>
+<li>删除所有注释。</li>
+<li>添加行号和文件名标识，用于编译时编译器产生调试信息。</li>
+<li>保留所有的 <code>#pragma</code> 编译器指令，因为编译器要用到他们。</li>
+</ul>
+<p>预处理阶段完成后，旧进入了程序的编译阶段。</p>
+<h1 id="3-编译"><a href="#3-编译" class="headerlink" title="3.  编译"></a>3.  编译</h1><p>源代码是无法直接运行的，这是因为 CPU 能直接解析并运行的不是源代码而是本地代码程序，对于 CPU 来讲本地代码就是转换成机器语言的程序，而这种转换的程序称为编译器。编译器是和 CPU 类型相关的，因为编译器本身也是程序，所以也需要运行环境，比如有 windos 用的 c 编译器，还有 Linux 用的 c 编译器，此外还有一种交叉编译器，它生成的是和运行环境中的 CPU 不同的 CPU 所使用的本地代码，嵌入式开发一般使用的就是交叉编译器。（为什么要有交叉编译？原因在于程序的编译过程中会占用很大的内存和磁盘空间，且对 CPU 处理速度要求较高，而目标平台，如路由器根本不可能达到要求，所以一般进行嵌入式开发时，是先在 PC 主机上编译出目标代码，然后下载到板子上跑起来运行）</p>
+<p>编译就是把完成预处理的文件进行一系列词法分析，语法分析，语义分析及优化后生成相应的汇编代码文件，这个过程是程序构建的核心部分。使用命令 <code>gcc –S hello.i –s hello.s</code>  就将<code>.i</code> 文件翻译成汇编代码，并输出为<code>.s</code> 文件，此文件可读，由汇编代码和一些伪代码组成。</p>
+<p>编译过程一般可以分为 6 步：扫描，语法分析，语义分析，源代码优化，代码生成和目标代码优化，整个过程见下图：</p>
+<p><img src="%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B%E6%80%BB%E5%9B%BE.jpg" alt="img"></p>
+<h2 id="3-1-编译过程"><a href="#3-1-编译过程" class="headerlink" title="3.1 编译过程"></a>3.1 编译过程</h2><p>以如下 C 代码为例 分析编译阶段的每一个过程。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Array [index] = (index + <span class="number">4</span>) * (<span class="number">2</span> + <span class="number">6</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-1-1-词法分析"><a href="#3-1-1-词法分析" class="headerlink" title="3.1.1 词法分析"></a>3.1.1 词法分析</h3><p>首先源代码程序被输入到扫描器，它进行词法分析，将源代码的字符序列分割成一系列的记号，如下：</p>
+<table>
+<thead>
+<tr>
+<th>记号</th>
+<th>类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>array</td>
+<td>标识符</td>
+</tr>
+<tr>
+<td>[</td>
+<td>左方括号</td>
+</tr>
+<tr>
+<td>index</td>
+<td>标识符</td>
+</tr>
+<tr>
+<td>]</td>
+<td>右方括号</td>
+</tr>
+<tr>
+<td>=</td>
+<td>赋值</td>
+</tr>
+<tr>
+<td>(</td>
+<td>左圆括号</td>
+</tr>
+<tr>
+<td>index</td>
+<td>标识符</td>
+</tr>
+<tr>
+<td>+</td>
+<td>加号</td>
+</tr>
+<tr>
+<td>4</td>
+<td>数字</td>
+</tr>
+<tr>
+<td>)</td>
+<td>右圆括号</td>
+</tr>
+<tr>
+<td>*</td>
+<td>乘号</td>
+</tr>
+<tr>
+<td>(</td>
+<td>左圆括号</td>
+</tr>
+<tr>
+<td>2</td>
+<td>数字</td>
+</tr>
+<tr>
+<td>+</td>
+<td>加号</td>
+</tr>
+<tr>
+<td>6</td>
+<td>数字</td>
+</tr>
+<tr>
+<td>)</td>
+<td>右圆括号</td>
+</tr>
+</tbody></table>
+<h3 id="3-1-2-语法分析"><a href="#3-1-2-语法分析" class="headerlink" title="3.1.2 语法分析"></a>3.1.2 语法分析</h3><p>然后语法分析器将对扫描器产生的记号进行语法分析，从而产生语法树，如下图所示：</p>
+<p><img src="%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90.jpg" alt="img"></p>
+<p>从中可以看到整个语句被看作是一个赋值表达式，赋值表达式的左边是一个数组表达式，右边是一个乘法表达式，数组表达式又由两个符号表达式组成等。符号和数字是最小的表达式，他们不是由其他表达式来组成的，所以他们通常作为整个语法树的叶节点。</p>
+<p>在语法分析过程的同时，很多运算符号的优先级和含义也被确定下来了，比如乘法表达式的优先级比加法高，而圆括号表达式的优先级比乘法高等等。如果出现表达式不合法，比如各种括号不匹配，表达式中缺少操作符等，编译器就会报告语法分析的错误。</p>
+<h3 id="3-1-3-语义分析"><a href="#3-1-3-语义分析" class="headerlink" title="3.1.3 语义分析"></a>3.1.3 语义分析</h3><p>接下来进行语义分析，语法分析并不了解这个语句是否真正有意义，所以编译器要进行语义分析，这个过程由语义分析器完成。</p>
+<p>编译器能够进行的只有静态语义分析，即可以在编译期间确定的语义，静态语义通常包含声明和类型的匹配，类型的转换，比如在将一个浮点型赋值给一个指针的时候，语义分析程序会发现类型不匹配，编译器将会报错。相对应的，动态语义分析一般指的是运行起出现的语义相关问题，比如将 <code>0</code> 作为除数是一个运行时的语义错误。</p>
+<p>经过语义分析阶段后，整个语法树的表达式都被标识了类型，如果有些类型需要做隐式转换，语义分析程序将会在语法数种插入相应的转换节点，如下图的语义树：</p>
+<p><img src="%E8%AF%AD%E4%B9%89%E6%A0%91.jpg" alt="img"></p>
+<p>可以看到语义分析还对符号表里的符号类型做了更新。</p>
+<h3 id="3-1-4-中间代码生成"><a href="#3-1-4-中间代码生成" class="headerlink" title="3.1.4 中间代码生成"></a>3.1.4 中间代码生成</h3><p>现代编译器有着多层次的优化，往往在源代码级别会有一个优化过程，这个给过程是由源码级优化器。源码级优化器会在源代码级别进行优化，比如上述表达式中的（2 + 6）就可以被优化掉，因为它的值在编译期就可以确定，经过优化后的语法树如下为优化后的语法树：</p>
+<p><img src="%E4%BC%98%E5%8C%96%E5%90%8E%E7%9A%84%E8%AF%AD%E4%B9%89%E6%A0%91.jpg" alt="img"></p>
+<p>可以看到 （2 + 6）的表达式被优化为 8。其实直接在语法树上进行优化比较困难，所以源代码优化器往往将整个语法树转换为中间代码，它是语法树的顺序表示，已经非常接近目标代码了。但是它一般跟目标机器和运行时环境是无关的，比如它不包含数据的尺寸，变量地址和寄存器的名字等，中间代码由很多形式，比较常见的有三地址码，我们上面的语法树被翻译为三地址码后的形式如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">t1 = <span class="number">2</span> + <span class="number">6</span></span><br><span class="line">t2 = index + <span class="number">4</span></span><br><span class="line">t3 = t2 * t1</span><br><span class="line"><span class="built_in">array</span> [index] = t3</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-1-5-目标代码的生成和优化"><a href="#3-1-5-目标代码的生成和优化" class="headerlink" title="3.1.5 目标代码的生成和优化"></a>3.1.5 目标代码的生成和优化</h3><p>代码生成器将中间代码转换为目标机器代码，这个过程依赖于目标机器，因为不同的机器拥有不同的字长，寄存器，整数数据类型等。对于上面的例子中的中间代码，代码生成器可能会生成如下代码序列，见下图目标机器（x86）代码：</p>
+<p><img src="%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90.jpg" alt="img"></p>
+<p>最后目标代码优化器对上述的目标代码进行优化，比如选择合适的寻址方式，使用位移来代替乘法运算，删除多余指令等。在上面的例子中，乘法由一条相对复杂的基址比例变址寻址的 <code>lea</code> 完成，随后由一条 <code>mov</code> 指令完成赋值操作，这条 <code>mov</code> 指令的寻址方式于 <code>lea</code> 是一样的，见下面的优化代码：</p>
+<p><img src="%E4%BC%98%E5%8C%96%E5%90%8E%E7%9A%84%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81.jpg" alt="img"></p>
+<p>经过以上步骤，最终生成了目标代码，为编译阶段的产物（一种 ELF 文件，ELF 文件的介绍会在第 5 章展开描述）。但是目标代码有个问题，index 和 array 的地址还没有确定，这其实是链接要做的事情，下面会继续分析。</p>
+<h1 id="4-汇编"><a href="#4-汇编" class="headerlink" title="4.  汇编"></a>4.  汇编</h1><p>编译器将预处理文件转换为特定机器语言，但是对于 CPU 来讲，能处理的是自己的指令，所以还需要汇编器将汇编代码转换为特定机器指令。汇编器的作用是将汇编代码转变为机器可以执行的指令，每一个汇编语句几乎否对应一条机器指令。所以汇编器相对于编译器来讲比较简单，没有复杂的语法，也没有语义，也不需要做指令优化，只是根据汇编指令和机器指令的对照表翻译即可。</p>
+<p>汇编器将汇编文件转换为可重定位目标文件（使用命令 <code>gcc –c hello.s –o hell.o</code>  或 或 <code>as hello.s –o hello.o</code>），即<code> .o</code> 文件，是一个不可读的二进制文件（是一种 ELF 文件），此文件可以使用 <code>objdump</code> 或 <code>readelf</code> 打开。这个过程会根据.s 文件中由编译器生成的符号构造一张符号表，内部包含符号表条目，用以链接使用，除此之外还会生成各个节。</p>
+<h1 id="5-链接"><a href="#5-链接" class="headerlink" title="5.  链接"></a>5.  链接</h1><h2 id="5-1-链接的背景"><a href="#5-1-链接的背景" class="headerlink" title="5.1  链接的背景"></a>5.1  链接的背景</h2><p>在现代软件开发过程中，软件规模往往很大，如果都放在一个模块肯定无法想象，所以大型软件一般会拥有多个模块，这些模块之间相互依赖又相对独立。按照这种层次化和模块化存储组织源代码有很多好处，比如代码可读性较高，每个模块可单独开发，编译，测试，改变部分代码不需要编译整个程序等。</p>
+<p>在一个程序被分割为多个模块后，这些模块如何组织形成一个单一的程序是必须解决的问题，模块之间如何组合的问题归结为模块之间如何通信的问题，最常见的是属于静态预言的 C/C++ 模块之间有两种通信方式，分别是函数调用和变量访问。函数访问必须知道目标函数的地址，变量访问也一样，所以这两种方式都可以归结为模块间的符号引用。</p>
+<p>而链接的目的就是将模块组合成单一程序，并赋予这些符号地址，实现模块之间的通信，链接的最终产物是一个可执行文件（也是一种 ELF 文件）</p>
+<h2 id="5-2-ELF-文件（Executable-Linkable-Format）"><a href="#5-2-ELF-文件（Executable-Linkable-Format）" class="headerlink" title="5.2  ELF 文件（Executable Linkable Format）"></a>5.2  ELF 文件（Executable Linkable Format）</h2><p>上面提到汇编和链接过程的产物是一种 ELF 文件，那么下面介绍一下 ELF 文件。</p>
+<p>ELF 是一种文件格式，是 Linux 上默认的目标文件格式，ELF 文件可以分为以下几种，分别是：</p>
+<ul>
+<li>可重定位目标文件：包含了代码段和数据，可与其他 ELF 文件进行合并，创建一个可执行目标文件或共享目标文件，如 Linux 下的<code>.o</code> 文件，静态库也是这一类文件。</li>
+<li>可执行目标文件：包含二进制代码和数据，可以被加载器加载执行，链接的最终产物就是一个可执行目标文件。</li>
+<li>共享目标文件 ( <code>.so</code>)，在链接过程和运行过程两个阶段都需要被使用到：链接过程中，编译器将其他 Relocatable Object File 与存在调用关系的 Shared Object File 进行链接处理后，输出 Executable File；运行过程中，动态链接器处理加载后的 Executable file 查找其依赖的 Shared Object File，进行加载处理，创建整个进程的运行实例。</li>
+<li>核心转储文件（<code>core</code> 文件），当程序崩溃时，会在核心文件中记录整个进程的镜像信息。</li>
+</ul>
+<p>ELF 文件格式提供了两种视图，分别是链接视图和执行视图：</p>
+<p><img src="ELF%E9%93%BE%E6%8E%A5%E5%8F%8A%E6%89%A7%E8%A1%8C%E8%A7%86%E5%9B%BE.png" alt="img"></p>
+<p>链接视图是以节（section）为单位，执行视图是以段（segment）为单位。接视图就是在链接时用到的视图，而执行视图则是在执行时用到的视图。</p>
+<p>目标文件<code>.o</code> 里的代码段 <code>.text</code> 是 section（汇编中.text 同理），当多个可重定向文件最终要整合成一个可执行的文件的时候（链接过程），链接器把目标文件中相同的 section 整合成一个 segment，在程序运行的时候，方便加载器的加载。</p>
+<p>ELF 文件主要包含三个 header，描述文件格式构成。</p>
+<h4 id="5-2-1-ELF-Header"><a href="#5-2-1-ELF-Header" class="headerlink" title="5.2.1 ELF Header"></a>5.2.1 ELF Header</h4><p>使用命令  <strong>readelf -h</strong> 可以查看一个 ELF 文件的 ELF Header 信息。</p>
+<p><img src="ELF_Header%E5%AE%9E%E4%BE%8B.png" alt="img"></p>
+<p>比较重要的成员有：<code>e_ident</code>（ELF 文件幻数）、<code>e_machine</code>（比如可执行文件 ET_EXEC）、<code>e_entry</code>（程序入口虚拟地址）等等。</p>
+<p>ELF 头部定义如以下结构体所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* /include/uapi/linux/elf.h */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">elf32_hdr</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">      <span class="type">unsigned</span> <span class="type">char</span>	e_ident [EI_NIDENT];	<span class="comment">/* Magic number and other info */</span></span><br><span class="line">      Elf32_Half	e_type;			<span class="comment">/* Object file type */</span></span><br><span class="line">      Elf32_Half	e_machine;		<span class="comment">/* Architecture */</span></span><br><span class="line">      Elf32_Word	e_version;		<span class="comment">/* Object file version */</span></span><br><span class="line">      Elf32_Addr	e_entry;		<span class="comment">/* Entry point virtual address */</span></span><br><span class="line">      Elf32_Off	e_phoff;		    <span class="comment">/* Program header table file offset */</span></span><br><span class="line">      Elf32_Off	e_shoff;		    <span class="comment">/* Section header table file offset */</span></span><br><span class="line">      Elf32_Word	e_flags;		<span class="comment">/* Processor-specific flags */</span></span><br><span class="line">      Elf32_Half	e_ehsize;		<span class="comment">/* ELF header size in bytes */</span></span><br><span class="line">      Elf32_Half	e_phentsize;	<span class="comment">/* Program header table entry size */</span></span><br><span class="line">      Elf32_Half	e_phnum;		<span class="comment">/* Program header table entry count */</span></span><br><span class="line">      Elf32_Half	e_shentsize;	<span class="comment">/* Section header table entry size */</span></span><br><span class="line">      Elf32_Half	e_shnum;		<span class="comment">/* Section header table entry count */</span></span><br><span class="line">      Elf32_Half	e_shstrndx;		<span class="comment">/* Section header string table index */</span></span><br><span class="line">&#125; Elf32_Ehdr;</span><br></pre></td></tr></table></figure>
+
+<p>简单归纳各字段</p>
+<pre><code>elf header:
+    magic num、version、arch、endian、flag、elf header size
+    elf type: EXEC (Executable file)、REL (Relocatable file)、DYN (Shared object file)
+    entry point: EXEC 文件才有，程序入口虚拟地址
+    program hdr offset/size/num in file:
+    section hdr offset/size/num in file:
+    str table of section hdr idx:
+</code></pre>
+<h4 id="5-2-2-Section-Header"><a href="#5-2-2-Section-Header" class="headerlink" title="5.2.2 Section Header"></a>5.2.2 Section Header</h4><p>使用命令  <strong>readelf -S</strong> 可以查看一个 ELF 文件的 Section Header 信息。</p>
+<p>![img](Section Header实例png.png)</p>
+<p>一个 ELF 文件中到底有哪些具体的 sections，由包含在这个 ELF 文件中的 section head table (SHT) 决定。每个 section 描述了这个段的信息，比如每个段的段名、段的长度、在文件中的偏移、读写权限及段的其它属性。</p>
+<p>下面介绍下常见和比较重要的 section：</p>
+<table>
+<thead>
+<tr>
+<th>sh_name</th>
+<th>sh_type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>.text</td>
+<td>SHT_PROGBITS</td>
+<td>代码段，包含程序的可执行指令</td>
+</tr>
+<tr>
+<td>.data</td>
+<td>SHT_PROGBITS</td>
+<td>包含初始化了的数据，将出现在程序的内存映像中</td>
+</tr>
+<tr>
+<td>.bss</td>
+<td>SHT_NOBITS</td>
+<td>未初始化数据，因为只有符号所以</td>
+</tr>
+<tr>
+<td>.rodata</td>
+<td>SHT_PROGBITS</td>
+<td>包含只读数据</td>
+</tr>
+<tr>
+<td>.comment</td>
+<td>SHT_PROGBITS</td>
+<td>包含版本控制信息</td>
+</tr>
+<tr>
+<td>.eh_frame</td>
+<td>SHT_PROGBITS</td>
+<td>它生成描述如何 unwind 堆栈的表</td>
+</tr>
+<tr>
+<td>.debug</td>
+<td>SHT_PROGBITS</td>
+<td>此节区包含用于符号调试的信息</td>
+</tr>
+<tr>
+<td>.dynsym</td>
+<td>SHT_DYNSYM</td>
+<td>此节区包含了动态链接符号表</td>
+</tr>
+<tr>
+<td>.shstrtab</td>
+<td>SHT_STRTAB</td>
+<td>存放 section 名，字符串表。Section Header String Table</td>
+</tr>
+<tr>
+<td>.strtab</td>
+<td>SHT_STRTAB</td>
+<td>字符串表</td>
+</tr>
+<tr>
+<td>.symtab</td>
+<td>SHT_SYMTAB</td>
+<td>符号表</td>
+</tr>
+<tr>
+<td>.got</td>
+<td>SHT_PROGBITS</td>
+<td>全局偏移表</td>
+</tr>
+<tr>
+<td>.plt</td>
+<td>SHT_PROGBITS</td>
+<td>过程链接表</td>
+</tr>
+<tr>
+<td>.relname</td>
+<td>SHT_REL</td>
+<td>包含了重定位信息，例如 .text 节区的重定位节区名字将是：.rel.text</td>
+</tr>
+<tr>
+<td>…</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>Section 头部定义如以下结构体所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* /include/uapi/linux/elf.h */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">elf32_shdr</span> &#123;</span></span><br><span class="line">        Elf32_Word sh_name;     <span class="comment">// 节区名，名字是一个 NULL 结尾的字符串。</span></span><br><span class="line">        Elf32_Word sh_type;     <span class="comment">// 为节区类型</span></span><br><span class="line">        Elf32_Word sh_flags;    <span class="comment">// 节区标志</span></span><br><span class="line">        Elf32_Addr sh_addr;     <span class="comment">// 节区的第一个字节应处的位置。否则，此字段为 0。</span></span><br><span class="line">        Elf32_Off sh_offset;    <span class="comment">// 此成员的取值给出节区的第一个字节与文件头之间的偏移。</span></span><br><span class="line">        Elf32_Word sh_size;     <span class="comment">// 此成员给出节区的长度（字节数）。</span></span><br><span class="line">        Elf32_Word sh_link;     <span class="comment">// 此成员给出节区头部表索引链接。其具体的解释依赖于节区类型。</span></span><br><span class="line">        Elf32_Word sh_info;     <span class="comment">// 此成员给出附加信息，其解释依赖于节区类型。</span></span><br><span class="line">        Elf32_Word sh_addralign;    <span class="comment">// 某些节区带有地址对齐约束.</span></span><br><span class="line">        Elf32_Word sh_entsize;      <span class="comment">// 给出每个表项的长度字节数。</span></span><br><span class="line">&#125; Elf32_Shdr;</span><br></pre></td></tr></table></figure>
+
+<p>简单归纳各字段</p>
+<pre><code>section header: （用于 link 的 elf 必须有，其他文件不是必要的）
+    name（string tbl index）、offset、size、addr
+    type:
+        PROGBITS
+        REL：重定位，如.rel.text
+        NOBITS：
+        STRTAB：字符串表，格式为 str1 \0 str2 \0 ... (其他使用该 str 时不需要记录 size)
+        SYMTAB：格式
+        
+    flag: write、alloc、execute、merge、strings、info、exclude、group
+    
+    .rel.text：
+         Offset     Info    Type            Sym.Value  Sym. Name
+        00000038  00000e04 R_MIPS_26         00000000   b_func_1
+
+    .symtab：
+    val：取决 type，可能是地址（相对所在 section 的 offset）
+    type 有 SECTION  OBJECT（变量） FUNC  NOTYPE（外部 sym） FILE（文件名 a.c）
+    Ndx: ABS (文件名)  UND（外部 sym）其他为所在 section index
+    Bind：LOCAL   GLOBAL（外部可见）
+    例子：
+        Num:    Value  Size Type    Bind   Vis      Ndx Name
+        13: 00000000   200 FUNC    GLOBAL DEFAULT    1 a_func_1
+        14: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND b_func_1
+</code></pre>
+<h4 id="5-3-3-Program-Header"><a href="#5-3-3-Program-Header" class="headerlink" title="5.3.3 Program Header"></a>5.3.3 Program Header</h4><p>使用命令  <strong>readelf -l</strong> 可以查看一个 ELF 文件的 Program Header 信息。</p>
+<p><img src="ProgramHeader%E5%AE%9E%E4%BE%8B.png" alt="img"></p>
+<p>程序头是一个结构的数组，每一个结构都表示一个段 (segments)。在可执行文件或者共享链接库中所有的节 (sections) 都被分为不同的几个段 (segments)。</p>
+<p>程序头的索引地址 (e_phoff)、段数量 (e_phnum)、表项大小 (e_phentsize) 都是通过 ELF 头部信息获取的。</p>
+<p>Program 头部定义如以下结构体所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* /include/uapi/linux/elf.h */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">elf32_phdr</span> &#123;</span></span><br><span class="line">      Elf32_Word	p_type;    <span class="comment">/* Magic number and other info */</span></span><br><span class="line">      Elf32_Off	p_offset;</span><br><span class="line">      Elf32_Addr	p_vaddr;</span><br><span class="line">      Elf32_Addr	p_paddr;</span><br><span class="line">      Elf32_Word	p_filesz;</span><br><span class="line">      Elf32_Word	p_memsz;</span><br><span class="line">      Elf32_Word	p_flags;</span><br><span class="line">      Elf32_Word	p_align;</span><br><span class="line">&#125; Elf32_Phdr;</span><br></pre></td></tr></table></figure>
+
+<p>简单归纳各字段</p>
+<pre><code>Program Headers:（用于进程 img 加载，其他文件不是必要的）
+    例子：
+      Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+      REGINFO        0x000094 0x00400094 0x00400094 0x00018 0x00018 R   0x4
+      LOAD           0x000000 0x00400000 0x00400000 0x003a0 0x003a0 R E 0x10000
+      LOAD           0x0003a0 0x004103a0 0x004103a0 0x00020 0x00050 RW  0x10000
+
+     Section to Segment mapping:
+      Segment Sections...
+       00     .reginfo
+       01     .reginfo .text
+       02     .data .sbss .bss
+</code></pre>
+<p>从加载的角度来看，ELF 文件被分成了许多段，ELF 文件中的代码，链接信息和注释都以段的形式存访。每个段在程序表头表中有一个描述项，分别包含段的类型，段的驻留位置相对于 ELF 文件开始处的偏移量，段在内存中的首地址，段的物理地址，段在文件中的大小，段在内存中的大小，段的对齐标志，如上图所示。</p>
+<p>一个可执行文件至少要有一个可加载类型的段，这种类型的段会被装载或映射进内存中，这个会在后面分析程序加载流程时会描述到。</p>
+<h2 id="5-3-符号和符号表"><a href="#5-3-符号和符号表" class="headerlink" title="5.3  符号和符号表"></a>5.3  符号和符号表</h2><h3 id="5-3-1-符号"><a href="#5-3-1-符号" class="headerlink" title="5.3.1  符号"></a>5.3.1  符号</h3><p>符号就是程序中的函数和变量，函数名或变量名就是符号名。每个 ELF 文件都有一个符号表，它包含了在此文件中定义和引用的符号，符号类型可以分为以下三类：</p>
+<p>l Global symbols 即全局符号，是由当前文件定义并能被其他模块引用的符号；</p>
+<p>l External symbols 即外部定义的全局符号，是由其他模块定义并被当前文件所引用的全局符号；</p>
+<p>l Local symbols 即本模块的局部符号，仅由本模块定义的带有 static 的 C 函数和全局变量。</p>
+<p>在编译器的代码里面。用下面结构体来描述一个符号，见下图</p>
+<p><img src="%E7%AC%A6%E5%8F%B7%E8%A1%A8%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.jpg" alt="img"></p>
+<h3 id="5-3-2-符号表"><a href="#5-3-2-符号表" class="headerlink" title="5.3.2  符号表"></a>5.3.2  符号表</h3><p>ELF 文件中的.symtab 节记录着符号表的信息，用 <code>readelf –s hello.o</code> 可以看到符号表的内容，当前 <code>hello.o </code>内的符号表信息如下图：</p>
+<p><img src="hello%E7%9A%84%E7%AC%A6%E5%8F%B7%E8%A1%A8%E4%BF%A1%E6%81%AF.jpg" alt="img"></p>
+<p>从上面的符号表信息中可以看到，当前有 10 个符号，其中符号 main 是 <code>hello.o</code> 内第 1 节（.text）偏移量为 0 的一个全局符号，占 21 字节，type 类型为 Func，其他的以此类推，上图中，ABS 表示不该被重定位，UND 表示未定义的含义。<code>hello.o</code> 中的节的信息如下：</p>
+<p><img src="hello%E7%9A%84section%E4%BF%A1%E6%81%AF.jpg" alt="img"></p>
+<h3 id="5-3-3-C-符号问题"><a href="#5-3-3-C-符号问题" class="headerlink" title="5.3.3 C++ 符号问题"></a>5.3.3 C++ 符号问题</h3><p>C++ 允许不同参数类型的函数拥有一样的函数名，这就是所谓的重载，那么 C++ 是如何来处理函数重载这一情况的呢？</p>
+<p>答案是函数签名，函数签名包含了一个函数的信息，包括函数名，参数类型和名称空间及其他信息。函数签名用于识别不同的函数。在编译器及链接器处理符号时，他们使用某种名称修饰的方法，使得每个函数对应一个修饰后名称，以此来使得编译器和链接器都认为这些重载函数是不同的函数。</p>
+<p>以 GCC 的修饰方法为例，当 GCC 按照一定的规则（不具体展开，不同编译器对名称的修饰方法可能不同）完成对 C++ 名称的修饰之后，就形成了对应的修饰名称。举例如下，下面是一段 C++ 代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">func</span> <span class="params">(<span class="type">int</span> a)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout &lt;&lt; a &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">float</span> <span class="title">func</span> <span class="params">(<span class="type">float</span> a)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout &lt;&lt; a &lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> a = <span class="number">3</span>;</span><br><span class="line">    <span class="type">float</span> b = <span class="number">3.14</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">func</span> (a);</span><br><span class="line">    <span class="built_in">func</span> (b);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译后查看符号表可以得到：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">g++ test.cpp -g -o <span class="built_in">test</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">nm <span class="built_in">test</span> | grep func</span>    </span><br><span class="line">0000000000400945 t _GLOBAL__sub_I__Z4funci</span><br><span class="line">0000000000400896 T _Z4funcf</span><br><span class="line">000000000040086d T _Z4funci</span><br></pre></td></tr></table></figure>
+
+<p>可以看到被修饰后的符号名称为 _Z4funcf 和 _Z4funci ，使用 c++filter 就可以解析对 func 修饰后的名称，解析结果为 func (int) ，如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">c++filt  _Z4funcf</span>      </span><br><span class="line">func (float)</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">c++filt  _Z4funci</span></span><br><span class="line">func (int)</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-4-链接脚本"><a href="#5-4-链接脚本" class="headerlink" title="5.4 链接脚本"></a>5.4 链接脚本</h2><p>每一个链接过程都由链接脚本 (linker script，一般以 lds 作为文件的后缀名) 控制。 链接脚本主要用于规定如何把输入文件内的 section 放入输出文件内，并控制输出文件内容各部分在程序地址空间内布局。链接器有个默认的内置链接脚本，可以使用 <code>ld -verbose</code> 查看。ld 链接选项 <code>-r</code> 和 <code>-N</code> 可以影响默认的链接脚本，-T 选项用以指定特定的链接脚本，它将代替默认的链接脚本。也可以使用暗含的链接脚本以增加自定义的链接命令。</p>
+<h3 id="5-4-1-链接脚本举例分析"><a href="#5-4-1-链接脚本举例分析" class="headerlink" title="5.4.1  链接脚本举例分析"></a>5.4.1  链接脚本举例分析</h3><p>内核镜像的第一个名称为 vmlinux ，vmlinux 是通过源码编译，汇编，链接而成的 ELF 文件，因此这个文件包含了 ELF 文件应有的属性及各种调试信息（这个阶段的 vmlinux 特别大，不能直接在目标机器上运行，因此要进一步压缩），内核目录<code> /arch/arm/kerner/vmlinux.lds.S</code> 会在编译阶段根据宏定义和传入的参数构建出针对特定平台和架构的 <code>vmlinux.lds</code> 链接脚本，由此链接脚本来指导 <code>vmlinux</code> 的生成，下面我们分段来分析此 <code>vmlinux.lds.S</code> 的内容。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">OUTPUT_ARCH (arm)</span><br><span class="line">ENTRY (stext)</span><br></pre></td></tr></table></figure>
+
+<p>这段脚本的含义是指定链输出文件的指令架构为 ARM，且入口函数为 <code>stext</code>，此函数可以在符号表内找到。在这里 <code>OUTPUT_ARCH</code> 用来指定输出架构，使用 <code>objdump –f vmlinux</code> 可以看出目标文件的体系架构；而 ENTRY 用来设置入口点，其参数为符号名称，有几种设置入口点的方法，如下：</p>
+<p><img src="%E7%A8%8B%E5%BA%8F%E5%85%A5%E5%8F%A3%E7%9A%84%E8%AE%BE%E7%BD%AE%E6%96%B9%E6%B3%95.jpg" alt="img"></p>
+<p>链接器会尝试上述几种方法来设置入口点，直到成功。</p>
+<p>接下来进入 <code>SECTIONS</code> 命令，它告诉链接器如何将输入段映射到输出段，以及将如何将输出段放到内存中，其命令格式为：</p>
+<p><img src="sections%E5%91%BD%E4%BB%A4%E6%A0%BC%E5%BC%8F.jpg" alt="img"></p>
+<p>每个 sections-command 可能为：ENTRY 命令，符号赋值，输出段的描述等。一个输出段的完整描述如下图:</p>
+<p><img src="%E8%BE%93%E5%87%BA%E6%AE%B5%E7%9A%84%E5%AE%8C%E6%95%B4%E6%8F%8F%E8%BF%B0.jpg" alt="img"></p>
+<p>其中，大部分属性在输出段中并不需要，我们会在下面的分析中看到，其中 section 后面必须跟一个空格，这样段名就没有歧义，另外，冒号和花括号是必须的。</p>
+<p><img src="section%E5%90%8E%E9%9D%A2%E5%AF%B9%E7%A9%BA%E6%A0%BC%E7%9A%84%E8%A6%81%E6%B1%82.jpg" alt="img"></p>
+<p>下面开始定义目标文件中的各个 section，首先对 “.” 进行赋值，它叫做位置计数器，对应内存里的一个虚拟地址，若不显式的为其赋值，则在每增加一个 <code>section</code> 后对其会自增。（可以看到当前内核的起始地址为 <code>PAGE_OFFSET</code>，它的值由内核宏定义控制，而 <code>TEXT_OFFSET</code> 为内核镜像加载的偏移量，中间预留的一部分内存用来做页表使用。）对 “.” 赋值后，开始对此位置的 <code>section</code> 进行描述。</p>
+<p>第一个 section 为 .head.text ，在此 section 中对 <code>_text</code> 进行赋值，其中 <code>HEAD_TEXT</code> 为宏定义，它展开为 *(<code>.head.text</code>) ，即将所有的目标文件中的 .head.text 加载到此段。</p>
+<p><img src="head.text%E4%B8%BE%E4%BE%8B.jpg" alt="img"></p>
+<p>接下来加载 <code>.text</code> 段，用 <code>_stext</code> 和<code> _etext</code> 两个变量来记录 <code>.text</code> 的起始位置和结束位置， 他们可以在代码内进行访问，<code>ARM_TEXT</code> 为宏定义，展开后指向所有目标文件中与代码段相关的段，其中 <code>ALIGN</code> 的作用是将地址按指定字节进行对齐。</p>
+<p><img src="text%E6%AE%B5%E4%B8%BE%E4%BE%8B.jpg" alt="img"></p>
+<p>接下来加载 <code>_ex_tables</code> 段，其加载地址是按 4 字节进行对齐，用变量 <code>__start_ex_table</code> 和 <code>__stop_ex_table</code>来记录其齐时地址和结束地址，这块可以看到有个 <code>unwind</code> 段，此段是用来进行栈回溯的。</p>
+<p><img src="ex_tables%E6%AE%B5%E4%B8%BE%E4%BE%8B.jpg" alt="img"></p>
+<p>然后加载 init 段，从 __init_begin 开始到 __init_end 结束，在 Linux 初始化完成后，这个段内的内存会被清空释放，只需要在初始化时使用以此，没有必要再驻留再内存中。</p>
+<p><img src="init%E6%AE%B5%E4%B8%BE%E4%BE%8B.jpg" alt="img"></p>
+<p>进一步加载.data 段，即已经初始化的内核数据段，用 _sdata 和 _edata 来记录 .data 段的起始地址和结束地址。</p>
+<p><img src="data%E6%AE%B5%E4%B8%BE%E4%BE%8B.jpg" alt="img"></p>
+<p>加载 bss 段，即未初始化的内核数据段，<code>.end</code> 记录加载结束位置。</p>
+<p>上面的汇编脚本经过编译后生成真正的链接脚本 <code>vmlinux.lds </code>，由其指导目标文件的链接，此链接脚本就是针对于特定平台而生成的，我们看一下最终生成 vmlinux 文件的各个段的排列如下图所示：</p>
+<p><img src="vmlinux%E6%96%87%E4%BB%B6%E7%9A%84%E5%90%84%E4%B8%AA%E6%AE%B5%E7%9A%84%E6%8E%92%E5%88%97.jpg" alt="img"></p>
+<p>可以看到目标文件的布局是严格按照链接脚本生成的。</p>
+<h2 id="5-5-链接的过程"><a href="#5-5-链接的过程" class="headerlink" title="5.5 链接的过程"></a>5.5 链接的过程</h2><p>上面讲过链接的过程就是把各个模块之间相互引用部分处理好，使得各个模块之间能够正确的衔接，最终形成可执行目标文件。链接的基本过程包含了两个步骤，分别是空间与地址分配，符号解析和重定位。</p>
+<h3 id="5-5-1-空间与地址分配"><a href="#5-5-1-空间与地址分配" class="headerlink" title="5.5.1  空间与地址分配"></a>5.5.1  空间与地址分配</h3><p>空间与地址分配的主要过程是扫描所有的输入目标文件，获得他们的各个段的长度，属性和位置，将输入目标文件中的符号表与所有的符号定义和符号引用收集起来，统一放到一个全局符号表，计算出各个段合并后的长度和位置，建立映射关系。</p>
+<p>经过这一步后，每个符号都有了对应的虚拟地址。</p>
+<h3 id="5-5-2-符号解析"><a href="#5-5-2-符号解析" class="headerlink" title="5.5.2  符号解析"></a>5.5.2  符号解析</h3><p>符号解析就是将符号的引用和符号的定义建立关联，这个过程中链接器会查找所有输入目标文件的符号表组成的全局符号表，查找函数或变量是否有对应的定义，如果没有则抛出错误终止链接。具体是怎么做的呢？首先将定义三个集合 E（可重定位目标文件集合）, U（未解析符号集合）, D（已定义符号集合），然后对于每一个输入的目标文件，将其添加进 E 中，并更新 U 和 D 反映当前文件的符号定义和引用情况，不断重复此过程，直到 U 和 D 不再发生变化，如果链接器扫描完所有输入文件后，发现 U 是非空的，那么链接器会输出一个错误并终止，否则进行对 E 中目标文件进行合并，构建可执行目标文件。</p>
+<h3 id="5-5-3-重定位"><a href="#5-5-3-重定位" class="headerlink" title="5.5.3  重定位"></a>5.5.3  重定位</h3><p>重定位就是在符号解析过程中将可执行文件中的符号引用处的地址修改为重定位后的地址。比如在 <code>hello.o</code> 文件内查看 main 的符号定义，其虚拟地址为 0，如下：</p>
+<p><img src="main%E7%9A%84%E7%AC%A6%E5%8F%B7%E5%AE%9A%E4%B9%89.jpg" alt="img"></p>
+<p>而在 hello 中可以看到 main 的地址见下</p>
+<p><img src="hello%E4%B8%ADmain%E7%9A%84%E5%9C%B0%E5%9D%80.jpg" alt="img"></p>
+<p>重定位完成后，最后生成的可执行目标文件中就不需要可重定位的条目，使用 readelf -r hello 可以看到，另外可以使用 objdum –h 命令，查看重定位后的各段的虚拟地址，如在 hello.o 中 ，.data 的地址为 0，因为还没有进行重定位，无法加载进内存运行，重定位后的结果见下图</p>
+<p><img src="%E9%87%8D%E5%AE%9A%E4%BD%8D%E5%90%8E%E5%9C%B0%E5%9D%80.jpg" alt="img"></p>
+<p>根据链接发生时机，将链接分为静态链接和动态链接，下面分别描述。</p>
+<h2 id="5-6-静态链接"><a href="#5-6-静态链接" class="headerlink" title="5.6 静态链接"></a>5.6 静态链接</h2><p>静态链接的核心内容就是将多个目标文件的相同段合并形成一个可执行文件，以 a.c 和 b.c 文件的链接过程为例，是在程序被加载进内存前。下面以一个例子来分析静态链接的过程。</p>
+<h3 id="5-6-1-静态链接过程"><a href="#5-6-1-静态链接过程" class="headerlink" title="5.6.1  静态链接过程"></a>5.6.1  静态链接过程</h3><p>给出两个文件，a.c 如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="type">int</span> shared;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span> <span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> a = <span class="number">100</span>;</span><br><span class="line">    swap (&amp;a, &amp;shared);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>b.c 如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">int shared = 1;</span><br><span class="line"></span><br><span class="line">void swap (int *a, int *b)</span><br><span class="line">&#123;</span><br><span class="line">    int tmp = *a;</span><br><span class="line">    *a = *b;</span><br><span class="line">    *b = tmp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>a.c 种引用了 b.c 文件种的 share 变量和函数，对上述两个使用命令 gcc -c a.c b.c 编译生成 a.o 和 b.o ，查看 a.o 内的符号表:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ gcc -c a.c b.c </span><br><span class="line">$ readelf -s a.o</span><br><span class="line"></span><br><span class="line">Symbol table &#x27;.symtab&#x27; contains 11 entries:</span><br><span class="line">   Num:    Value          Size Type    Bind   Vis      Ndx Name</span><br><span class="line">     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND </span><br><span class="line">     1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS a.c</span><br><span class="line">     2: 0000000000000000     0 SECTION LOCAL  DEFAULT    1 </span><br><span class="line">     3: 0000000000000000     0 SECTION LOCAL  DEFAULT    3 </span><br><span class="line">     4: 0000000000000000     0 SECTION LOCAL  DEFAULT    4 </span><br><span class="line">     5: 0000000000000000     0 SECTION LOCAL  DEFAULT    6 </span><br><span class="line">     6: 0000000000000000     0 SECTION LOCAL  DEFAULT    7 </span><br><span class="line">     7: 0000000000000000     0 SECTION LOCAL  DEFAULT    5 </span><br><span class="line">     8: 0000000000000000    44 FUNC    GLOBAL DEFAULT    1 main</span><br><span class="line">     9: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND shared</span><br><span class="line">    10: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND swap</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 a.o 中引用的两个符号 shared、swap 是未定义的（UND），下面看一下 b.o 的符号表，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ readelf -s b.o</span><br><span class="line"></span><br><span class="line">Symbol table &#x27;.symtab&#x27; contains 10 entries:</span><br><span class="line">   Num:    Value          Size Type    Bind   Vis      Ndx Name</span><br><span class="line">     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND </span><br><span class="line">     1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS b.c</span><br><span class="line">     2: 0000000000000000     0 SECTION LOCAL  DEFAULT    1 </span><br><span class="line">     3: 0000000000000000     0 SECTION LOCAL  DEFAULT    2 </span><br><span class="line">     4: 0000000000000000     0 SECTION LOCAL  DEFAULT    3 </span><br><span class="line">     5: 0000000000000000     0 SECTION LOCAL  DEFAULT    5 </span><br><span class="line">     6: 0000000000000000     0 SECTION LOCAL  DEFAULT    6 </span><br><span class="line">     7: 0000000000000000     0 SECTION LOCAL  DEFAULT    4 </span><br><span class="line">     8: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    2 shared</span><br><span class="line">     9: 0000000000000000    44 FUNC    GLOBAL DEFAULT    1 swap</span><br></pre></td></tr></table></figure>
+
+<p>可以看到变量和函数名是存在的，不是未定义的，下面使用命令 ld a.o b.o -e main -o ab ，把两个目标文件合成一个可执行文件，其中 –e 是指定程序入口是 main 函数，-o 是表示链接后的文件名，看一下 ab 的符号表：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ ld a.o b.o -e main -o ab  </span><br><span class="line">$ readelf -s ab</span><br><span class="line"></span><br><span class="line">Symbol table &#x27;.symtab&#x27; contains 14 entries:</span><br><span class="line">   Num:    Value          Size Type    Bind   Vis      Ndx Name</span><br><span class="line">     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND </span><br><span class="line">     1: 00000000004000e8     0 SECTION LOCAL  DEFAULT    1 </span><br><span class="line">     2: 0000000000400140     0 SECTION LOCAL  DEFAULT    2 </span><br><span class="line">     3: 0000000000600198     0 SECTION LOCAL  DEFAULT    3 </span><br><span class="line">     4: 0000000000000000     0 SECTION LOCAL  DEFAULT    4 </span><br><span class="line">     5: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS a.c</span><br><span class="line">     6: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS b.c</span><br><span class="line">     7: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS </span><br><span class="line">     8: 0000000000400114    44 FUNC    GLOBAL DEFAULT    1 swap</span><br><span class="line">     9: 0000000000600198     4 OBJECT  GLOBAL DEFAULT    3 shared</span><br><span class="line">    10: 000000000060019c     0 NOTYPE  GLOBAL DEFAULT    3 __bss_start</span><br><span class="line">    11: 00000000004000e8    44 FUNC    GLOBAL DEFAULT    1 main</span><br><span class="line">    12: 000000000060019c     0 NOTYPE  GLOBAL DEFAULT    3 _edata</span><br><span class="line">    13: 00000000006001a0     0 NOTYPE  GLOBAL DEFAULT    3 _end</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 main，share， swap 三个符号都有，并且不再是 UND。上面提到静态链接规则其实是将目标文件的相似段进行合并，那么看一下是是如何进行合并的，以 text 段为例，a.o 的 text 段：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ objdump -h a.o</span><br><span class="line"></span><br><span class="line">a.o:     file format elf64-x86-64</span><br><span class="line"></span><br><span class="line">Sections:</span><br><span class="line">Idx Name          Size      VMA               LMA               File off  Algn</span><br><span class="line">  0 .text         0000002c  0000000000000000  0000000000000000  00000040  2**0</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE</span><br><span class="line">  1 .data         00000000  0000000000000000  0000000000000000  0000006c  2**0</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, DATA</span><br><span class="line">  2 .bss          00000000  0000000000000000  0000000000000000  0000006c  2**0</span><br><span class="line">                  ALLOC</span><br><span class="line">  3 .comment      0000002c  0000000000000000  0000000000000000  0000006c  2**0</span><br><span class="line">                  CONTENTS, READONLY</span><br><span class="line">  4 .note.GNU-stack 00000000  0000000000000000  0000000000000000  00000098  2**0</span><br><span class="line">                  CONTENTS, READONLY</span><br><span class="line">  5 .eh_frame     00000038  0000000000000000  0000000000000000  00000098  2**3</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATA</span><br></pre></td></tr></table></figure>
+
+<p>可以看到该 text 段的大小为 2c，再来看一下 b.o 的 text 段：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ objdump -h b.o</span><br><span class="line"></span><br><span class="line">b.o:     file format elf64-x86-64</span><br><span class="line"></span><br><span class="line">Sections:</span><br><span class="line">Idx Name          Size      VMA               LMA               File off  Algn</span><br><span class="line">  0 .text         0000002c  0000000000000000  0000000000000000  00000040  2**0</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, READONLY, CODE</span><br><span class="line">  1 .data         00000004  0000000000000000  0000000000000000  0000006c  2**2</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, DATA</span><br><span class="line">  2 .bss          00000000  0000000000000000  0000000000000000  00000070  2**0</span><br><span class="line">                  ALLOC</span><br><span class="line">  3 .comment      0000002c  0000000000000000  0000000000000000  00000070  2**0</span><br><span class="line">                  CONTENTS, READONLY</span><br><span class="line">  4 .note.GNU-stack 00000000  0000000000000000  0000000000000000  0000009c  2**0</span><br><span class="line">                  CONTENTS, READONLY</span><br><span class="line">  5 .eh_frame     00000038  0000000000000000  0000000000000000  000000a0  2**3</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATA</span><br></pre></td></tr></table></figure>
+
+<p>b.o 的 text 段大小为 2c，看一下链接形成的可执行文件 ab 的段信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ objdump -h ab</span><br><span class="line"></span><br><span class="line">ab:     file format elf64-x86-64</span><br><span class="line"></span><br><span class="line">Sections:</span><br><span class="line">Idx Name          Size      VMA               LMA               File off  Algn</span><br><span class="line">  0 .text         00000058  00000000004000e8  00000000004000e8  000000e8  2**0</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, READONLY, CODE</span><br><span class="line">  1 .eh_frame     00000058  0000000000400140  0000000000400140  00000140  2**3</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, READONLY, DATA</span><br><span class="line">  2 .data         00000004  0000000000600198  0000000000600198  00000198  2**2</span><br><span class="line">                  CONTENTS, ALLOC, LOAD, DATA</span><br><span class="line">  3 .comment      0000002b  0000000000000000  0000000000000000  0000019c  2**0</span><br><span class="line">                  CONTENTS, READONLY</span><br></pre></td></tr></table></figure>
+
+<p>2c + 27 = 53，由此证明了链接的规则，同时在链接完成后，各个段的虚拟地址都已经被计算好了，为文件执行做准备，同时做一个简单计：在 ab 中，text 段的虚拟地址为 4000e8 ，因为 swap 在 b.o 中的偏移量为 0，所以进行相似段合并时，swap 的地址为 4000e8 + 27 = 40010f，查看 swap 的地址如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ readelf -s ab</span><br><span class="line"></span><br><span class="line">Symbol table &#x27;.symtab&#x27; contains 14 entries:</span><br><span class="line">   Num:    Value          Size Type    Bind   Vis      Ndx Name</span><br><span class="line">     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND </span><br><span class="line">     1: 00000000004000e8     0 SECTION LOCAL  DEFAULT    1 </span><br><span class="line">     2: 0000000000400140     0 SECTION LOCAL  DEFAULT    2 </span><br><span class="line">     3: 0000000000600198     0 SECTION LOCAL  DEFAULT    3 </span><br><span class="line">     4: 0000000000000000     0 SECTION LOCAL  DEFAULT    4 </span><br><span class="line">     5: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS a.c</span><br><span class="line">     6: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS b.c</span><br><span class="line">     7: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS </span><br><span class="line">     8: 0000000000400114    44 FUNC    GLOBAL DEFAULT    1 swap</span><br><span class="line">     9: 0000000000600198     4 OBJECT  GLOBAL DEFAULT    3 shared</span><br><span class="line">    10: 000000000060019c     0 NOTYPE  GLOBAL DEFAULT    3 __bss_start</span><br><span class="line">    11: 00000000004000e8    44 FUNC    GLOBAL DEFAULT    1 main</span><br><span class="line">    12: 000000000060019c     0 NOTYPE  GLOBAL DEFAULT    3 _edata</span><br><span class="line">    13: 00000000006001a0     0 NOTYPE  GLOBAL DEFAULT    3 _end</span><br></pre></td></tr></table></figure>
+
+<p>与预期计算相符，其他符号的地址都是这么计算出来的，链接后，每个符号的虚拟地址已经确定，那么在确定符号的虚拟地址后，链接器根据符号的地址对每个需要重定位的指令进行修正，用 objdump 反汇编编译出的指令，ab 的汇编如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">$ objdump -d ab</span><br><span class="line"></span><br><span class="line">ab:     file format elf64-x86-64</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Disassembly of section .text:</span><br><span class="line"></span><br><span class="line">00000000004000e8 &lt;main&gt;:</span><br><span class="line">  4000e8:       55                      push   % rbp</span><br><span class="line">  4000e9:       48 89 e5                mov    % rsp,% rbp</span><br><span class="line">  4000ec:       48 83 ec 10             sub    $0x10,% rsp</span><br><span class="line">  4000f0:       c7 45 fc 64 00 00 00    movl   $0x64,-0x4 (% rbp)</span><br><span class="line">  4000f7:       48 8d 45 fc             lea    -0x4 (% rbp),% rax</span><br><span class="line">  4000fb:       be 98 01 60 00          mov    $0x600198,% esi</span><br><span class="line">  400100:       48 89 c7                mov    % rax,% rdi</span><br><span class="line">  400103:       b8 00 00 00 00          mov    $0x0,% eax</span><br><span class="line">  400108:       e8 07 00 00 00          callq  400114 &lt;swap&gt;</span><br><span class="line">  40010d:       b8 00 00 00 00          mov    $0x0,% eax</span><br><span class="line">  400112:       c9                      leaveq </span><br><span class="line">  400113:       c3                      retq   </span><br><span class="line">  </span><br><span class="line">  0000000000400114 &lt;swap&gt;:</span><br><span class="line">  400114:       55                      push   % rbp</span><br><span class="line">  400115:       48 89 e5                mov    % rsp,% rbp</span><br><span class="line">  400118:       48 89 7d e8             mov    % rdi,-0x18 (% rbp)</span><br><span class="line">  40011c:       48 89 75 e0             mov    % rsi,-0x20 (% rbp)</span><br><span class="line">  400120:       48 8b 45 e8             mov    -0x18 (% rbp),% rax</span><br><span class="line">  400124:       8b 00                   mov    (% rax),% eax</span><br><span class="line">  400126:       89 45 fc                mov    % eax,-0x4 (% rbp)</span><br><span class="line">  400129:       48 8b 45 e0             mov    -0x20 (% rbp),% rax</span><br><span class="line">  40012d:       8b 10                   mov    (% rax),% edx</span><br><span class="line">  40012f:       48 8b 45 e8             mov    -0x18 (% rbp),% rax</span><br><span class="line">  400133:       89 10                   mov    % edx,(% rax)</span><br><span class="line">  400135:       48 8b 45 e0             mov    -0x20 (% rbp),% rax</span><br><span class="line">  400139:       8b 55 fc                mov    -0x4 (% rbp),% edx</span><br><span class="line">  40013c:       89 10                   mov    % edx,(% rax)</span><br><span class="line">  40013e:       5d                      pop    % rbp</span><br><span class="line">  40013f:       c3                      retq  </span><br></pre></td></tr></table></figure>
+
+<p>这就是重定位，还有一个问题是链接器是怎么知道哪些指令要进行重定位呢？在 ELF 文件内有一个重定位表的结构专门用来保存这些与重定位相关的信息，使用 readelf –r a.o 可以看到目标文件的重定位表，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ objdump -r a.o</span><br><span class="line"></span><br><span class="line">a.o:     file format elf64-x86-64</span><br><span class="line"></span><br><span class="line">RELOCATION RECORDS FOR [.text]:</span><br><span class="line">OFFSET           TYPE              VALUE </span><br><span class="line">0000000000000014 R_X86_64_32       shared</span><br><span class="line">0000000000000021 R_X86_64_PC32     swap-0x0000000000000004</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">RELOCATION RECORDS FOR [.eh_frame]:</span><br><span class="line">OFFSET           TYPE              VALUE </span><br><span class="line">0000000000000020 R_X86_64_PC32     .text</span><br></pre></td></tr></table></figure>
+
+<p>其中 “<code>0000000000000021 R_X86_64_PC32     swap-0x0000000000000004</code>“ 表示 swap 在 text 段内被引用了，需要进行重定位，重定位地址为 text 段偏移量为 21 字节处，看一下 a.o 的反汇编</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ objdump  -D a.o</span><br><span class="line"></span><br><span class="line">a.o:     file format elf64-x86-64</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Disassembly of section .text:</span><br><span class="line"></span><br><span class="line">0000000000000000 &lt;main&gt;:</span><br><span class="line">   0:   55                      push   % rbp</span><br><span class="line">   1:   48 89 e5                mov    % rsp,% rbp</span><br><span class="line">   4:   48 83 ec 10             sub    $0x10,% rsp</span><br><span class="line">   8:   c7 45 fc 64 00 00 00    movl   $0x64,-0x4 (% rbp)</span><br><span class="line">   f:   48 8d 45 fc             lea    -0x4 (% rbp),% rax</span><br><span class="line">  13:   be 00 00 00 00          mov    $0x0,% esi</span><br><span class="line">  18:   48 89 c7                mov    % rax,% rdi</span><br><span class="line">  1b:   b8 00 00 00 00          mov    $0x0,% eax</span><br><span class="line">  20:   e8 00 00 00 00          callq  25 &lt;main+0x25&gt;</span><br><span class="line">  25:   b8 00 00 00 00          mov    $0x0,% eax</span><br><span class="line">  2a:   c9                      leaveq </span><br><span class="line">  2b:   c3                      retq   </span><br></pre></td></tr></table></figure>
+
+<p>偏移的 21 字节刚好是 e8 （call 指令）后的位置，这里的 21 也叫做重定位入口。（在重定位段中，swap 的 TYPE 属性是 R_X86_64_PC32，这个表示的是，不要在重定位入口处直接填写 swap 的虚拟内存地址，而要填 swap 相对 call 指令下一条指令的偏移量。R_X86_64_PC32 这里也叫做重定位入口类型。</p>
+<p>如果我们在链接指令<code> ld a.o b.o –e main –o ab</code> 中，不链接 b.o ，则会出现如下错误，这是静态链接常见的一种编译报错，即符号未定义引起的报错。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ ld a.o -e main -o ab</span><br><span class="line">a.o: In function `main&#x27;:</span><br><span class="line">a.c:(.text+0x14): undefined reference to `shared&#x27;</span><br><span class="line">a.c:(.text+0x21): undefined reference to `swap</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-7-动态链接"><a href="#5-7-动态链接" class="headerlink" title="5.7 动态链接"></a>5.7 动态链接</h2><h3 id="5-7-1-动态链接的背景"><a href="#5-7-1-动态链接的背景" class="headerlink" title="5.7.1  动态链接的背景"></a>5.7.1  动态链接的背景</h3><p>上面分析了静态链接的过程，可以看到静态链接有一个明显的特点就是必须是在程序运行前完成。这样会存在以下两个缺点：</p>
+<ul>
+<li>版本更新麻烦。静态库和所有的软件一样，需要定期维护和更新。如 lib 更新了，还需要重新编译可执行文件，尽管可能是一个很小的改动，却导致整个程序需要重新下载，全量更新。</li>
+<li>内存空间浪费。几乎每个 C 程序都使用标准 I/O 函数，比如 printf 和 scanf 在运行时，这些函数的代码会被复制到每个运行进程的文本段中。在一个运行 50-100 个进程的典型系统上，这会是对稀少的存储器系统资源的极大浪费。</li>
+</ul>
+<p>为了解决以上问题，引入了共享库和动态链接。共享库是致力于解决静态库缺陷的一个现代创新产物，它是一个目标模块，在运行时，可以加载到任意的存储器地址，并在存储器中和一个程序链接起来，这个过程称为动态链接，是由一个叫做动态链接器的程序来执行的。</p>
+<p>在任何给定的文件系统中，对于一个库只有一个共享库文件。 所有引用该库的可执行目标文件共享这个共享库文件中的代码和数据，而不是像静态库的内容那样被拷贝和嵌入到引用它们的可执行的文件中；在存储器中，一个共享库的.text 节只有一个副本可以被不同的正在运行的进程共享。</p>
+<p>这样一来，既节省了磁盘空间和内存空间，又使得程序的升级更容易进行，不用再重新编译整个代码，只需要对原有旧目标进行替换即可。</p>
+<h3 id="5-7-2-动态链接原理分析"><a href="#5-7-2-动态链接原理分析" class="headerlink" title="5.7.2 动态链接原理分析"></a>5.7.2 动态链接原理分析</h3><p>动态链接的基本步骤分为以下几步：</p>
+<ul>
+<li>动态链接器的自举（动态链接器即 ld.so 本身也是一个共享对象，但是它不依赖于任何共享对象，如下图所示，其次动态链接器本身所需的全局变量和静态变量的重定位由其自己完成，这就是动态链接器的自举，就像内核的自我解压）</li>
+</ul>
+<p>动态链接的基本步骤分为一下几步：</p>
+<p>（1）动态链接器的自举（动态链接器即 ld.so 本身也是一个共享对象，但是它不依赖于任何共享对象，如下图所示，其次动态链接器本身所需的全局变量和静态变量的重定位由其自己完成，这就是动态链接器的自举，就像内核的自我解压）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ldd /lib/x86_64-linux-gnu/ld-2.19.so </span><br><span class="line">        statically linked</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li> 动态链接装载共享对象，即动态链接器将可执行文件依赖的代码段和数据段映射到进程的地址空间中，直到所有的依赖对象都被装载成功。</li>
+<li> 符号的重定位。</li>
+</ul>
+<p>完成以上步骤后，动态链接器将控制权移交给进程，进程开始运行。</p>
+<p>我们重点分析动态链接时，其符号是如何被重定位的，介绍 GOT，PLT 等相关内容，同时举例分析重定位是如何一步一步实现的。</p>
+<h3 id="5-7-3-地址无关代码（Position-independent-Code）"><a href="#5-7-3-地址无关代码（Position-independent-Code）" class="headerlink" title="5.7.3 地址无关代码（Position-independent Code）"></a>5.7.3 地址无关代码（Position-independent Code）</h3><p>当动态链接模块被装载进内存空间后，指令部分在多个进程间共享，若使用重新装载的方法，需要修改指令（像静态链接一样），没有办法做到同一份指令被多个进程共享，因为重定位后的指令对于每个进程来讲是不一样的，它不像动态链接库中的可修改数据部分，对每个进程来讲都有一份拷贝，可以使用装载时重定位的方法。</p>
+<p>那么如何处理这种动态库的指令部分不能共享的问题呢？我们希望的是程序模块中共享的指令部分在装载时不需要因为装载地址的改变而改变，所以实现方法就是把指令中需要修改的部分分离出来，跟数据部分放在一块，这样指令部分就可以保持不变，而数据部分可以在每个进程中拥有一个副本，这就是地址无关代码，这就保证了二进制文件不论被加载到哪个位置，都可以正确执行。</p>
+<p>我们将共享对象模块种的地址引用按照是否跨模块分为两类，模块内部引用和模块外部引用，按照不同的引用方式又可以分为指令引用和数据访问，同时给出其地址引用方式</p>
+<table>
+<thead>
+<tr>
+<th>各种地址引用方式</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td>指令跳转，引用</td>
+<td>数据访问</td>
+</tr>
+<tr>
+<td>模块内部</td>
+<td>相对跳转和调用</td>
+<td>相对地址访问</td>
+</tr>
+<tr>
+<td>模块外部</td>
+<td>间接跳转和调用（GOT）</td>
+<td>间接访问（GOT）</td>
+</tr>
+</tbody></table>
+<p>其中模块内部的指令引用和数据访问都可以使用相对偏移来进行计算，因为模块内部之间他们的相对偏移是固定的，而模块外部的函数调用需要使用 GOT 进行间接跳转。</p>
+<h3 id="5-7-4-GOT（GLOBAL-Offset-Table）"><a href="#5-7-4-GOT（GLOBAL-Offset-Table）" class="headerlink" title="5.7.4 GOT（GLOBAL Offset Table）"></a>5.7.4 GOT（GLOBAL Offset Table）</h3><p>在进行动态链接时，程序的代码段是只读属性，在重定位过程中是不能被修改的，因为多个进程是共享动态库中的指令部分，但是每个进程却拥有动态共享库的数据部分，那就只能通过修改数据部分来完成重定位过程。</p>
+<p>GOT 即全局偏移表，它是 ELF 在其数据段内建立一个指向被引用的外部变量的指针数组，保存了所有外部符号的地址信息，GOT 被保存在数据段，所以可以在装载时被修改，并且每个进程都有独立的副本，互不影响。假如在执行的指令中，需要引用符号 A，但是 A 存在于动态库中，链接过程并不知道它的地址，于是将 A 的地址部分改写为 GOT 表中的一项，在编译阶段 GOT 表中没有真实数据的，但是在动态链接阶段，动态链接器可以将符号 A 的真实地址写到 GOT 表中对应的数据项，这样就产生流对指令 A 的正确引用，GOT 表中的每一个表项表示的是运行时的符号的真实地址。</p>
+<p>这就是引入 GOT 表的原因。</p>
+<h3 id="5-7-5-PLT（Procedure-Linkage-Table）"><a href="#5-7-5-PLT（Procedure-Linkage-Table）" class="headerlink" title="5.7.5 PLT（Procedure Linkage Table）"></a>5.7.5 PLT（Procedure Linkage Table）</h3><p>相对于静态链接而言，动态链接比较灵活，当然也带来了性能上的一些损失，ELF 程序在静态链接下要比动态链接要快，大约 1%~5%，当然这也取决于程序的运行环境。但如果在动态链接的时候，没有被用到的函数也被重定位，则会延长链接时间，所以 ELF 采用了一种延迟绑定（Lazy Binding）策略，基本思想就是在函数第一次被用到时才进行绑定，如果没有用到则不被绑定。所以程序开始执行时，模块间的函数都没有被绑定，而是需要时才由动态链接器来负责绑定，这种做法可以加快程序启动速度。</p>
+<p>而延迟绑定的实现是由 PLT 表来实现，ELF 文件中，PLT 表和 GOT 表几乎是同时存在，因为运行时不能修改指令，所以通过数据部分的 GOT 表来传递运行时符号的真实地址，而 PLT 是一小段跳转指令，来实现函数的间接调用。</p>
+<p>下面举例来分析一下 PLT 和 GOT 是如何配合来实现函数的间接调用的。</p>
+<h3 id="5-7-6-举例分析"><a href="#5-7-6-举例分析" class="headerlink" title="5.7.6 举例分析"></a>5.7.6 举例分析</h3><p>回到我们最初的 hello world 程序，其虚拟空间地址空间内容如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> /proc/15457/maps</span></span><br><span class="line">00400000-00401000 r-xp 00000000 08:13 2883925                            /home/yw/mywork/my_programe/test</span><br><span class="line">00600000-00601000 r--p 00000000 08:13 2883925                            /home/yw/mywork/my_programe/test</span><br><span class="line">00601000-00602000 rw-p 00001000 08:13 2883925                            /home/yw/mywork/my_programe/test</span><br><span class="line">7fccada35000-7fccadbf3000 r-xp 00000000 08:13 1310823                    /lib/x86_64-linux-gnu/libc-2.19.so</span><br><span class="line">7fccadbf3000-7fccaddf3000 ---p 001be000 08:13 1310823                    /lib/x86_64-linux-gnu/libc-2.19.so</span><br><span class="line">7fccaddf3000-7fccaddf7000 r--p 001be000 08:13 1310823                    /lib/x86_64-linux-gnu/libc-2.19.so</span><br><span class="line">7fccaddf7000-7fccaddf9000 rw-p 001c2000 08:13 1310823                    /lib/x86_64-linux-gnu/libc-2.19.so</span><br><span class="line">7fccaddf9000-7fccaddfe000 rw-p 00000000 00:00 0 </span><br><span class="line">7fccaddfe000-7fccade21000 r-xp 00000000 08:13 1310820                    /lib/x86_64-linux-gnu/ld-2.19.so</span><br><span class="line">7fccae005000-7fccae008000 rw-p 00000000 00:00 0 </span><br><span class="line">7fccae01f000-7fccae020000 rw-p 00000000 00:00 0 </span><br><span class="line">7fccae020000-7fccae021000 r--p 00022000 08:13 1310820                    /lib/x86_64-linux-gnu/ld-2.19.so</span><br><span class="line">7fccae021000-7fccae022000 rw-p 00023000 08:13 1310820                    /lib/x86_64-linux-gnu/ld-2.19.so</span><br><span class="line">7fccae022000-7fccae023000 rw-p 00000000 00:00 0 </span><br><span class="line">7ffefa50c000-7ffefa52d000 rw-p 00000000 00:00 0                          [stack]</span><br><span class="line">7ffefa571000-7ffefa574000 r--p 00000000 00:00 0                          [vvar]</span><br><span class="line">7ffefa574000-7ffefa576000 r-xp 00000000 00:00 0                          [vdso]</span><br><span class="line">ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]</span><br></pre></td></tr></table></figure>
+
+<p>因为可执行代码要调用 printf 函数，所以要在运行时链接 libc.so ，那么其最终是怎么使用到 printf 的呢，用 gdb 调试一下，可以看到其最终调用了跳入了地址 0x400410，进入了 puts 的 plt 表项：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">(gdb) disassemble </span><br><span class="line">Dump of assembler code for function main:</span><br><span class="line">   0x000000000040052d &lt;+0&gt;:     push   % rbp</span><br><span class="line">   0x000000000040052e &lt;+1&gt;:     mov    % rsp,% rbp</span><br><span class="line">=&gt; 0x0000000000400531 &lt;+4&gt;:     mov    $0x4005d4,% edi</span><br><span class="line">   0x0000000000400536 &lt;+9&gt;:     callq  0x400410 &lt;puts@plt&gt;</span><br><span class="line">   0x000000000040053b &lt;+14&gt;:    mov    $0x0,% eax</span><br><span class="line">   0x0000000000400540 &lt;+19&gt;:    pop    % rbp</span><br><span class="line">   0x0000000000400541 &lt;+20&gt;:    retq   </span><br><span class="line">End of assembler dump.</span><br><span class="line">(gdb) </span><br></pre></td></tr></table></figure>
+
+<p>因为可执行代码要调用 printf 函数，所以要在运行时链接 libc.so ，那么其最终是怎么使用到 printf 的呢，用 gdb 调试一下，可以看到其最终调用了跳入了地址 0x400410，进入了 puts 的 plt 表项，反汇编这个地址，结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(gdb) disassemble 0x400410</span><br><span class="line">Dump of assembler code for function puts@plt:</span><br><span class="line">   0x0000000000400410 &lt;+0&gt;:     jmpq   *0x200c02 (% rip)        # 0x601018 &lt;puts@got.plt&gt;</span><br><span class="line">   0x0000000000400416 &lt;+6&gt;:     pushq  $0x0</span><br><span class="line">   0x000000000040041b &lt;+11&gt;:    jmpq   0x400400</span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 0x40010 中是 plt 表中的内容，这里存放着三行代码。可以看到 plt 中又直接跳转到了 *0x200c02 (% rip) 中，跳转到 (0x200c02 + rip) 中存放的数据，接着看一下 (0x200c02 + rip) 中存放了什么，在 x86 汇编中 rip 是指向下一条指令的地址，所以是 0x601018，上面这条指令右边的注释已经帮我们标明了。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) print /x *0x601018</span><br><span class="line">$1 = 0x400416</span><br></pre></td></tr></table></figure>
+
+<p>可以看到值为 0x400416, 正是当前指令的下一条指令 pushq $0x0。0x601018 存放的地址是 puts 函数的地址，如果链接器在初始化阶段已经初始化该项，并且将 puts 的地址填入该项，那么这个跳转指令就是我们所期望的，实现函数的正确调用，但是为了实现延迟绑定，链接器在初始化阶段并没有将 puts 的地址填入到该项，而是将上面 0x400416 指令 pushq 填入到了 <a href="mailto:&#112;&#117;&#x74;&#115;&#x40;&#x67;&#x6f;&#x74;&#46;&#112;&#108;&#x74;">&#112;&#117;&#x74;&#115;&#x40;&#x67;&#x6f;&#x74;&#46;&#112;&#108;&#x74;</a>，所以我们看到 * 0x601018 的值为 0x400416。</p>
+<p>0x400416 下面接着的指令是 jmpq 0x400400，用 <code>x /5i 0x400400</code> 指令 查看（不知道为啥 disassemble 指令不起作用，所以直接看内存）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(gdb) x /5i 0x400400</span><br><span class="line">   0x400400:    pushq  0x200c02 (% rip)        # 0x601008</span><br><span class="line">   0x400406:    jmpq   *0x200c04 (% rip)        # 0x601010</span><br><span class="line">   0x40040c:    nopl   0x0 (% rax)</span><br><span class="line">   0x400410 &lt;puts@plt&gt;: jmpq   *0x200c02 (% rip)        # 0x601018 &lt;puts@got.plt&gt;</span><br><span class="line">   0x400416 &lt;puts@plt+6&gt;:       pushq  $0x0</span><br><span class="line">(gdb) </span><br></pre></td></tr></table></figure>
+
+<p>第一个 <code>pushq 0x200c02 (% rip)</code> 将 <code>link_map</code> 的地址入栈，<code>jmpq *0x200c04 (% rip)</code> 跳转到 <code>dl_runtime_reslove</code> 中解析函数，解析完毕，再将解析到的函数地址，填到对应的 got 表项中。每个外部函数第一次调用都要进行这样一次函数的查找，并将地址填到 got 表项中，这样下次调用的时候，就无需查找了，直接跳转到外部函数。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p /x *0x601018</span><br><span class="line">$6 = 0xf7a80d60</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-7-7-动态库的编译"><a href="#5-7-7-动态库的编译" class="headerlink" title="5.7.7  动态库的编译"></a>5.7.7  动态库的编译</h3><p>动态链接的基本思想就是把程序按照模块拆分为各个相对独立的部分，在程序运行时才将它们链接在一起形成一个完整的程序，而不是像静态链接一样把所有程序模块都链接成一个单独可执行文件，当前 Linux 中，ELF 动态链接文件被称为动态共享对象（Dynamic Shared Objects），一般都是以.so 结尾，windos 下常见的就是.dll 结尾的文件。</p>
+<p>我们依旧以一个例子展开描述动态链接的基本步骤。</p>
+<p>程序 p1.c 如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Lib.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    foobar (<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序 p2.c 如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Lib.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    foobar (<span class="number">2</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述两端代码都引用了 Lib.c 里面的 foobar 函数，为了在内存中加载一次 Lib.c ，使得 p1 和 p2 共享，将 Lib.c 编译成共享对象。</p>
+<p>程序 Lib.c 如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">foobar</span><span class="params">(<span class="type">int</span> a)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;Printing from Lib.so % d\n&quot;</span>, a);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>首先使用命令 gcc -fpic -shared -o Lib.so Lib.c  将 Lib.c 编译为共享对象，-shared 表示产生共享对象，-fpic 表示产生地址无关代码（还有一个 –fPIC 区别在于这个参数产生的代码大一点，而 - fpic 产生的代码小一点，还有一点 - fpic 在某些平台上会有限制，比如全局符号的梳理或代码长度，而而 –FPIC 则没有此限制，一般情况下都用大写的来产生地址无关代码）然后我们得到了一个 Lib.so 的文件，然后我们分别编译链接 p1.c 和 p2.c </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gcc -o p1 p1.c ./Lib.so</span><br><span class="line">gcc -o p2 p2.c ./Lib.so</span><br></pre></td></tr></table></figure>
+
+<p>这样我们得到了两个可执行文件 p1 和 p2 ，基本过程如下：</p>
+<p><img src="%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E8%BF%87%E7%A8%8B.jpg" alt="img"></p>
+<p>与静态链接不同的地方在于 program1.o 和 Lib.o 会被链接在一起，产生可执行文件，但是动态链接的输入只有 program1.o ，在链接执行过程中，链接器会将 foobar 标记为一个动态链接的符号，不对它进行重定位，把这个过程留到装载时再执行，这就是要在编译时带上 Lib.so 的原因（Lib.so 内保存了完整的符号信息），执行 p1，输出如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./p1</span>     </span><br><span class="line">Printing from Lib.so 1</span><br></pre></td></tr></table></figure>
+
+<p>在执行 p1 时，进程的虚拟地址空间布局如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> /proc/24125/maps</span></span><br><span class="line">00400000-00401000 r-xp 00000000 08:13 2883957                            /home/yw/mywork/my_programe/p1</span><br><span class="line">00600000-00601000 r--p 00000000 08:13 2883957                            /home/yw/mywork/my_programe/p1</span><br><span class="line">00601000-00602000 rw-p 00001000 08:13 2883957                            /home/yw/mywork/my_programe/p1</span><br><span class="line">7f934331f000-7f93434dd000 r-xp 00000000 08:13 1310823                    /lib/x86_64-linux-gnu/libc-2.19.so</span><br><span class="line">7f93434dd000-7f93436dd000 ---p 001be000 08:13 1310823                    /lib/x86_64-linux-gnu/libc-2.19.so</span><br><span class="line">7f93436dd000-7f93436e1000 r--p 001be000 08:13 1310823                    /lib/x86_64-linux-gnu/libc-2.19.so</span><br><span class="line">7f93436e1000-7f93436e3000 rw-p 001c2000 08:13 1310823                    /lib/x86_64-linux-gnu/libc-2.19.so</span><br><span class="line">7f93436e3000-7f93436e8000 rw-p 00000000 00:00 0 </span><br><span class="line">7f93436e8000-7f93436e9000 r-xp 00000000 08:13 2883937                    /home/yw/mywork/my_programe/Lib.so</span><br><span class="line">7f93436e9000-7f93438e8000 ---p 00001000 08:13 2883937                    /home/yw/mywork/my_programe/Lib.so</span><br><span class="line">7f93438e8000-7f93438e9000 r--p 00000000 08:13 2883937                    /home/yw/mywork/my_programe/Lib.so</span><br><span class="line">7f93438e9000-7f93438ea000 rw-p 00001000 08:13 2883937                    /home/yw/mywork/my_programe/Lib.so</span><br><span class="line">7f93438ea000-7f934390d000 r-xp 00000000 08:13 1310820                    /lib/x86_64-linux-gnu/ld-2.19.so</span><br><span class="line">7f9343af0000-7f9343af3000 rw-p 00000000 00:00 0 </span><br><span class="line">7f9343b0a000-7f9343b0c000 rw-p 00000000 00:00 0 </span><br><span class="line">7f9343b0c000-7f9343b0d000 r--p 00022000 08:13 1310820                    /lib/x86_64-linux-gnu/ld-2.19.so</span><br><span class="line">7f9343b0d000-7f9343b0e000 rw-p 00023000 08:13 1310820                    /lib/x86_64-linux-gnu/ld-2.19.so</span><br><span class="line">7f9343b0e000-7f9343b0f000 rw-p 00000000 00:00 0 </span><br><span class="line">7ffe39932000-7ffe39953000 rw-p 00000000 00:00 0                          [stack]</span><br><span class="line">7ffe3998d000-7ffe39990000 r--p 00000000 00:00 0                          [vvar]</span><br><span class="line">7ffe39990000-7ffe39992000 r-xp 00000000 00:00 0                          [vdso]</span><br><span class="line">ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]</span><br></pre></td></tr></table></figure>
+
+<p>可以看到整个进程的虚拟地址空间，多出来几个文件的映射，同时看到 p1 还引用了动态链接形式的 C 语言运行时库 libc-2.19.so ，还有一个对象是 ld-2.19.so，它是 Linux 下的动态链接器。动态链接器与普通共享对象一起被映射进进程的地址空间，在系统开始运行 p1 之前，首先会把控制权交给动态链接器，由其完成动态链接工作以后，再把控制权交给 p1。</p>
+<p>Lib.so 的属性如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">readelf -l Lib.so</span> </span><br><span class="line"></span><br><span class="line">Elf file type is DYN (Shared object file)</span><br><span class="line">Entry point 0x5e0</span><br><span class="line">There are 7 program headers, starting at offset 64</span><br><span class="line"></span><br><span class="line">Program Headers:</span><br><span class="line">  Type           Offset             VirtAddr           PhysAddr</span><br><span class="line">                 FileSiz            MemSiz              Flags  Align</span><br><span class="line">  LOAD           0x0000000000000000 0x0000000000000000 0x0000000000000000</span><br><span class="line">                 0x000000000000078c 0x000000000000078c  R E    200000</span><br><span class="line">  LOAD           0x0000000000000e00 0x0000000000200e00 0x0000000000200e00</span><br><span class="line">                 0x0000000000000238 0x0000000000000240  RW     200000</span><br><span class="line">  DYNAMIC        0x0000000000000e18 0x0000000000200e18 0x0000000000200e18</span><br><span class="line">                 0x00000000000001c0 0x00000000000001c0  RW     8</span><br><span class="line">  NOTE           0x00000000000001c8 0x00000000000001c8 0x00000000000001c8</span><br><span class="line">                 0x0000000000000024 0x0000000000000024  R      4</span><br><span class="line">  GNU_EH_FRAME   0x000000000000070c 0x000000000000070c 0x000000000000070c</span><br><span class="line">                 0x000000000000001c 0x000000000000001c  R      4</span><br><span class="line">  GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000</span><br><span class="line">                 0x0000000000000000 0x0000000000000000  RW     10</span><br><span class="line">  GNU_RELRO      0x0000000000000e00 0x0000000000200e00 0x0000000000200e00</span><br><span class="line">                 0x0000000000000200 0x0000000000000200  R      1</span><br><span class="line"></span><br><span class="line"> Section to Segment mapping:</span><br><span class="line">  Segment Sections...</span><br><span class="line">   00     .note.gnu.build-id .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_r .rela.dyn .rela.plt .init .plt .text .fini .rodata .eh_frame_hdr .eh_frame </span><br><span class="line">   01     .init_array .fini_array .jcr .dynamic .got .got.plt .data .bss </span><br><span class="line">   02     .dynamic </span><br><span class="line">   03     .note.gnu.build-id </span><br><span class="line">   04     .eh_frame_hdr </span><br><span class="line">   05     </span><br><span class="line">   06     .init_array .fini_array .jcr .dynamic .got</span><br></pre></td></tr></table></figure>
+
+<p>可以看到其加载段的虚拟地址为 0，需要在装载时由装载器根据当前地址情况，分配足够大小的虚拟地址空间给相应的共享对象。</p>
+<p>如果当前可执行文件的所在的目录缺少 Lib.so，则会报错，执行 p1 时，会有 动态链接报错，这是一种常见的动态链接报错的形式，找不到动态库：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> Lib.so Lib.so.bak</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./p1</span></span><br><span class="line">./p1: error while loading shared libraries: ./Lib.so: cannot open shared object file: No such file or directory</span><br><span class="line"><span class="meta prompt_">$ </span></span><br></pre></td></tr></table></figure>
+
+<h2 id="5-8-显式运行时链接"><a href="#5-8-显式运行时链接" class="headerlink" title="5.8 显式运行时链接"></a>5.8 显式运行时链接</h2><p>支持动态链接的系统都支持一种更加灵活的模块加载方式，叫做显式运行时链接，也叫做运行时加载，也就是让程序自己在运行时控制加载指定的模块，并且可以在不需要该模块时将其卸载。如果动态链接器可以在运行时将共享模块载入内存并且可以进行重定位操作，那么这种运行时加载在理论上也很容易实现，而且一般的共享对象不需要进行任何修改就可以进行运行时装载，这种共享对象往往被叫做动态装载库，和一般的共享对象没有什么区别。</p>
+<p>对于 Linux 来讲，动态库跟一般的共享对象的主要区别在于共享对象是由动态链接器在程序启动之前负责装载和链接的，这一系列步骤由动态链接器自动完成，对于程序本身来讲是透明的；而动态链接库的装载则是通过一系列由动态链接器提供的 API 完成，详细可以参考 dlopen，dlsym，dlerror，dlclose 这几个函数的用法。</p>
+<h1 id="6-加载"><a href="#6-加载" class="headerlink" title="6. 加载"></a>6. 加载</h1><h3 id="6-1-进程地址空间"><a href="#6-1-进程地址空间" class="headerlink" title="6.1 进程地址空间"></a>6.1 进程地址空间</h3><p>Linux 进程地址空间由多个 segments 构成，不同的 segments 具备不同的属性（读、写、执行）以及具备不同的特征（静态、动态），完成不同的功能。</p>
+<p>具体以 32bit 处理器为例，地址空间 layout 布局如下图所示：</p>
+<p><img src="%E8%BF%9B%E7%A8%8B%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4.png" alt="img"></p>
+<p>从地址由小递增而看，分析各个 segments 具备的特征属性及实现功能，其中‘r’表示可读，‘w’表示可写，‘x’表示可执行，‘p’表示 private 私有，‘s’表示 shared 共享：</p>
+<p><strong>Text segment：</strong> 代码段，存放程序指令，通常为权限为‘rxp’</p>
+<p><strong>Data segment：</strong> 数据段，存放程序初始化后的全局及静态变量，通常为权限为‘rxp’</p>
+<p><strong>BSS segment：</strong> 数据段，存放程序未初始化或初始化为 0 的全局及静态变量，通常为权限为‘rxp’</p>
+<p>以上三个 segments 的特征为静态的，即对于一个程序而言在编译后大小是固定的，所以这三个 segments 连续存储排布。</p>
+<p><strong>Heap segment：</strong> 堆，用于进程动态分配内存，通常为权限为‘rwp’</p>
+<p><strong>Mem map segment：</strong>Map 段，mmap 系统调用后申请的段，可以用于存储动态库、匿名页等等</p>
+<p><strong>Stack segment：</strong> 栈，用于函数调用过程栈生长及收缩，通常为权限为‘rwp’</p>
+<p>对于一个进程实例，可以通过 <strong><code>cat /proc/&#123;PID&#125;/maps</code></strong> 查看该进程的内存地址空间布局，下图为一个进程实例：</p>
+<p><img src="%E8%BF%9B%E7%A8%8B%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4%E5%AE%9E%E4%BE%8B.png" alt="img"></p>
+<p>上图包含了一个进程实例的以下关键信息：</p>
+<ol>
+<li>进程地址空间 segments 构成</li>
+<li>各 segments 占用的地址范围，具备的属性特征</li>
+<li>各 segment 是匿名段还是命名段，如果是命名段，其指向的具体文件</li>
+</ol>
+<h3 id="6-2-程序加载过程"><a href="#6-2-程序加载过程" class="headerlink" title="6.2 程序加载过程"></a>6.2 程序加载过程</h3><p>从编译链接的角度看，可以分为静态链接和动态链接。</p>
+<p>同样，对于一个执行文件的加载运行过程，静态链接程序和动态链接程序存在差异：</p>
+<ol>
+<li>静态链接程序：运行加载过程无需进行动态 lib 库的加载链接，静态链接程序运行时地址空间如下图所示：</li>
+</ol>
+<p><img src="%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E7%A8%8B%E5%BA%8F%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4.png" alt="img"></p>
+<ol start="2">
+<li>动态链接程序：运行加载过程需要进行动态 lib 库的加载链接，动态链接程序运行时地址空间如下图所示：</li>
+</ol>
+<p><img src="%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E7%A8%8B%E5%BA%8F%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4.png" alt="img"></p>
+<p>程序运行过程主要完成以下三部分流程：</p>
+<ol>
+<li><p>创建一个独立的虚拟地址空间。</p>
+</li>
+<li><p>读取可执行文件，并且建立虚拟空间与可执行文件的映射关系。</p>
+</li>
+<li><p>将 CPU 的 PC 寄存器设置成可执行文件的入口地址，启动运行新进程。</p>
+</li>
+</ol>
+<p>以下更为详细的介绍 ELF 可执行程序的加载流程：</p>
+<ol>
+<li><p>读取并检查目标执行程序 ELF 头部</p>
+</li>
+<li><p>加载及解析目标程序的 Program Header</p>
+</li>
+<li><p>如果需要动态链接，则寻找和处理解释器段。<strong>INTERP</strong> 是解释器段类型，需要加载解析器段，用于加载共享库。找到后就根据其位置的 p_offset 和大小 p_filesz 把整个” 解释器” 段的内容读入缓冲区。</p>
+</li>
+</ol>
+<p><img src="ProgramHeader%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8%E4%BF%A1%E6%81%AF.png" alt="img"></p>
+<p>​    通过命令   <strong><code>readelf -S</code></strong> 可以看到动态链接程序使用的解释器，如上图红框所示。而静态链接程序无此内容。</p>
+<ol start="4">
+<li><p>装入目标程序的段 segment</p>
+<p>从目标映像的程序头中搜索类型为 PT_LOAD 的段（Segment）。在二进制映像中，只有类型为 PT_LOAD 的段才是需要装入的。确定了装入地址后，建立用户空间虚拟地址空间与目标映像文件中某个连续区间之间的映射。</p>
+<p>有一点需要注意，在映射到进程的虚拟地址空间时，栈、堆、mmap、** 解析器 ** 段 的起始地址往往加上一个 <strong>随机偏移量</strong>。因为在 i386 系统上，文本基地址（.text）固定为 0x08048000，敏感的堆栈区域容易被推算出入口地址，从而被黑客攻击。</p>
+</li>
+<li><p>获取程序的入口地址</p>
+<p>完成了目标程序和解释器的加载，各个段的内容已经加载到内存了。</p>
+<p>1）如果需要装入解释器，则进入用户空间的入口地址设置成 l 解释器映像的入口地址。这样返回用户空间时先执行解析器程序，将需要的 share lib 映射到进程的 mmap 虚拟地址空间中；可通过 ldd 命令查看依赖动态库。</p>
+<p>2）若不需要装入解释器，那么这个入口地址就是目标映像本身的入口地址。</p>
+</li>
+<li><p>需要准备目标文件的参数环境变量等必要信息</p>
+<p>从 execve 系统调用拿到的参数、环境变量等等，还有一些 “辅助向量，经过一些设置后，压入进程栈中。</p>
+<p>这些信息需要复制到用户空间，使它们在 CPU 进入解释器或目标映像的程序入口时出现在用户空间堆栈上。</p>
+</li>
+</ol>
+<p><strong>进程加载段（segment）的类型定义如下</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> PT_NULL    0	             <span class="comment">/* 未定义的条目 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PT_LOAD    1	             <span class="comment">/* 可加载的段 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PT_DYNAMIC 2	             <span class="comment">/* 动态链接相关信息 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PT_INTERP  3	             <span class="comment">/* 解析器段 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PT_NOTE    4	             <span class="comment">/* 附加信息的位置和大小 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PT_SHLIB   5	             <span class="comment">/* 预留类型，无意义 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PT_PHDR    6	             <span class="comment">/* 指出该程序头表在文件和内存映像中的位置和大小 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PT_TLS     7		         <span class="comment">/* Thread local storage segment */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PT_LOOS    0x60000000	     <span class="comment">/* OS-specific */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PT_HIOS    0x6fffffff	     <span class="comment">/* OS-specific */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PT_LOPROC  0x70000000	     <span class="comment">/* 体系相关信息 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PT_HIPROC  0x7fffffff	     <span class="comment">/* 体系相关信息 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PT_GNU_EH_FRAME  0x6474e550            <span class="comment">/* 供栈回溯的信息 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PT_GNU_STACK	(PT_LOOS + 0x474e551)  <span class="comment">/* 栈 */</span></span></span><br></pre></td></tr></table></figure>
+
+<h1 id="7-编译、链接工具使用举例"><a href="#7-编译、链接工具使用举例" class="headerlink" title="7. 编译、链接工具使用举例"></a>7. 编译、链接工具使用举例</h1><p><strong>gcc</strong></p>
+<p>以下是我们 TDMP 平台的一条编译命令，输入文件为 specialDial.c，输出为 specialDial.o：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arm-openwrt-linux-muslgnueabi-gcc -Os -pipe -march=armv7-a -mtune=cortex-a7 -g3 -fno-caller-saves -Wa,--noexecstack -fhonour-copts -mfloat-abi=soft -fPIC -fstack-protector -D_FORTIFY_SOURCE=2 -Wl,-z,now -Wl,-z,relro -DMANUFACTURER_VENDOR_TPLINK -DTP_MESH_TPLINK -DINCLUDE_TPDDNS_FUNC -DVENDOR_WLAN_DRIVER_qca -DVENDOR_ETHERNET_ipq5018 -DCONFIG_LAN_ETH_NAME_PREFIX=\&quot;eth0.\&quot; -DCONFIG_APS_BUILT_IN -DCONFIG_PS_FAST_FORWARD_SUPPORT -DINCLUDE_APP_MARKET -DFACBOOT_UPGRADE_SUPPORT -DTP_FEATURE_MESH -DTP_WPS_ENROLLEE_SUPPORT -DTP_FEATURE_DFS_SUPPORT -DMESH_WPS_STA_SUPPORT -DWIFISON_FACTORY_PAIR -DTP_WPS_FRAG_SUPPORT -DTP_FEATURE_DUALBAND_BH -DTP_FEATURE_WPS -DINET6 -DHTTP_IPV6_MANAGEMENT -DCONFIG_STATISTICS_IPV6_SUPPORT -DIPV6_AUTO_DIAL -DCONFIG_SINGLE_WAN_NAT66 -DCONFIG_IPV6_DIAL_FOLLOW_IPV4 -DCONFIG_DNS_PROXY_IPV6_SUPPORT -DGPIO_SYS_LED=38 -DGPIO_MESH_LED_RED=19 -DGPIO_PAIR_BUTTON=31 -DCONFIG_GPIO_LED_ACTIVE_MODE=0 -DGPIO_RESET_BUTTON=32 -DTP_FEATURE_EVENT_ENHANCE -DTP_FEATURE_EVENT_ENHANCE_IN_INETD -DHTTP_MAX_CONTENT=0x1200000 -DCONFIG_VLAN_PER_PORT -DCONFIG_WAN_AT_NOPORT -DWLAN_5G_BAND1_SUPPORT -DWLAN_2G_11AX_SUPPORT -DMAPD_SUPPORT_802_11_AX -DWLAN_5G_11AX_SUPPORT -DMAPD_SUPPORT_802_11_AX -DWLAN_OFDMA_DEFAULT_CONFIG_DISABLED -DWLAN_5G_BAND1_BAND2_SUPPORT -DWLAN_5G_BW160_SUPPORT -DWLAN_CONFIG_BANDWIDTH_SUPPROT_160M -DPHY_SPEED_1000M -DTP_FEATURE_WAN_PORT_DETECT -DFIX_WAN_PORT=3 -DSWITCH_PHY_NUM=4 -DTP_FEATURE_POWER_POSITION_LEFT -DDM_ARRAY_OPTION_SUPPORT -DTP_WAN_PORT_DETECT_PROTOCOL=0x7878 -DDMS_PLUGIN_BUILTIN -DDEV_MAIN_VER=0x50010000 -DDEV_MINOR_VER=0x0000 -DSWITCH_PORT_MASK=0xF -DLAN_WAN_PARTITION_BY_VLAN_TAG -DWLAN_DUAL_BAND -DGUEST_5G_SUPPORT -DGUEST_SSIDBRD_SUPPORT -DWLAN_SECURITY_SUPPORT -DWLAN_DOT11_SAE -DWLAN_MULTI_SSID_SUPPORT -DWLAN_WIFI5_COMPATIBLE_BSS_SUPPORT -DWLAN_WIFI5_BSS_DEFAULT_SUFFIX=\&quot;_WiFi5\&quot; -DMAP_BSS_MAX_NUM=6 -DWLAN_EXTEND_MSSID_NUM=3 -DCTCFG_WLAN_SWITCH_SUPPORT -DUSE_DHCP_DETECT=1 -DCTCFG_TP_FEATURE_RSSI_DETECT -DBUILD_DATE=220828 -DBUILD_DATE_YEAR=22 -DBUILD_DATE_MON=8 -DBUILD_DATE_MDAY=28 -DBUILD_DATE_HOUR=11 -DBUILD_DATE_MIN=5 -DBUILD_DATE_SEC=7 -DCONFIG_PS_PORT_MAX=32 -DCTCFG_SUPPORT -DPLATFORM_TDMP -DDUAL_FREQ -DCTCFG_WAN_BRIDGE -DDEFAULT_SYS_MODE=0 -DCTCFG_NETSTAT_SUPPORT -DCTCFG_ROLE_SWITCH_SUPPORT -DCTCFG_MAPD_SERVER_DOMAINS=\&quot;wifiserver.smartont.net:NULL\&quot; -DCONFIG_CUEI_SUPPORT -DELINK_SUPPORT -DELINK_SYNC_DISABLE -DCTCFG_WLAN_EXT -DCTCFG_TRAFFIC_STATISTIC_EX -DCTCFG_MAC_FILTER_SUPPORT -DCTCFG_IPTV_SUPPORT -DIPTV_LAN1_PORT_INDEX=2 -DIPTV_LAN2_PORT_INDEX=1 -DIPTV_LAN3_PORT_INDEX=0 -DELINK_V1 -DCT_WOCLIENT_SUPPORT -DWOLINK_FEATURE -DCT_SOHO_SDK_API -DCT_SPEED_LIMIT_BITS -DHAVE_CYASSL -DCT_WOCLIENT_SCRAM_SUPPORT -DDUAL_IMAGE -DUSE_NAND_FLASH -DCONFIG_MTD_SPI_NOR_UC_USE_4K_SECTORS -DCTCFG_GET_LAN_BY_MAC -DCPU_INFO_SUPPORT -DCTCFG_TELNET_SUPPORT -DCTCFG_TELNET_USERNAME=\&quot;useradmin\&quot; -DCTCFG_TELNET_PASSWD=\&quot;123456\&quot; -DCTCFG_TELNET_ENABLE=0 -DDMS_FEATURE_ATED_FIRSTBOOT_LIMIT -DDMS_FEATURE_TMP_FIRSTBOOT_LIMIT -DCTCFG_FACTORY_TEST_STATUS_SUPPORT -DCT_WPS_PIN_BAND_SUPPORT -DCTCFG_LAN_CONNECT_TRIGGER_PAIRING -DTP_FEATURE_REMOTE_DM -DCONFIG_USE_kmod_wlan_access_mng_notify -DCTCFG_MULTI_DOMAIN_SUPPORT -DFPIVOT_PATH_LOCK -DCONFIG_SET_SWITCH_FC_PARAM_BY_PORT_NUM -DTP_FEATURE_CFG80211 -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/staging_dir/target-arm_cortex-a7_musl-1.1.16_eabi/usr/include/libnl -DTP_FEATURE_ANI_ENHANCE -DTP_FEATURE_ANI_DESENSE_LEVEL_LOWER_BOUND=-5 -DTP_FEATURE_ANI_DESENSE_LEVEL_UPPER_BOUND=25 -DTP_FEATURE_ANI_DESENSE_LEVEL_ERROR_SCALE_MASK=0x00880004 -DTP_FEATURE_ANI_DYNAMIC_EDCCA -DTP_FEATURE_ANI_DYNAMIC_EDCCA_UPPER_BOUND=0x26 -DTP_FEATURE_ANI_DYNAMIC_EDCCA_SCALE_MASK=0x1 -DTP_FEATURE_ANI_DYNAMIC_NF -DTP_FEATURE_ANI_DYNAMIC_NF_THESHOLD=15 -DTMP_WLAN_INFO_SUPPORT -DSUPPORT_ENTER_ART -DCONFIG_LOCAL_MAX_STA_NUM=256 -DCONFIG_REMOTE_MAX_STA_NUM=256 -DCONFIG_MANAGE_MAX_STA_NUM=128 -DCONFIG_TOPOLOGY_MAX_STA_LIMIT=256 -DHOST_NUM_2G=128 -DHOST_NUM_5G=128 -DWLAN_BAND_MAX_STA_NUM=128 -DWAN_MAX_PHY_NUM=1 -DTOPOLOGY_UPDATE_AP_PHY_ATTR_BY_NOTIFY -DCONFIG_RTNL_LOCAL_FDB_HANDLE -DCONFIG_GET_SWITCH_PORT_FLOW_STAT -DCONFIG_SUPPORT_QCA_NSS -DCTCFG_FAC_MAC_BOTH_USE_FOR_LAN_WAN -DCONFIG_DEFAULT_QUERY_ENABLE_VALUE -ffunction-sections -fdata-sections -Werror=implicit-function-declaration -Werror=format-extra-args -Werror=switch -Werror=implicit-int -Werror=return-type -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/build_dir/target-arm_cortex-a7_musl-1.1.16_eabi/dms/include/-I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/staging_dir/target-arm_cortex-a7_musl-1.1.16_eabi/tdmp/usr/include -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/staging_dir/target-arm_cortex-a7_musl-1.1.16_eabi/usr/include -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/staging_dir/target-arm_cortex-a7_musl-1.1.16_eabi/include -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/staging_dir/toolchain-arm_cortex-a7_gcc-5.2.0_musl-1.1.16_eabi/usr/include -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/staging_dir/toolchain-arm_cortex-a7_gcc-5.2.0_musl-1.1.16_eabi/include  -fpic -Wall -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/build_dir/target-arm_cortex-a7_musl-1.1.16_eabi/dms -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/build_dir/target-arm_cortex-a7_musl-1.1.16_eabi/dms/include -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/build_dir/target-arm_cortex-a7_musl-1.1.16_eabi/dms/framework/standardApi -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/staging_dir/target-arm_cortex-a7_musl-1.1.16_eabi/tdmp/usr/include -DcreationDate=&quot;\&quot;Aug 28 2022, 11:13:39\&quot;&quot; -DEXCLUDE_RADIUS -DTP_FEATURE_STEER -DWLAN_DUAL_BAND -DLINUX -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/build_dir/target-arm_cortex-a7_musl-1.1.16_eabi/dms/libs/libct/ct_sohojsonapi/src/soho_json_api_impl/sdmp/include -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/build_dir/target-arm_cortex-a7_musl-1.1.16_eabi/dms/libs/libct/ct_sohosdkapi/src/platform/sdmp/include -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/build_dir/target-arm_cortex-a7_musl-1.1.16_eabi/dms/libs/libct/ct_sohojsonapi/src/include -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/build_dir/target-arm_cortex-a7_musl-1.1.16_eabi/dms/libs/libct/ct_utilitylib/src/include -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/build_dir/target-arm_cortex-a7_musl-1.1.16_eabi/dms/libs/libct/ct_sdk_api/src/platform/sdmp/include -I/var/lib/jenkins/workspace/soho4_tdmp_qca_ax3000_release/torchlight/build_dir/target-arm_cortex-a7_musl-1.1.16_eabi/dms/libs/libct/ct_sdk_api/src/platform/sdmp/soho_json_api_impl/include -c -o specialDial.o specialDial.c</span><br></pre></td></tr></table></figure>
+
+<p>看此很长，但很多是重复项，一般来说，我们需要重点关心的有以下几项：</p>
+<ul>
+<li><code>-Os</code>，编译优化等级，介于 <code>-O2</code> 和 <code>-O3</code> 之间，如果遇到问题，怀疑是编译器优化造成的，可以将其改为 - O0。</li>
+<li><code>-Wa</code>，开启所有警告，平时要重视所有的警告信息。</li>
+<li><code>-Wl,-z,now -Wl</code>，两个 <code>-Wl</code>，代表中间的参数是需要传递给链接器的参数。</li>
+<li><code>-D</code>，一些宏的定义，一般通过变量 <code>CFLAGS</code> 传进来。</li>
+<li><code>-I</code>，头文件的搜索路径，当我们写<code> #include xxx.h</code> 时，编译时需要将<code>xxx.h</code>的路径通过<code> -Ipath</code> 告诉编译器，一般也是通过变量 <code>CFLAGS</code> 传进来的，如果找不到头文件，优先考虑排查这个参数。</li>
+<li><code>-o</code>，输出文件的名字</li>
+</ul>
+<p><strong>ld</strong></p>
+<p>以下是 SDMP 平台链接命令，链接生成最终的可执行文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ldarm -EL -X -N -gc-sections -e sysInit -Ttext 40205000 D:\jenkins\workspace\soho4_sdmp_mtk_arm_non_smart_router_release/image/mt7626/vxbin/basicRouter/dataSegPad.o D:\jenkins\workspace\soho4_sdmp_mtk_arm_non_smart_router_release/image/mt7626/vxbin/basicRouter/partialImage.o \</span><br><span class="line">D:\jenkins\workspace\soho4_sdmp_mtk_arm_non_smart_router_release/image/mt7626/vxbin/basicRouter/ctdt.o -T D:/jenkins/workspace/Tornado/Toolchain_4.1.2_ARMv7_Build_SDMP_Kernel_Mesh_IPv6_T4/target/h/tool/gnu/ldscripts/link.RAM -o D:\jenkins\workspace\soho4_sdmp_mtk_arm_non_smart_router_release/image/mt7626/vxbin/basicRouter/vxWorks</span><br></pre></td></tr></table></figure>
+
+<p>平时我们基本不会遇到该命令相关的错误，但还是了解一下其中的参数：</p>
+<ul>
+<li><code>-EL</code>，小端模式，对应的，-EB 为大端模式。</li>
+<li><code>-X</code>，不保留临时符号。</li>
+<li><code>-gc-sections</code> 去除没有用到的 sections，该选项配合编译选项 - ffunction-sections -fdata-sections，可以去除没有被调用的函数和数据，节省 flash 空间。</li>
+<li><code>-e</code> 设置第一个函数。</li>
+<li><code>-Ttext 40205000</code> 设置 text 段的其实地址为 0x40205000 。</li>
+<li><code>-T</code> <code>D:/jenkins/workspace/Tornado/Toolchain_4.1.2_ARMv7_Build_SDMP_Kernel_Mesh_IPv6_T4/target/h/tool/gnu/ldscripts/link.RAM</code> 链接脚本，链接脚本上文已经有介绍，这里不再介绍。</li>
+<li><code>-o</code> <code>D:\jenkins\workspace\soho4_sdmp_mtk_arm_non_smart_router_release/image/mt7626/vxbin/basicRouter/vxWorks</code> 最终生成的文件。</li>
+</ul>
+<h1 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h1><p>《程序要的自我修养》</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">xuedue</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/%E7%BC%96%E8%AF%91%E9%93%BE%E6%8E%A5%E5%8E%9F%E7%90%86/">http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/%E7%BC%96%E8%AF%91%E9%93%BE%E6%8E%A5%E5%8E%9F%E7%90%86/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">xuedue</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/C-C/">C/C++</a></div><div class="post-share"><div class="social-share" data-image="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E8%B0%83%E8%AF%95%E5%8E%9F%E7%90%86/" title="GDB调试原理"><img class="cover" src="/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">GDB调试原理</div></div><div class="info-2"><div class="info-item-1">前言这篇文章来聊聊大名鼎鼎的 GDB，它的豪门背景咱就不提了，和它的兄弟 GCC 一样是含着金钥匙出生的，在 GNU 的家族中的地位不可撼动。  我们都知道，在使用 GCC 编译时，可以使用 -g 选项在可执行文件中嵌入更多的调试信息，那么具体嵌入了哪些调试信息？这些调试信息是如何与二进制的指令之间进行相互交互？在调试的时候，调试信息中是如何获取函数调用栈中的上下文信息？ GDB调试模型GDB 调试包括 2 个程序：gdb 程序和被调试程序。根据这 2 个程序是否运行在同一台电脑中，可以把 GDB 的调试模型分为 2 种:  本地调试 远程调试  本地调试：调试程序和被调试程序运行在同一台电脑中。  远程调试：调试程序运行在一台电脑中，被调试程序运行在另一台电脑中。  关于可视化调试程序并不是重点，它只是一个用来封装 GDB 的外壳而已。我们既可以用黑乎乎的终端窗口来手动输入调试命令；也可以选择集成开发环境(IDE)，这个 IDE 中已经嵌入了器调试，这样就可以使用各种 button 来代替手动输入调试命令了。 与本地调试相比，远程调试中多了一个 GdbServer 程序，它和目...</div></div></div></a><a class="pagination-related" href="/2025/02/23/Paper/Paper-LLM/" title="Paper-LLM"><img class="cover" src="/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Paper-LLM</div></div><div class="info-2"><div class="info-item-1">LLM 从入门到入土开头附上大语言模型的发展时间线  按照时间线，典型开源大模型    模型名称 发布时间 参数量（个） 模型类型 预训练数据量    T5 2019 年 10 月 110 亿 基础模型 1 万亿个词元   PanGu-α 2021 年 4 月 130 亿 基础模型 1.1 万亿个词元   CPM-2 2021 年 6 月 1980 亿 基础模型 2.6 万亿个词元   CodeGen 2022 年 3 月 160 亿 基础模型 5770 亿个词元   GPT-NeoX-20B 2022 年 4 月 200 亿 基础模型 825GB   OPT 2022 年 5 月 1750 亿 基础模型 1800 亿个词元   GLM 2022 年 10 月 1300 亿 基础模型 4000 亿个词元   Flan-T5 2022 年 10 月 110 亿 对话模型 -   BLOOM 2022 年 11 月 1760 亿 基础模型 3660 亿个词元   BLOOMZ 2022 年 11 月 1760 亿 对话模型 -   OPT-IML 2022 年 12 月 1750 亿...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E8%B0%83%E8%AF%95%E5%8E%9F%E7%90%86/" title="GDB调试原理"><img class="cover" src="/img/default.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">GDB调试原理</div></div><div class="info-2"><div class="info-item-1">前言这篇文章来聊聊大名鼎鼎的 GDB，它的豪门背景咱就不提了，和它的兄弟 GCC 一样是含着金钥匙出生的，在 GNU 的家族中的地位不可撼动。  我们都知道，在使用 GCC 编译时，可以使用 -g 选项在可执行文件中嵌入更多的调试信息，那么具体嵌入了哪些调试信息？这些调试信息是如何与二进制的指令之间进行相互交互？在调试的时候，调试信息中是如何获取函数调用栈中的上下文信息？ GDB调试模型GDB 调试包括 2 个程序：gdb 程序和被调试程序。根据这 2 个程序是否运行在同一台电脑中，可以把 GDB 的调试模型分为 2 种:  本地调试 远程调试  本地调试：调试程序和被调试程序运行在同一台电脑中。  远程调试：调试程序运行在一台电脑中，被调试程序运行在另一台电脑中。  关于可视化调试程序并不是重点，它只是一个用来封装 GDB 的外壳而已。我们既可以用黑乎乎的终端窗口来手动输入调试命令；也可以选择集成开发环境(IDE)，这个 IDE 中已经嵌入了器调试，这样就可以使用各种 button 来代替手动输入调试命令了。 与本地调试相比，远程调试中多了一个 GdbServer 程序，它和目...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/makefile%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/" title="makefile基础介绍"><img class="cover" src="/img/default.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">makefile基础介绍</div></div><div class="info-2"><div class="info-item-1">简介Makefile 是一个文本文件，描述了一个或者多个目标-依赖关系以及目标对应的生成/更新（后续统一称为更新）规则。 Makefile 由 make 命令一键解析并处理。 通过 Makefile+make 的支持，我们可以以层级的方式组织项目的成百上千个代码文件，并达到增量编译的目的、以减少编译时间。 本文的阅读方式本文只列出了我们工作中常用的 Makefile 语法，还有一些高级语法及特性没有没有讲解。 本文出现的示例代码中：  $为命令行提示符，意为等待用户输入 #开头的为注释，也是 Makefile中 的注释符号 部分示例可以直接保存到文件中运行，行首的的空格需要改为 Tab，否则编译会提示 missing separator. Stop.  Makefile 基本组成Makefile 由以下的基本结构外加其他一些特性（如变量定义、文件包含等）组成： 12target(s) : prerequisite(s)    command(s)  我们通过以下一个简单的Makefile来讲解这个基本的结构： Makefile 1234567891011121314main: m...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GCC/" title="GCC"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">GCC</div></div><div class="info-2"><div class="info-item-1">简介Linux 下最常用的 C 编译器是 GCC，大多数发行版本都默认安装了 GCC。我们可以用以下 GCC 命令，把 test.c 编译成可执行文件 test：gcc -g test.c -o test。 如果大家习惯了 Visual Studio 等集成开发环境的话，会觉得上述的命令很费解。但掌握 GCC 等工具的用法，是一个程序员所必备的技能。 回到上面的 GCC 命令，它的作用是编译源文件 test.c 并生成可执行文件。其中 -o 表示生成的可执行文件名为 test，-g 表明要在可执行文件中添加调试信息。如果要使用 GDB 单步调试程序，必须使用 -g 参数。 可以看到，GCC 的行为是通过命令行参数进行指定的。所以，要掌握 GCC，重点在于熟悉 GCC 的各种参数上。但 GCC 的参数实在太多了，所以更普遍的做法是掌握其常用参数，并在遇到不认识的参数时多查资料进行学习。 GCC 的常用参数-c 作用：只对源文件进行编译操作。 例子: gcc -c test.c 说明：这将生成目标文件（object file）test.o。 -E 作用：只对源文件进行预处理操作。 例...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E7%AE%80%E4%BB%8B/" title="GDB简介"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">GDB简介</div></div><div class="info-2"><div class="info-item-1">简介GDB，又称 GNU 调试器，是用来帮助调试我们程序的工具。 GDB有如下两种使用方式  调试会崩溃、有逻辑错误的程序； 调试程序崩溃时自动生成的 core dump；  GDB 可以干以下几件事：  给程序设置（特定条件下的）断点，包括某块内存的内容改变时触发断点，如果某个变量不知被哪段代码意外篡改了，可以使用 GDB 打数据断点抓到肇事者。 当程序停在断点处时，我们查看所有变量、寄存器的值 当程序停在断点处时，我们除了能查看所有变量的值以外，还能在不改变源代码的情况下改变这些值  安装1sudo apt-get install gdb    编译被测程序被测程序需修改 Makefile，将 CFLAGS 添加 -O0 -g 重新编译并且保证不去符号。如果不加 -g ，gdb 加载后将提示 No symbol table is loaded。缺少调试信息，调试起来会比较麻烦。 如果不使用 -O0 而是-O1、 -O2、-O3，代码优化后，给调试带来难度。 make 编译时，后面需要加 STRIP=/bin/true，当然如果 Makefile 里没有调用 strip 去符号...</div></div></div></a><a class="pagination-related" href="/2021/07/22/C%E8%AF%AD%E8%A8%80/C&C++%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/" title="C&#x2F;C++知识点整理"><img class="cover" src="/img/default.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-22</div><div class="info-item-2">C&#x2F;C++知识点整理</div></div><div class="info-2"><div class="info-item-1">C++关键词const 指向常量的指针int const *p;const int *p;   指针本身是常量int *const p;分辨:从右往左看，看const离谁近   const修饰成员函数void func() const{} 常成员函数，可以使用类中的所有成员变量，但是不能修改它们，一般用于返回成员变量；  define(预处理阶段)  define 在预处理阶段进行替换  define函数  1define add(a,b) &#123;a++; b++; cout&lt;&lt;a+b&lt;&lt;endl;&#125; inline(编译阶段)内联函数和普通函数的区别：当编译器处理调用内联函数的语句时，不会将该语句编译成函数调用的指令，而是直接将整个函数体的代码插人调用语句处，就像整个函数体在调用处被重写了一遍一样。    优点: 有了内联函数，就能像调用一个函数那样方便地重复使用一段代码，而不需要付出执行函数调用的额外开销。 缺点:  使用内联函数会使最终可执行程序的体积增加。以空间换时间，或增加空间消耗来节省时间，这是计算机学科中常用的方法;  inli...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">xuedue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xuedue"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/xuedue" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://bilibili.com" target="_blank" title="BiliBili"><i class="fa-brands fa-bilibili" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">今天超市薯片半价</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">1.  前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E9%A2%84%E5%A4%84%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">2. 预处理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E7%BC%96%E8%AF%91"><span class="toc-number">3.</span> <span class="toc-text">3.  编译</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 编译过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-1-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90"><span class="toc-number">3.1.1.</span> <span class="toc-text">3.1.1 词法分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-2-%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90"><span class="toc-number">3.1.2.</span> <span class="toc-text">3.1.2 语法分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-3-%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90"><span class="toc-number">3.1.3.</span> <span class="toc-text">3.1.3 语义分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-4-%E4%B8%AD%E9%97%B4%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="toc-number">3.1.4.</span> <span class="toc-text">3.1.4 中间代码生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-5-%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E7%9A%84%E7%94%9F%E6%88%90%E5%92%8C%E4%BC%98%E5%8C%96"><span class="toc-number">3.1.5.</span> <span class="toc-text">3.1.5 目标代码的生成和优化</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E6%B1%87%E7%BC%96"><span class="toc-number">4.</span> <span class="toc-text">4.  汇编</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E9%93%BE%E6%8E%A5"><span class="toc-number">5.</span> <span class="toc-text">5.  链接</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#5-1-%E9%93%BE%E6%8E%A5%E7%9A%84%E8%83%8C%E6%99%AF"><span class="toc-number">5.1.</span> <span class="toc-text">5.1  链接的背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-2-ELF-%E6%96%87%E4%BB%B6%EF%BC%88Executable-Linkable-Format%EF%BC%89"><span class="toc-number">5.2.</span> <span class="toc-text">5.2  ELF 文件（Executable Linkable Format）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-1-ELF-Header"><span class="toc-number">5.2.0.1.</span> <span class="toc-text">5.2.1 ELF Header</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-2-Section-Header"><span class="toc-number">5.2.0.2.</span> <span class="toc-text">5.2.2 Section Header</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-3-Program-Header"><span class="toc-number">5.2.0.3.</span> <span class="toc-text">5.3.3 Program Header</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-3-%E7%AC%A6%E5%8F%B7%E5%92%8C%E7%AC%A6%E5%8F%B7%E8%A1%A8"><span class="toc-number">5.3.</span> <span class="toc-text">5.3  符号和符号表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-1-%E7%AC%A6%E5%8F%B7"><span class="toc-number">5.3.1.</span> <span class="toc-text">5.3.1  符号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-2-%E7%AC%A6%E5%8F%B7%E8%A1%A8"><span class="toc-number">5.3.2.</span> <span class="toc-text">5.3.2  符号表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-3-C-%E7%AC%A6%E5%8F%B7%E9%97%AE%E9%A2%98"><span class="toc-number">5.3.3.</span> <span class="toc-text">5.3.3 C++ 符号问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-4-%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC"><span class="toc-number">5.4.</span> <span class="toc-text">5.4 链接脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-1-%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC%E4%B8%BE%E4%BE%8B%E5%88%86%E6%9E%90"><span class="toc-number">5.4.1.</span> <span class="toc-text">5.4.1  链接脚本举例分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-5-%E9%93%BE%E6%8E%A5%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="toc-number">5.5.</span> <span class="toc-text">5.5 链接的过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-1-%E7%A9%BA%E9%97%B4%E4%B8%8E%E5%9C%B0%E5%9D%80%E5%88%86%E9%85%8D"><span class="toc-number">5.5.1.</span> <span class="toc-text">5.5.1  空间与地址分配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-2-%E7%AC%A6%E5%8F%B7%E8%A7%A3%E6%9E%90"><span class="toc-number">5.5.2.</span> <span class="toc-text">5.5.2  符号解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-3-%E9%87%8D%E5%AE%9A%E4%BD%8D"><span class="toc-number">5.5.3.</span> <span class="toc-text">5.5.3  重定位</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-6-%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5"><span class="toc-number">5.6.</span> <span class="toc-text">5.6 静态链接</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-6-1-%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E8%BF%87%E7%A8%8B"><span class="toc-number">5.6.1.</span> <span class="toc-text">5.6.1  静态链接过程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-7-%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5"><span class="toc-number">5.7.</span> <span class="toc-text">5.7 动态链接</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-7-1-%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E7%9A%84%E8%83%8C%E6%99%AF"><span class="toc-number">5.7.1.</span> <span class="toc-text">5.7.1  动态链接的背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-7-2-%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90"><span class="toc-number">5.7.2.</span> <span class="toc-text">5.7.2 动态链接原理分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-7-3-%E5%9C%B0%E5%9D%80%E6%97%A0%E5%85%B3%E4%BB%A3%E7%A0%81%EF%BC%88Position-independent-Code%EF%BC%89"><span class="toc-number">5.7.3.</span> <span class="toc-text">5.7.3 地址无关代码（Position-independent Code）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-7-4-GOT%EF%BC%88GLOBAL-Offset-Table%EF%BC%89"><span class="toc-number">5.7.4.</span> <span class="toc-text">5.7.4 GOT（GLOBAL Offset Table）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-7-5-PLT%EF%BC%88Procedure-Linkage-Table%EF%BC%89"><span class="toc-number">5.7.5.</span> <span class="toc-text">5.7.5 PLT（Procedure Linkage Table）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-7-6-%E4%B8%BE%E4%BE%8B%E5%88%86%E6%9E%90"><span class="toc-number">5.7.6.</span> <span class="toc-text">5.7.6 举例分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-7-7-%E5%8A%A8%E6%80%81%E5%BA%93%E7%9A%84%E7%BC%96%E8%AF%91"><span class="toc-number">5.7.7.</span> <span class="toc-text">5.7.7  动态库的编译</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-8-%E6%98%BE%E5%BC%8F%E8%BF%90%E8%A1%8C%E6%97%B6%E9%93%BE%E6%8E%A5"><span class="toc-number">5.8.</span> <span class="toc-text">5.8 显式运行时链接</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E5%8A%A0%E8%BD%BD"><span class="toc-number">6.</span> <span class="toc-text">6. 加载</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E8%BF%9B%E7%A8%8B%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4"><span class="toc-number">6.0.1.</span> <span class="toc-text">6.1 进程地址空间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E7%A8%8B%E5%BA%8F%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B"><span class="toc-number">6.0.2.</span> <span class="toc-text">6.2 程序加载过程</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-%E7%BC%96%E8%AF%91%E3%80%81%E9%93%BE%E6%8E%A5%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8%E4%B8%BE%E4%BE%8B"><span class="toc-number">7.</span> <span class="toc-text">7. 编译、链接工具使用举例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99%EF%BC%9A"><span class="toc-number">8.</span> <span class="toc-text">参考资料：</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%206G%E8%B0%83%E7%A0%94/" title="80211 6G调研">80211 6G调研</a><time datetime="2026-02-04T15:39:55.000Z" title="发表于 2026-02-04 15:39:55">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/20/Proxy/telegram%E7%99%BB%E5%BD%95/" title="Telegram需要旧手机验证/收不到验证码100%可用解决方法">Telegram需要旧手机验证/收不到验证码100%可用解决方法</a><time datetime="2026-01-20T16:02:09.000Z" title="发表于 2026-01-20 16:02:09">2026-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/18/%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%B0%83%E6%B5%8B%E5%B7%A5%E5%85%B7/" title="嵌入式调测工具">嵌入式调测工具</a><time datetime="2026-01-18T16:08:55.000Z" title="发表于 2026-01-18 16:08:55">2026-01-18</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/default.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By xuedue</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 5.4.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3"></script><script src="/js/main.js?v=5.5.3"></script><script src="/js/tw_cn.js?v=5.5.3"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liuy5uBHgv2OwgD3',
+      clientSecret: '5846745c3fef6377eeb8df8b4ad3aaf4cf0f1cb8',
+      repo: 'xuedue_comments',
+      owner: 'xuedue',
+      admin: ['xuedue'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '9d279c5aa8b88e53b0813ad186d56305'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.3"></script></div></div></body></html>

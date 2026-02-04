@@ -1,0 +1,425 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>GDB简介 | xuedue</title><meta name="author" content="xuedue"><meta name="copyright" content="xuedue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="简介GDB，又称 GNU 调试器，是用来帮助调试我们程序的工具。 GDB有如下两种使用方式  调试会崩溃、有逻辑错误的程序； 调试程序崩溃时自动生成的 core dump；  GDB 可以干以下几件事：  给程序设置（特定条件下的）断点，包括某块内存的内容改变时触发断点，如果某个变量不知被哪段代码意外篡改了，可以使用 GDB 打数据断点抓到肇事者。 当程序停在断点处时，我们查看所有变量、寄存器的值">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GDB简介">
+<meta property="og:url" content="http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E7%AE%80%E4%BB%8B/index.html">
+<meta property="og:site_name" content="xuedue">
+<meta property="og:description" content="简介GDB，又称 GNU 调试器，是用来帮助调试我们程序的工具。 GDB有如下两种使用方式  调试会崩溃、有逻辑错误的程序； 调试程序崩溃时自动生成的 core dump；  GDB 可以干以下几件事：  给程序设置（特定条件下的）断点，包括某块内存的内容改变时触发断点，如果某个变量不知被哪段代码意外篡改了，可以使用 GDB 打数据断点抓到肇事者。 当程序停在断点处时，我们查看所有变量、寄存器的值">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg">
+<meta property="article:published_time" content="2026-01-18T15:04:37.000Z">
+<meta property="article:modified_time" content="2026-02-04T16:38:43.913Z">
+<meta property="article:author" content="xuedue">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "GDB简介",
+  "url": "http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E7%AE%80%E4%BB%8B/",
+  "image": "https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg",
+  "datePublished": "2026-01-18T15:04:37.000Z",
+  "dateModified": "2026-02-04T16:38:43.913Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "xuedue",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E7%AE%80%E4%BB%8B/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'GDB简介',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 5.4.2"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/img/bg_img.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">xuedue</span></a><a class="nav-page-title" href="/"><span class="site-name">GDB简介</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 文章</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-face-grin-beam-sweat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fa-solid fa-image"></i><span> 图库</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">GDB简介</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-18T15:04:37.000Z" title="发表于 2026-01-18 15:04:37">2026-01-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-04T16:38:43.913Z" title="更新于 2026-02-04 16:38:43">2026-02-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/C-C/">C/C++</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2026-02-04 16:38:43&quot;}" hidden></div><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>GDB，又称 GNU 调试器，是用来帮助调试我们程序的工具。</p>
+<p>GDB有如下两种使用方式</p>
+<ol>
+<li>调试会崩溃、有逻辑错误的程序；</li>
+<li>调试程序崩溃时自动生成的 core dump；</li>
+</ol>
+<p>GDB 可以干以下几件事：</p>
+<ol>
+<li>给程序设置（特定条件下的）断点，包括某块内存的内容改变时触发断点，如果某个变量不知被哪段代码意外篡改了，可以使用 GDB 打数据断点抓到肇事者。</li>
+<li>当程序停在断点处时，我们查看所有变量、寄存器的值</li>
+<li>当程序停在断点处时，我们除了能查看所有变量的值以外，还能在不改变源代码的情况下改变这些值</li>
+</ol>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install gdb</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="编译被测程序"><a href="#编译被测程序" class="headerlink" title="编译被测程序"></a>编译被测程序</h2><p>被测程序需修改 Makefile，将 <code>CFLAGS</code> 添加 <code>-O0 -g</code> 重新编译并且保证不去符号。如果不加 <code>-g</code> ，gdb 加载后将提示 <code>No symbol table is loaded</code>。缺少调试信息，调试起来会比较麻烦。</p>
+<p>如果不使用 <code>-O0</code> 而是<code>-O1</code>、 <code>-O2</code>、<code>-O3</code>，代码优化后，给调试带来难度。</p>
+<p>make 编译时，后面需要加 <code>STRIP=/bin/true</code>，当然如果 Makefile 里没有调用 strip 去符号，可以不用加。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">time make -j STRIP=/bin/true</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="加载被测程序"><a href="#加载被测程序" class="headerlink" title="加载被测程序"></a>加载被测程序</h2><p>设被测程序名为 hello。</p>
+<p>使用 gdb 运行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gdb ./hello</span><br><span class="line"></span><br><span class="line">Reading symbols from ./hello... # 如果未输出此行，则说明 hello 没有加 -g 编译</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="普通断点"><a href="#普通断点" class="headerlink" title="普通断点"></a>普通断点</h2><p>在 main 函数打普通断点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) b main</span><br></pre></td></tr></table></figure>
+
+<p>然后运行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) r</span><br></pre></td></tr></table></figure>
+
+<p>运行到 main 函数时程序暂停。</p>
+<h2 id="条件断点"><a href="#条件断点" class="headerlink" title="条件断点"></a>条件断点</h2><p>顾名思义，这种断点是当满足一定条件时才会触发，比较适合进行异常排查。设置方式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) b line-or-function if (condition)</span><br></pre></td></tr></table></figure>
+
+<p>如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) b src/main.cpp:127 if count==10</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="监视"><a href="#监视" class="headerlink" title="监视"></a>监视</h2><p>设置监视也必须是在程序运行后才行。如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(gdb) watch *地址    # 当地址所指内容发生变化时断点</span><br><span class="line">(gdb) watch var    # 当 var 值变化时，断点</span><br><span class="line">(gdb) watch (condition)    # 当条件符合时，断点</span><br></pre></td></tr></table></figure>
+
+<p>监视也被称为硬件断点。可以监测栈变量和堆变量值的变化，当被监测变量值发生变化时，程序被停住。</p>
+<h2 id="调试-coredump"><a href="#调试-coredump" class="headerlink" title="调试 coredump"></a>调试 <strong>coredump</strong></h2><p>coredump 叫做核心转储，它是进程运行时在突然崩溃的那一刻的一个内存快照。操作系统在程序发生异常而异常在进程内部又没有被捕获的情况下，会把进程此刻内存、寄存器状态、运行堆栈等信息转储保存在一个文件里。</p>
+<p>该文件也是二进制文件，可以使用 gdb、elfdump、objdump 进行打开分析里面的具体内容。</p>
+<p><strong>ulimit</strong></p>
+<p>虽然我们知道进程在 coredump 的时候会产生core文件，但是有时候却发现进程虽然崩溃了，但是我们却找不到coredump 文件。</p>
+<p>在 Linux 下是需要进行设置的。</p>
+<p><code>ulimit -c</code> 可以设置core文件的大小，如果这个值为0.则不会产生core文件，这个值太小，则 core 文件也不会产生，因为core文件一般都比较大。</p>
+<p>使用<code>ulimit -c unlimited</code> 来设置无限大，则任意情况下都会产生 core 文件。Ubuntu 18.04，coredump会默认产生在以下目录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/var/lib/apport/coredump/</span><br></pre></td></tr></table></figure>
+
+<p><strong>gdb 分析 coredump 的简单示例</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line"></span><br><span class="line">void dumpCrash()</span><br><span class="line">&#123;</span><br><span class="line">    char *pStr = &quot;test_content&quot;;</span><br><span class="line">    free(pStr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    dumpCrash();</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如上代码，pStr 指针指向的是字符串常量，字符串常量是保存在常量区的，free 释放常量区的内存肯定会导致coredump。</p>
+<p>首先把上面的代码保存为 dumpTest.c 文件，gcc 编译：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc dumpTest.c -o dumpTest</span><br></pre></td></tr></table></figure>
+
+<p>设置 core 文件大小为无限制大小：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ulimit -c unlimited</span><br></pre></td></tr></table></figure>
+
+<p>运行 dumpTest 产生 core 文件。</p>
+<p><strong>gdb 调试 coredump 初步尝试</strong></p>
+<p>gdb打开 core 文件的格式为</p>
+<p>gdb 程序名(包含路径) core*（core文件名和路径）</p>
+<p>gdb 打开 core 文件时，有显示没有调试信息，因为之前编译的时候没有带上 <code>-g</code> 选项，没有调试信息是正常的，实际上它也不影响调试 core 文件。因为调试 core 文件时，符号信息都来自符号表，用不到调试信息。</p>
+<p><strong>查看 coredump 时的堆栈</strong></p>
+<p>查看堆栈使用 bt 或者 where 命令。</p>
+<p>在带上调试信息的情况下，我们实际上是可以看到 core 的地方和代码行的匹配位置。</p>
+<p>但往往正常发布环境是不会带上调试信息的，因为调试信息通常会占用比较大的存储空间，一般都会在编译的时候把 <code>-g</code> 选项去掉。</p>
+<p>没有调试信息的情况下，打开 coredump 堆栈，并不会直接显示 core 的代码行。</p>
+<p>此时只能通过 disassemble 命令打开该帧函数的反汇编代码进行分析。具体的分析方法后续再补充完善。</p>
+<p>在实际问题中，C 程序的很多 coredump 问题都是和指针相关的，很多 segmentfault 都是由于指针被误删或者访问空指针、或者越界等造成的。</p>
+<h2 id="多进程调试"><a href="#多进程调试" class="headerlink" title="多进程调试"></a>多进程调试</h2><blockquote>
+<p><strong>提示</strong></p>
+<p>在入职培训之初的 C 语言作业，不涉及多进程，下面的内容简单浏览，有个印象即可。后续正式开发工作中可能需要使用。</p>
+</blockquote>
+<p>gdb调试多进程的命令：</p>
+<p><code>set follow-fork-mode mode</code> 设置调试器的模式</p>
+<p>mode 参数可以是</p>
+<p>parent: fork之后调试原进程，子进程不受影响，这是缺省的方式</p>
+<p>child: fork之后调试新的进程，父进程不受影响。</p>
+<p><code>show follow-fork-mode</code> 显示当前调试器的模式</p>
+<p><code>set detach-on-fork mode</code> 设置gdb在fork之后是否detach进程中的其中一个，或者继续保留控制这两个进程</p>
+<p>on 子进程(或者父进程，依赖于follow-fork-mode的值)会detach然后独立运行，这是缺省的mode</p>
+<p>off 两个进程都受gdb控制，一个进程（子进程或父进程，依赖于follow-fork-mode）被调试，另外一个进程被挂起</p>
+<p><code>info inferiors</code> 显示所有进程</p>
+<p><code>inferiors processid</code> 切换进程</p>
+<p><code>detach inferiors processid</code> detach 一个由指定的进程，然后从fork 列表里删除。这个进程会被</p>
+<p>允许继续独立运行。</p>
+<p><code>kill inferiors processid</code> 杀死一个由指定的进程，然后从fork 列表里删除。</p>
+<p>catch fork 让程序在fork，vfork或者exec调用的时候中断</p>
+<h2 id="调试范例"><a href="#调试范例" class="headerlink" title="调试范例"></a>调试范例</h2><h3 id="范例1"><a href="#范例1" class="headerlink" title="范例1"></a>范例1</h3><p>编译并构建程序，加上调试选项 -g，若为 make 构建，修改 Makefile 的 CFLAGS。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -g main.c -o test.out</span><br></pre></td></tr></table></figure>
+
+<p>用 GDB 来运行程序：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb test.out</span><br></pre></td></tr></table></figure>
+
+<p>在 main 函数入口处设置一个断点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">b main</span><br></pre></td></tr></table></figure>
+
+<p>运行程序：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">r</span><br></pre></td></tr></table></figure>
+
+<p>不断按 <code>s</code> 单步运行到第N行:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">s</span><br></pre></td></tr></table></figure>
+
+<p>查看 balance, rate, interest 变量的值:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">p balance</span><br><span class="line">p rate</span><br><span class="line">p interest</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="范例2"><a href="#范例2" class="headerlink" title="范例2"></a>范例2</h3><p>假设要调试程序 、/bin/hello 的wlanAC.c 中的 wacAddWhitelist() 函数:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">/******************************************************************************</span><br><span class="line">* FUNCTION      :   wacAddWhitelist()</span><br><span class="line">* DESCRIPTION   :   添加一个站点设备MAC地址到白名单。</span><br><span class="line">* INPUT         :</span><br><span class="line">* OUTPUT        :   N/A</span><br><span class="line">* RETURN        :</span><br><span class="line">* HISTORY       :</span><br><span class="line">******************************************************************************/</span><br><span class="line">LOCAL int wacAddWhitelist(WAC_WHITELIST_ITEM *item)</span><br><span class="line">&#123;</span><br><span class="line">    int res = ERROR;</span><br><span class="line">    UINT32 index = 0;</span><br><span class="line"></span><br><span class="line">    if (NULL == item || INVALID_MAC(item-&gt;staMac))</span><br><span class="line">    &#123;</span><br><span class="line">        return res;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /* 添加一个条目到白名单列表里。*/</span><br><span class="line">    WACLOCK(wacWhitelistMutex);</span><br><span class="line">    if (gWacWhitelist.count &lt; WAC_WHITELIST_SIZE)</span><br><span class="line">    &#123;</span><br><span class="line">        /* 是否有重复添加的，没有则允许加入。*/</span><br><span class="line">        for (index = 0; index &lt; gWacWhitelist.count; index++)</span><br><span class="line">        &#123;</span><br><span class="line">            if (0 == memcmp(gWacWhitelist.list[index].staMac, item-&gt;staMac, WAC_MAC_SIZE))</span><br><span class="line">            &#123;</span><br><span class="line">                WACUNLOCK(wacWhitelistMutex);</span><br><span class="line">                return res;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        memcpy(&amp;gWacWhitelist.list[gWacWhitelist.count], item, sizeof(WAC_WHITELIST_ITEM));</span><br><span class="line">        gWacWhitelist.count++;</span><br><span class="line">        res = OK;</span><br><span class="line">    &#125;</span><br><span class="line">    WACUNLOCK(wacWhitelistMutex);</span><br><span class="line"></span><br><span class="line">    return res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>试图在变量 index 的值发生变化时触发断点，相关命令和输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line">root@TDMP:~# gdb /bin/hello</span><br><span class="line">GNU gdb (GDB) 8.3.1</span><br><span class="line">Copyright (C) 2019 Free Software Foundation, Inc.</span><br><span class="line">License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;</span><br><span class="line">This is free software: you are free to change and redistribute it.</span><br><span class="line">There is NO WARRANTY, to the extent permitted by law.</span><br><span class="line">Type &quot;show copying&quot; and &quot;show warranty&quot; for details.</span><br><span class="line">This GDB was configured as &quot;arm-brcm-linux-gnueabi&quot;.</span><br><span class="line">Type &quot;show configuration&quot; for configuration details.</span><br><span class="line">For bug reporting instructions, please see:</span><br><span class="line">&lt;http://www.gnu.org/software/gdb/bugs/&gt;.</span><br><span class="line">Find the GDB manual and other documentation resources online at:</span><br><span class="line">    &lt;http://www.gnu.org/software/gdb/documentation/&gt;.</span><br><span class="line"></span><br><span class="line">For help, type &quot;help&quot;.</span><br><span class="line">Type &quot;apropos word&quot; to search for commands related to &quot;word&quot;...</span><br><span class="line">Reading symbols from /bin/hello...</span><br><span class="line"></span><br><span class="line">(gdb) set detach-on-fork off  # 设置 gdb 在 fork 之后继续保留控制这两个进程</span><br><span class="line"></span><br><span class="line">(gdb) r  # 等效于 run 命令，开始运行</span><br><span class="line">Starting program: /bin/hello </span><br><span class="line">[Thread debugging using libthread_db enabled]</span><br><span class="line">Using host libthread_db library &quot;/usr/lib/libthread_db.so.1&quot;.</span><br><span class="line">[New inferior 2 (process 5488)]</span><br><span class="line">[Thread debugging using libthread_db enabled]</span><br><span class="line">Using host libthread_db library &quot;/usr/lib/libthread_db.so.1&quot;.</span><br><span class="line">[Inferior 1 (process 5485) exited normally]</span><br><span class="line"></span><br><span class="line">(gdb) info inferiors  # 显示所有进程</span><br><span class="line">  Num  Description       Executable        </span><br><span class="line">* 1    &lt;null&gt;            /bin/hello          </span><br><span class="line">  2    process 5488      /bin/hello  </span><br><span class="line"></span><br><span class="line">(gdb) inferior 2    # 切换到进程2</span><br><span class="line">[Switching to inferior 2 [process 5488] (/bin/hello)]</span><br><span class="line">[Switching to thread 2.1 (process 5488)]</span><br><span class="line">Reading symbols from /bin/hello...</span><br><span class="line">Reading symbols from /usr/lib/libjson.so.0...</span><br><span class="line">Reading symbols from /lib/libpthread.so.0...</span><br><span class="line">Reading symbols from /lib/libsecurity.so...</span><br><span class="line">Reading symbols from /usr/lib/libcyassl.so.5...</span><br><span class="line">Reading symbols from /usr/lib/libz.so.1...</span><br><span class="line">Reading symbols from /lib/libbcm_flashutil.so...</span><br><span class="line">Reading symbols from /lib/libbcm_boardctl.so...</span><br><span class="line">Reading symbols from /lib/libbcm_util.so...</span><br><span class="line">Reading symbols from /lib/libgen_util.so...</span><br><span class="line">Reading symbols from /lib/libsys_util.so...</span><br><span class="line">Reading symbols from /lib/libethswctl.so...</span><br><span class="line">Reading symbols from /lib/libc.so.6...</span><br><span class="line">Reading symbols from /lib/ld-linux.so.3...</span><br><span class="line">Reading symbols from /lib/libm.so.6...</span><br><span class="line">#0  0xf75ae2c8 in fork () from /lib/libc.so.6</span><br><span class="line"></span><br><span class="line">(gdb) b wacAddWhitelist # 等效于 break wacAddWhitelist， 在 wacAddWhitelist 函数开头打断点</span><br><span class="line">Breakpoint 1 at 0x2311c4: wacAddWhitelist. (2 locations)</span><br><span class="line"></span><br><span class="line">(gdb) c</span><br><span class="line">Continuing.</span><br><span class="line">[New Thread 0xf73c3460 (LWP 22[  487.008626] gpio 17 request failed.</span><br><span class="line">14)]</span><br><span class="line">[New Th[  487.013850] gpio 10 request failed.</span><br><span class="line">......</span><br><span class="line">60 (LWP 2215)]</span><br><span class="line">[New Thread 0xf63c3460 (LWP 2216)]</span><br><span class="line">......</span><br><span class="line">[New Thread 0xf5bc3460 (LWP 2217)]</span><br><span class="line">......</span><br><span class="line">Can not resume the parent process over vfork in the foreground while</span><br><span class="line">holding the child stopped.  Try &quot;set detach-on-fork&quot; or &quot;set schedule-multiple&quot;.</span><br><span class="line"></span><br><span class="line">(gdb) bt  # 等效于 backtrace，打印栈回溯信息，可知在 vfork 处暂停</span><br><span class="line">#0  0xf75ae560 in vfork () from /lib/libc.so.6</span><br><span class="line">#1  0x0029ab14 in doSystemExec (cmdline=0x33bf84 &quot;insmod slp_gpio.ko&quot;, sync=1)</span><br><span class="line">    at systemOps.c:83</span><br><span class="line">#2  0x0029ad50 in systemExec (cmdline=0x33bf84 &quot;insmod slp_gpio.ko&quot;)</span><br><span class="line">    at systemOps.c:142</span><br><span class="line">#3  0x002917b4 in gpioInit () at gpio.c:215</span><br><span class="line">#4  0x002db7c8 in __libc_csu_init ()</span><br><span class="line">#5  0xf7528b08 in __libc_start_main () from /lib/libc.so.6</span><br><span class="line">#6  0x0003f2e4 in _start ()</span><br><span class="line">Backtrace stopped: previous frame identical to this frame (corrupt stack?)</span><br><span class="line"></span><br><span class="line">(gdb) set detach-on-fork on # 子进程(或者父进程，依赖于 follow-fork-mode 的值)会 detach 然后独立运行</span><br><span class="line"></span><br><span class="line">(gdb) c # 继续运行直到在 wacAddWhitelist 入口处暂停</span><br><span class="line">Continuing.</span><br><span class="line">......</span><br><span class="line">[Detaching after vfork from child process 4737]</span><br><span class="line"></span><br><span class="line">Thread 2.1 &quot;hello&quot; hit Breakpoint 2, wacAddWhitelist (item=0xfffefad8)</span><br><span class="line">    at wlanAC.c:98</span><br><span class="line">98     wlanAC.c: No such file or directory.</span><br><span class="line"></span><br><span class="line">(gdb) bt  ## 栈回溯显示确实是在 wacAddWhitelist 暂停</span><br><span class="line">#0  wacAddWhitelist (item=0xfffefad8) at wlanAC.c:98</span><br><span class="line">#1  0x00232740 in wacSyncWhitelistFromFlash () at wlanAC.c:631</span><br><span class="line">#2  0x00231838 in wacEnableOperation () at wlanAC.c:302</span><br><span class="line">#3  0x00233b34 in wacStart () at wlanAC.c:1034</span><br><span class="line">#4  0x002431e4 in ctrlModuleStart () at control.c:672</span><br><span class="line">#5  0x002436d0 in ctrlPowerOn () at control.c:895</span><br><span class="line">#6  0x002da9b0 in main (argc=1, argv=0xfffefe54) at main.c:103</span><br><span class="line"></span><br><span class="line">(gdb) watch index  # 设置当 index 变量发生变化时暂停</span><br><span class="line">Watchpoint 2: index</span><br><span class="line"></span><br><span class="line">(gdb) c  # 继续运行</span><br><span class="line">Continuing.</span><br><span class="line"></span><br><span class="line">Thread 2.1 &quot;hello&quot; hit Watchpoint 5: index</span><br><span class="line"></span><br><span class="line">Old value = 4147980344</span><br><span class="line">New value = 0</span><br><span class="line">wacAddWhitelist (item=0xfffefad8) at wlanAC.c:101</span><br><span class="line">101    in wlanAC.c</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="GDB-常用命令"><a href="#GDB-常用命令" class="headerlink" title="GDB 常用命令"></a>GDB 常用命令</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">r   直接调到断点处，没有设置断点的话直接运行程序</span><br><span class="line">b fun   设置一个断点breakpoint在函数”fun”的最开始</span><br><span class="line">b N     在当前运行源文件的第N行设置断点</span><br><span class="line">b file.c:N  在当前源文件file.c的第N行设置断点</span><br><span class="line">d N     删掉delete第N行的断点</span><br><span class="line">info break  显示所有断点信息</span><br><span class="line">c   继续(continue)运行程序，一直到下一个断点或程序结束</span><br><span class="line">f   运行直到当前函数(function)结束</span><br><span class="line">s   按step调试1行，会进入函数体</span><br><span class="line">s N     按step调试接下来的N行</span><br><span class="line">n   调试1行，与按s命令不同的是此处不进入函数体</span><br><span class="line">p var   输出(print)变量”var”的值</span><br><span class="line">set var=val     设置变量”var”的值</span><br><span class="line">bt  打印调用堆栈(stack trace)</span><br><span class="line">q   退出gdb</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h2><p>以上为常见的调试命令，若需要更高级的技巧，可以参阅 GDB 官方参考资料：<a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb/">https://sourceware.org/gdb/current/onlinedocs/gdb/</a></p>
+<h2 id="GDB-的调试原理"><a href="#GDB-的调试原理" class="headerlink" title="GDB 的调试原理"></a>GDB 的调试原理</h2><p>参见 <a href="GDB%E8%B0%83%E8%AF%95%E5%8E%9F%E7%90%86.md">GDB 的调试原理</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">xuedue</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E7%AE%80%E4%BB%8B/">http://example.com/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E7%AE%80%E4%BB%8B/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">xuedue</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/C-C/">C/C++</a></div><div class="post-share"><div class="social-share" data-image="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/01/18/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C/" title="802.11无线网络"><img class="cover" src="/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">802.11无线网络</div></div><div class="info-2"><div class="info-item-1">802.11 PHY协议基础通信系统模型  信源：产生需要传递给信宿的比特信息。  调制器：将比特信息通过一系列调制方法“放置在”电磁波上，生成调制信号。  信道：调制信号从发送端传递给接收端经过的传输媒介。  解调器：从调制信号中 “提取出”比特信息，是调制器的逆过程。  信宿：接收比特信息。   通信质量指标 有效性：传输效率，可用通信速率来评估。 可靠性：传输质量，可用误符号率来评估。 安全性：通信安全，涉及加密解密技术。   注：有效性和可靠性不可兼得，需要两者权衡  涉及参数 频率：通信载波频率。目前WiFi使用的频率段包括2.4G、5G和6G。 带宽：信号占用频带宽度。带宽越大，速率越高。 功率：发射信号强度。提高功率可提高传输质量，但会加强对其他通信链路的干扰。 速率：每秒传输的比特数量。一般以Mbps/Gbps为单位。 天线数量：可使用多跟天线进行信号发射和接收，一般接收天线数量要大于有效发射天线数量。  802.11 MAC层MAC层介绍MAC层，即Medium Access Control，顾名思义其主要工作就是：  通过管理帧对设备接入进行管控； 通过信道接...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/makefile%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/" title="makefile基础介绍"><img class="cover" src="/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">makefile基础介绍</div></div><div class="info-2"><div class="info-item-1">简介Makefile 是一个文本文件，描述了一个或者多个目标-依赖关系以及目标对应的生成/更新（后续统一称为更新）规则。 Makefile 由 make 命令一键解析并处理。 通过 Makefile+make 的支持，我们可以以层级的方式组织项目的成百上千个代码文件，并达到增量编译的目的、以减少编译时间。 本文的阅读方式本文只列出了我们工作中常用的 Makefile 语法，还有一些高级语法及特性没有没有讲解。 本文出现的示例代码中：  $为命令行提示符，意为等待用户输入 #开头的为注释，也是 Makefile中 的注释符号 部分示例可以直接保存到文件中运行，行首的的空格需要改为 Tab，否则编译会提示 missing separator. Stop.  Makefile 基本组成Makefile 由以下的基本结构外加其他一些特性（如变量定义、文件包含等）组成： 12target(s) : prerequisite(s)    command(s)  我们通过以下一个简单的Makefile来讲解这个基本的结构： Makefile 1234567891011121314main: m...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GDB%E8%B0%83%E8%AF%95%E5%8E%9F%E7%90%86/" title="GDB调试原理"><img class="cover" src="/img/default.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">GDB调试原理</div></div><div class="info-2"><div class="info-item-1">前言这篇文章来聊聊大名鼎鼎的 GDB，它的豪门背景咱就不提了，和它的兄弟 GCC 一样是含着金钥匙出生的，在 GNU 的家族中的地位不可撼动。  我们都知道，在使用 GCC 编译时，可以使用 -g 选项在可执行文件中嵌入更多的调试信息，那么具体嵌入了哪些调试信息？这些调试信息是如何与二进制的指令之间进行相互交互？在调试的时候，调试信息中是如何获取函数调用栈中的上下文信息？ GDB调试模型GDB 调试包括 2 个程序：gdb 程序和被调试程序。根据这 2 个程序是否运行在同一台电脑中，可以把 GDB 的调试模型分为 2 种:  本地调试 远程调试  本地调试：调试程序和被调试程序运行在同一台电脑中。  远程调试：调试程序运行在一台电脑中，被调试程序运行在另一台电脑中。  关于可视化调试程序并不是重点，它只是一个用来封装 GDB 的外壳而已。我们既可以用黑乎乎的终端窗口来手动输入调试命令；也可以选择集成开发环境(IDE)，这个 IDE 中已经嵌入了器调试，这样就可以使用各种 button 来代替手动输入调试命令了。 与本地调试相比，远程调试中多了一个 GdbServer 程序，它和目...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/makefile%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/" title="makefile基础介绍"><img class="cover" src="/img/default.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">makefile基础介绍</div></div><div class="info-2"><div class="info-item-1">简介Makefile 是一个文本文件，描述了一个或者多个目标-依赖关系以及目标对应的生成/更新（后续统一称为更新）规则。 Makefile 由 make 命令一键解析并处理。 通过 Makefile+make 的支持，我们可以以层级的方式组织项目的成百上千个代码文件，并达到增量编译的目的、以减少编译时间。 本文的阅读方式本文只列出了我们工作中常用的 Makefile 语法，还有一些高级语法及特性没有没有讲解。 本文出现的示例代码中：  $为命令行提示符，意为等待用户输入 #开头的为注释，也是 Makefile中 的注释符号 部分示例可以直接保存到文件中运行，行首的的空格需要改为 Tab，否则编译会提示 missing separator. Stop.  Makefile 基本组成Makefile 由以下的基本结构外加其他一些特性（如变量定义、文件包含等）组成： 12target(s) : prerequisite(s)    command(s)  我们通过以下一个简单的Makefile来讲解这个基本的结构： Makefile 1234567891011121314main: m...</div></div></div></a><a class="pagination-related" href="/2021/07/22/C%E8%AF%AD%E8%A8%80/C&C++%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/" title="C&#x2F;C++知识点整理"><img class="cover" src="/img/default.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-22</div><div class="info-item-2">C&#x2F;C++知识点整理</div></div><div class="info-2"><div class="info-item-1">C++关键词const 指向常量的指针int const *p;const int *p;   指针本身是常量int *const p;分辨:从右往左看，看const离谁近   const修饰成员函数void func() const{} 常成员函数，可以使用类中的所有成员变量，但是不能修改它们，一般用于返回成员变量；  define(预处理阶段)  define 在预处理阶段进行替换  define函数  1define add(a,b) &#123;a++; b++; cout&lt;&lt;a+b&lt;&lt;endl;&#125; inline(编译阶段)内联函数和普通函数的区别：当编译器处理调用内联函数的语句时，不会将该语句编译成函数调用的指令，而是直接将整个函数体的代码插人调用语句处，就像整个函数体在调用处被重写了一遍一样。    优点: 有了内联函数，就能像调用一个函数那样方便地重复使用一段代码，而不需要付出执行函数调用的额外开销。 缺点:  使用内联函数会使最终可执行程序的体积增加。以空间换时间，或增加空间消耗来节省时间，这是计算机学科中常用的方法;  inli...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/GCC/" title="GCC"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">GCC</div></div><div class="info-2"><div class="info-item-1">简介Linux 下最常用的 C 编译器是 GCC，大多数发行版本都默认安装了 GCC。我们可以用以下 GCC 命令，把 test.c 编译成可执行文件 test：gcc -g test.c -o test。 如果大家习惯了 Visual Studio 等集成开发环境的话，会觉得上述的命令很费解。但掌握 GCC 等工具的用法，是一个程序员所必备的技能。 回到上面的 GCC 命令，它的作用是编译源文件 test.c 并生成可执行文件。其中 -o 表示生成的可执行文件名为 test，-g 表明要在可执行文件中添加调试信息。如果要使用 GDB 单步调试程序，必须使用 -g 参数。 可以看到，GCC 的行为是通过命令行参数进行指定的。所以，要掌握 GCC，重点在于熟悉 GCC 的各种参数上。但 GCC 的参数实在太多了，所以更普遍的做法是掌握其常用参数，并在遇到不认识的参数时多查资料进行学习。 GCC 的常用参数-c 作用：只对源文件进行编译操作。 例子: gcc -c test.c 说明：这将生成目标文件（object file）test.o。 -E 作用：只对源文件进行预处理操作。 例...</div></div></div></a><a class="pagination-related" href="/2026/01/18/C%E8%AF%AD%E8%A8%80/%E7%BC%96%E8%AF%91%E9%93%BE%E6%8E%A5%E5%8E%9F%E7%90%86/" title="编译链接原理"><img class="cover" src="https://i.loli.net/2021/08/02/DnqpSa6M5R1eHvG.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-18</div><div class="info-item-2">编译链接原理</div></div><div class="info-2"><div class="info-item-1">1.  前言学过 C 语言同学，第一个接触的例子应该就是著名的 “hello world” 程序，即便时隔多年，也能行云流水般敲出以下代码： 1234567#include &lt;stdio.h&gt;int main (void)&#123;    printf (&quot;hello world!\n&quot;);    return 0;&#125;  然后使用 GCC 一气呵成地编译链接出可执行文件，并运行： 123$ gcc main.c -o test$ ./test hello world!  看着屏幕输出我们想要的显示，开始难免会有一丝兴奋，原来这么简单就可以控制屏幕输出。但事实上真的有这么简单吗？#include 是做什么用的，gcc 在背后帮我们做了什么事情，./test 开始运行时背后又有什么故事。这就是本文的重点：编译、链接、装载。 实际上，一个 c 文件到最后运行，一般会经历以下过程，背后的故事，很长：  2. 预处理预处理是将头文件进行展开，并进行相关的宏替换和处理，删除注释等，最后生成 .i 文件，使用命令 gcc -E hello.c -o ...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">xuedue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xuedue"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/xuedue" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://bilibili.com" target="_blank" title="BiliBili"><i class="fa-brands fa-bilibili" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">今天超市薯片半价</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E8%A2%AB%E6%B5%8B%E7%A8%8B%E5%BA%8F"><span class="toc-number">3.</span> <span class="toc-text">编译被测程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E8%A2%AB%E6%B5%8B%E7%A8%8B%E5%BA%8F"><span class="toc-number">4.</span> <span class="toc-text">加载被测程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%AE%E9%80%9A%E6%96%AD%E7%82%B9"><span class="toc-number">5.</span> <span class="toc-text">普通断点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E6%96%AD%E7%82%B9"><span class="toc-number">6.</span> <span class="toc-text">条件断点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%91%E8%A7%86"><span class="toc-number">7.</span> <span class="toc-text">监视</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E8%AF%95-coredump"><span class="toc-number">8.</span> <span class="toc-text">调试 coredump</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E8%BF%9B%E7%A8%8B%E8%B0%83%E8%AF%95"><span class="toc-number">9.</span> <span class="toc-text">多进程调试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E8%8C%83%E4%BE%8B"><span class="toc-number">10.</span> <span class="toc-text">调试范例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8C%83%E4%BE%8B1"><span class="toc-number">10.1.</span> <span class="toc-text">范例1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8C%83%E4%BE%8B2"><span class="toc-number">10.2.</span> <span class="toc-text">范例2</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GDB-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-number">11.</span> <span class="toc-text">GDB 常用命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3"><span class="toc-number">12.</span> <span class="toc-text">官方文档</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GDB-%E7%9A%84%E8%B0%83%E8%AF%95%E5%8E%9F%E7%90%86"><span class="toc-number">13.</span> <span class="toc-text">GDB 的调试原理</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/80211%206G%E8%B0%83%E7%A0%94/" title="80211 6G调研">80211 6G调研</a><time datetime="2026-02-04T15:39:55.000Z" title="发表于 2026-02-04 15:39:55">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/20/Proxy/telegram%E7%99%BB%E5%BD%95/" title="Telegram需要旧手机验证/收不到验证码100%可用解决方法">Telegram需要旧手机验证/收不到验证码100%可用解决方法</a><time datetime="2026-01-20T16:02:09.000Z" title="发表于 2026-01-20 16:02:09">2026-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/18/%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%B0%83%E6%B5%8B%E5%B7%A5%E5%85%B7/" title="嵌入式调测工具">嵌入式调测工具</a><time datetime="2026-01-18T16:08:55.000Z" title="发表于 2026-01-18 16:08:55">2026-01-18</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/default.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By xuedue</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 5.4.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3"></script><script src="/js/main.js?v=5.5.3"></script><script src="/js/tw_cn.js?v=5.5.3"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liuy5uBHgv2OwgD3',
+      clientSecret: '5846745c3fef6377eeb8df8b4ad3aaf4cf0f1cb8',
+      repo: 'xuedue_comments',
+      owner: 'xuedue',
+      admin: ['xuedue'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'ebe4e940475ff9e681db63553ed22f2e'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.3"></script></div></div></body></html>
