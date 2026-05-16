@@ -1,0 +1,25 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 2692404 */
+  src: url('//at.alicdn.com/t/font_2692404_eqypusmgmqt.woff2?t=1626924512506') format('woff2'),
+       url('//at.alicdn.com/t/font_2692404_eqypusmgmqt.woff?t=1626924512506') format('woff'),
+       url('//at.alicdn.com/t/font_2692404_eqypusmgmqt.ttf?t=1626924512506') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-bilibili-fill:before {
+  content: "\e652";
+}
+/* 卡片处小图标 */
+.card_icon {
+  /* 修改颜色 */
+  color: #66B3FF;
+  /* 修改大小 */
+  font-size: 30px;
+}
